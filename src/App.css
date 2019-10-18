@@ -3,6 +3,51 @@ html, body {
   color: white;
 }
 
+body * {
+  transition: all 0.5s;
+}
+
+nav {
+  background: linear-gradient(#333, black);
+}
+
+nav ul {
+  margin: 0px;
+  padding: 16px 24px;
+  list-style-type: none;
+}
+
+nav ul li {
+  display: inline-block;
+  box-shadow: 0px 0px 10px 10px #333;
+  border-radius: 8px;
+  padding: 8px 12px;
+  color: #CCC;
+  cursor: pointer;
+  margin: 0px 12px;
+}
+
+nav ul li:first-child {
+  margin-left: 0px;
+}
+
+nav ul li:hover {
+  box-shadow: 0px 0px 12px 16px #444;
+  border-radius: 5px;
+  color: white;
+}
+
+h1 {
+  text-align: center;
+  margin: 10px auto 40px auto;
+  box-shadow: 0px 0px 10px 10px #444;
+  padding: 8px 16px;
+  background: #444;
+  color: #EEE;
+  overflow: hidden;
+  animation: show-title 0.5s;
+}
+
 article {
   display: grid;
   grid-template-columns: 30% 30% 30%;
@@ -14,6 +59,7 @@ article > section {
   background: #222;
   box-shadow: 0px 0px 20px 20px #444;
   overflow: hidden;
+  animation: show-section 1.2s ease;
 }
 
 article > section > h2 {
@@ -30,6 +76,7 @@ ul.items li {
   box-shadow: 0px 0px 6px 6px #444;
   padding: 8px 16px;
   margin: 16px 0px;
+  animation: add-item 0.5s ease;
 }
 
 ul.items li.newItem {
@@ -51,7 +98,7 @@ ul.items li.newItem input::placeholder {
 
 ul.items li .vote {
   display: inline-block;
-  margin-right: 12px;
+  width: 56px;
 }
 
 ul.items li .vote a {
@@ -69,4 +116,92 @@ ul.items li .vote a:hover {
 
 ul.items li .content {
   display: inline-block;
+}
+
+ul.items li .content .upvote {
+  display: inline-block;
+  animation: upvote 0.4s;
+  font-size: 1.1em;
+}
+
+ul.items li .content .downvote {
+  display: inline-block;
+  animation: downvote 0.4s;
+  font-size: 1.1em;
+}
+
+/**
+ * Animations
+ */
+
+@keyframes add-item {
+  0% {
+    opacity: 0;
+    transform: scaleY(0);
+  }
+  100% {
+    opacity: 1;
+    transform: scaleY(1);
+  }
+}
+
+@keyframes show-section {
+  0% {
+    opacity: 0;
+    transform: scale(0);
+    box-shadow: 0px 0px 10px 10px #444;
+  }
+  80% {
+    opacity: 1;
+    transform: scale(1);
+    box-shadow: 0px 0px 30px 30px #444;
+  }
+  100% {
+    box-shadow: 0px 0px 20px 20px #444;
+  }
+}
+
+@keyframes upvote {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  80% {
+    opacity: 1;
+    transform: translateY(-4px);
+  }
+  100% {
+    transform: translateY(0px);
+  }
+}
+
+@keyframes downvote {
+  0% {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  80% {
+    opacity: 1;
+    transform: translateY(4px);
+  }
+  100% {
+    transform: translateY(0px);
+  }
+}
+
+@keyframes show-title {
+  0% {
+    opacity: 0;
+    margin: 0px;
+    max-height: 0px;
+    box-shadow: 0px 0px 0px 0px black;
+    background: black;
+  }
+  100% {
+    opacity: 1;
+    margin: 10px auto 40px auto;
+    max-height: none;
+    box-shadow: 0px 0px 10px 10px #444;
+    background: #444;
+  }
 }

@@ -26,6 +26,8 @@ function List({ items, addItem, upvoteItem, downvoteItem }) {
         .sort((a, b) => a.total < b.total ? 1 : -1)
         .map(({ id, text, up, down }) =>
           <Item
+            key={text}
+            id={id}
             up={up}
             down={down}
             upvoteItem={() => upvoteItem(id)}
@@ -38,6 +40,7 @@ function List({ items, addItem, upvoteItem, downvoteItem }) {
             placeholder="Add new item..."
             value={newItemText}
             onChange={e => setNewItemText(e.target.value)}
+            maxLength={1024}
           />
         </form>
       </li>
