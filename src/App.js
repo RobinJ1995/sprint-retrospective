@@ -1,6 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import useInterval from 'use-interval';
-import Promise from 'bluebird';
 import './App.css';
 import List from './List';
 import uuid from 'uuid/v4';
