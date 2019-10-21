@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import Item from './Item';
 
-function List({ items, addItem, upvoteItem, downvoteItem }) {
+function List({ items, addItem, upvoteItem, downvoteItem, voteMode }) {
   const [newItemText, setNewItemText] = useState('');
 
   const submit = e => {
@@ -30,6 +30,7 @@ function List({ items, addItem, upvoteItem, downvoteItem }) {
             id={id}
             up={up}
             down={down}
+            voteMode={voteMode}
             upvoteItem={() => upvoteItem(id)}
             downvoteItem={() => downvoteItem(id)}
           >{text}</Item>)}

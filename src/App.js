@@ -3,6 +3,7 @@ import useInterval from 'use-interval';
 import './App.css';
 import List from './List';
 import uuid from 'uuid/v4';
+import { VOTE_MODES } from './constants';
 
 window.API_BASE = `http://localhost:5432/${uuid()}`;
 
@@ -10,7 +11,8 @@ let data = {
   title: null,
   good: [],
   bad: [],
-  actions: []
+  actions: [],
+  voteMode: VOTE_MODES.UPVOTE
 };
 
 const post = (url, data = {}) => fetch(url, {
@@ -34,9 +36,11 @@ function App() {
   const [ good, setGood ] = useState(data.good);
   const [ bad, setBad ] = useState(data.bad);
   const [ actions, setActions ] = useState(data.actions);
+  const [ voteMode, setVoteMode ] = useState(data.voteMode);
 
   const addGood = text => {
     post(`${window.API_BASE}/good`, { text })
+      .then(response => response.status)
       .catch(alert);
 
     setGood([...good, { text }]);
@@ -80,14 +84,22 @@ function App() {
     setTitle(title);
   };
 
+  const updateVoteMode = voteMode => {
+    put(`${window.API_BASE}/voteMode`, { voteMode })
+      .catch(alert);
+
+    setVoteMode(voteMode);
+  };
+
   useInterval(() => {
     fetch(window.API_BASE)
       .then(res => res.json())
-      .then(({good, bad, actions, title}) => {
+      .then(({good, bad, actions, title, voteMode }) => {
         setGood(good);
         setBad(bad);
         setActions(actions);
         setTitle(title);
+        setVoteMode(voteMode);
       });
   }, 1000);
 
@@ -97,6 +109,9 @@ function App() {
         <ul>
           {!!title ||
             <li onClick={() => updateTitle(prompt('Name this retrospective:'))}>Set name</li>}
+          <li onClick={() => updateVoteMode(VOTE_MODES.UPVOTE_DOWNVOTE)}>Vote mode: 👍👎</li>
+          <li onClick={() => updateVoteMode(VOTE_MODES.UPVOTE)}>Vote mode: 👍</li>
+          <li onClick={() => updateVoteMode(VOTE_MODES.NONE)}>Vote mode: 🚫</li>
           <li onClick={() => alert(JSON.stringify({ title, good, bad, actions }, null,4))}>Export</li>
         </ul>
       </nav>
@@ -108,6 +123,7 @@ function App() {
           <List
             items={good}
             addItem={addGood}
+            voteMode={voteMode}
             upvoteItem={id => upvoteItem(id, 'good', setGood, good)}
             downvoteItem={id => downvoteItem(id, 'good', setGood, good)}
           ></List>
@@ -117,6 +133,7 @@ function App() {
           <List
             items={bad}
             addItem={addBad}
+            voteMode={voteMode}
             upvoteItem={id => upvoteItem(id, 'bad', setBad, bad)}
             downvoteItem={id => downvoteItem(id, 'bad', setBad, bad)}
           ></List>
@@ -126,6 +143,7 @@ function App() {
           <List
             items={actions}
             addItem={addAction}
+            voteMode={voteMode}
             upvoteItem={id => upvoteItem(id, 'action', setActions, actions)}
             downvoteItem={id => downvoteItem(id, 'action', setActions, actions)}
           ></List>
