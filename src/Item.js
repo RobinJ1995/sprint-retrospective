@@ -8,24 +8,27 @@ function Item({ id, children, up, down, upvoteItem, downvoteItem, voteMode }) {
     <li data-id={id} data-up={up} data-down={down}>
       {voteMode !== VOTE_MODES.NONE &&
         <div class="vote">
-          <a href="#" onClick={upvoteItem}>👍</a>
+          <button onClick={upvoteItem}>👍</button>
           {voteMode === VOTE_MODES.UPVOTE_DOWNVOTE &&
-            <a href="#" onClick={downvoteItem}>👎</a>
+            <button onClick={downvoteItem}>👎</button>
           }
         </div>
       }
       <div class="content">
         {children}
-        {voteMode !== VOTE_MODES.NONE &&
-          [
-            repeat(up, <span class="upvote">👍</span>),
-            voteMode === VOTE_MODES.UPVOTE_DOWNVOTE &&
-              repeat(down, <span class="downvote">👎</span>)
-          ]
-        }
+        <span class="votes">
+          {voteMode !== VOTE_MODES.NONE &&
+            [
+              repeat(up, <span class="upvote">👍</span>),
+              voteMode === VOTE_MODES.UPVOTE_DOWNVOTE &&
+                repeat(down, <span class="downvote">👎</span>)
+            ]
+          }
+        </span>
       </div>
     </li>
   );
 }
 
 export default Item;
+export { repeat };

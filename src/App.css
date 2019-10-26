@@ -7,8 +7,17 @@ body * {
   transition: all 0.5s;
 }
 
+main.error {
+  pointer-events: none;
+}
+
 nav {
   background: linear-gradient(#333, black);
+}
+
+.error nav {
+  pointer-events: none;
+  background: linear-gradient(red, black);
 }
 
 nav ul {
@@ -27,14 +36,49 @@ nav ul li {
   margin: 0px 12px;
 }
 
-nav ul li:first-child {
-  margin-left: 0px;
+@media (min-width: 900px) {
+  nav ul li:first-child {
+    margin-left: 0px;
+  }
+}
+
+@media (max-width: 600px) {
+  nav ul {
+    padding: 1vh 2vw;
+  }
+
+  nav ul li {
+    width: calc(96vw - (2 * 12px));
+    margin: 6px 0px;
+  }
 }
 
 nav ul li:hover {
   box-shadow: 0px 0px 12px 16px #444;
   border-radius: 5px;
   color: white;
+}
+
+nav ul.submenu {
+    padding: 4px;
+}
+
+nav ul.submenu li {
+    display: block;
+    margin: 12px 0px;
+    padding: 2px;
+    background: #333;
+    text-align: center;
+    box-shadow: 0px 0px 5px 5px #333;
+}
+
+nav ul.submenu li:last-child  {
+    margin-bottom: 2px;
+}
+
+nav ul.submenu li:hover {
+    background: #333;
+    box-shadow: 0px 0px 8px 8px #444;
 }
 
 h1 {
@@ -48,11 +92,38 @@ h1 {
   animation: show-title 0.5s;
 }
 
+p#error {
+  text-align: center;
+  margin: 10px auto 40px auto;
+  box-shadow: 0px 0px 10px 10px red;
+  padding: 8px 16px;
+  background: red;
+  color: black;
+  animation: show-error 0.5s;
+}
+
 article {
   display: grid;
-  grid-template-columns: 30% 30% 30%;
-  grid-gap: 3%;
+  grid-template-columns: 30vw 30vw 30vw;
+  grid-gap: 3vw;
+  justify-content: center;
   margin: 20px;
+}
+
+.error article {
+  opacity: 0.8;
+}
+
+@media (max-width: 1400px) {
+  article {
+    grid-template-columns: 45vw 45vw;
+  }
+}
+
+@media (max-width: 900px) {
+  article {
+    grid-template-columns: 95vw;
+  }
 }
 
 article > section {
@@ -60,6 +131,8 @@ article > section {
   box-shadow: 0px 0px 20px 20px #444;
   overflow: hidden;
   animation: show-section 1.2s ease;
+  width: 100%;
+  margin-bottom: 3vh;
 }
 
 article > section > h2 {
@@ -98,33 +171,43 @@ ul.items li.newItem input::placeholder {
 
 ul.items li .vote {
   display: inline-block;
-  width: 56px;
+  margin-right: 4px;
 }
 
-ul.items li .vote a {
+ul.items li .vote button {
   display: inline-block;
   opacity: 0.5;
   padding: 3px;
   text-decoration: none;
   transition: all 0.2s;
+  border: none;
+  background: transparent;
+  font-size: 1rem;
+  cursor: pointer;
+  animation: show-vote-button 0.4s;
 }
 
-ul.items li .vote a:hover {
+ul.items li .vote button:hover {
   opacity: 1;
   transform: scale(1.8);
 }
 
 ul.items li .content {
   display: inline-block;
+  overflow-wrap: anywhere;
 }
 
-ul.items li .content .upvote {
+ul.items li .content .votes {
+  margin-left: 4px;
+}
+
+ul.items li .content .votes .upvote {
   display: inline-block;
   animation: upvote 0.4s;
   font-size: 1.1em;
 }
 
-ul.items li .content .downvote {
+ul.items li .content .votes .downvote {
   display: inline-block;
   animation: downvote 0.4s;
   font-size: 1.1em;
@@ -203,5 +286,33 @@ ul.items li .content .downvote {
     max-height: none;
     box-shadow: 0px 0px 10px 10px #444;
     background: #444;
+  }
+}
+
+@keyframes show-error {
+  0% {
+    opacity: 0;
+    margin: 0px;
+    max-height: 0px;
+    box-shadow: 0px 0px 0px 0px black;
+    background: black;
+  }
+  100% {
+    opacity: 1;
+    margin: 10px auto 40px auto;
+    max-height: none;
+    box-shadow: 0px 0px 10px 10px red;
+    background: red;
+  }
+}
+
+@keyframes show-vote-button {
+  0% {
+    opacity: 0;
+    transform: scale(0.1);
+  }
+  100% {
+    opacity: 0.5;
+    transform: scale(1);
   }
 }
