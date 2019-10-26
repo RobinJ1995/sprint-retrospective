@@ -1,6 +1,7 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "Sprint Retro",
+  "name": "Sprint Retrospective",
+  "description": "Collaborate on, share, and export sprint retrospectives. No signup required.",
   "icons": [
     {
       "src": "favicon.ico",
@@ -8,20 +9,19 @@
       "type": "image/x-icon"
     },
     {
-      "src": "logo192.png",
-      "type": "image/png",
-      "sizes": "192x192"
-    },
-    {
-      "src": "logo512.png",
+      "src": "logo.png",
       "type": "image/png",
       "sizes": "512x512"
     }
   ],
   "start_url": ".",
-  "display": "standalone",
+  "display": "fullscreen",
   "theme_color": "#000000",
-  "background_color": "#ffffff",
+  "background_color": "#000000",
+  "categories": [
+    "productivity",
+    "utilities"
+  ],
   "permissions": [
     "clipboardWrite"
   ]
