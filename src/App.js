@@ -28,7 +28,8 @@ const getOrSetRetroId = () => {
 
 const RETRO_ID = getOrSetRetroId();
 
-window.API_BASE = `http://localhost:5432/${RETRO_ID}`;
+const apiEndpoint = process.env.REACT_APP_API_ENDPOINT || 'http://localhost:5432';
+window.API_BASE = `${apiEndpoint}/${RETRO_ID}`;
 
 let data = {
   title: null,
