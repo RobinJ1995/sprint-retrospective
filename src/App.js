@@ -4,7 +4,8 @@ import './App.css';
 import List from './List';
 import uuid from 'uuid/v4';
 import { VOTE_MODES, SUBMENUS, PATH_MAX_LENGTH } from './constants';
-import {exportToConfluenceWiki, exportToJson, exportToMarkdown} from './export';
+import { exportToConfluenceWiki, exportToJson, exportToMarkdown } from './export';
+import Cache from "./Cache";
 
 const trimSlashes = str => str.replace(/^\//, '').replace(/\/$/, '');
 const getRetroIdFromUrl = () => {
@@ -31,12 +32,14 @@ const RETRO_ID = getOrSetRetroId();
 const apiEndpoint = process.env.REACT_APP_API_ENDPOINT || 'http://localhost:5432';
 window.API_BASE = `${apiEndpoint}/${RETRO_ID}`;
 
-let data = {
+const cache = new Cache();
+const initialData = {
   title: null,
   good: [],
   bad: [],
   actions: [],
-  voteMode: VOTE_MODES.UPVOTE
+  voteMode: VOTE_MODES.UPVOTE,
+  ...cache.get(RETRO_ID)
 };
 
 const post = (url, data = {}) => fetch(url, {
@@ -62,22 +65,37 @@ const copyToClipboard = text => new Promise((resolve, reject) => {
   }
 });
 
-const share = () => copyToClipboard(window.location)
-  .then(() => alert(`Share the following URL to collaborate on this retrospective:\n\n${window.location}\n\nFor your convenience, it has been copied to your clipboard.`))
-  .catch(() => alert(`Share the following URL to collaborate on this retrospective:\n\n${window.location}`));
+const shareFallback = () => copyToClipboard(window.location)
+    .then(() => alert(`Share the following URL to collaborate on this retrospective:\n\n${window.location}\n\nFor your convenience, it has been copied to your clipboard.`))
+    .catch(() => alert(`Share the following URL to collaborate on this retrospective:\n\n${window.location}`));
 
 const alertAndCopy = text => copyToClipboard(text)
   .then(() => alert(text))
   .catch(() => alert(text));
 
 function App() {
-  const [ title, setTitle ] = useState(data.title);
-  const [ good, setGood ] = useState(data.good);
-  const [ bad, setBad ] = useState(data.bad);
-  const [ actions, setActions ] = useState(data.actions);
-  const [ voteMode, setVoteMode ] = useState(data.voteMode);
+  const [ title, setTitle ] = useState(initialData.title);
+  const [ good, setGood ] = useState(initialData.good);
+  const [ bad, setBad ] = useState(initialData.bad);
+  const [ actions, setActions ] = useState(initialData.actions);
+  const [ voteMode, setVoteMode ] = useState(initialData.voteMode);
   const [ openedSubmenu, setOpenedSubmenu ] = useState(null);
   const [ error, setError ] = useState(null);
+
+  const share = () => {
+    if (navigator.share) {
+      const nItems = good.length + bad.length + actions.length;
+
+      return navigator.share({
+        title: title || 'Sprint Retrospective',
+        text: `Collaborate on this sprint retrospective! It currently contains ${nItems} items.`,
+        url: window.location
+      })
+      .catch(() => shareFallback());
+    }
+
+    return shareFallback();
+  };
 
   const addGood = text => {
     post(`${window.API_BASE}/good`, { text })
@@ -144,13 +162,18 @@ function App() {
   useInterval(() => {
     fetch(window.API_BASE)
       .then(res => res.json())
-      .then(({good, bad, actions, title, voteMode }) => {
+      .then(({id, good, bad, actions, title, voteMode }) => {
         setGood(good);
         setBad(bad);
         setActions(actions);
         setTitle(title);
         setVoteMode(voteMode);
         setError(null);
+
+        if (id) {
+          cache.setIfModified(id, { id, good, bad, actions, title, voteMode })
+              .catch(console.error);
+        }
       }).catch(setError);
   }, 1000);
 

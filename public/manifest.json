@@ -23,6 +23,7 @@
     "utilities"
   ],
   "permissions": [
-    "clipboardWrite"
+    "clipboardWrite",
+    "unlimitedStorage"
   ]
 }
