@@ -181,8 +181,7 @@ function App() {
     <main className={!!error && 'error'}>
       <nav>
         <ul>
-          {!!title ||
-            <li onClick={() => updateTitle(prompt('Name this retrospective:'))}>Set name</li>}
+          <li onClick={() => updateTitle(prompt('Name this retrospective:'))}>{title ? 'Change' : 'Set'} name</li>
           <li onClick={() => toggleOpenedSubmenu(SUBMENUS.VOTE_MODE)}>Set voting mode
             {openedSubmenu === SUBMENUS.VOTE_MODE &&
               <ul class="submenu">
