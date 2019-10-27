@@ -28,12 +28,16 @@ nav ul {
 
 nav ul li {
   display: inline-block;
+  background: linear-gradient(#222, #111);
   box-shadow: 0px 0px 10px 10px #333;
   border-radius: 8px;
   padding: 8px 12px;
   color: #CCC;
   cursor: pointer;
   margin: 0px 12px;
+}
+nav > ul > li {
+  animation: show-nav-button 1.2s;
 }
 
 @media (min-width: 900px) {
@@ -43,13 +47,33 @@ nav ul li {
 }
 
 @media (max-width: 600px) {
-  nav ul {
+  nav > ul {
     padding: 1vh 2vw;
+
+    display: grid;
+    grid-template-columns: 30vw 30vw 30vw;
+    grid-gap: 3vw;
   }
 
-  nav ul li {
-    width: calc(96vw - (2 * 12px));
+  nav > ul > li {
+    text-align: center;
     margin: 6px 0px;
+  }
+}
+
+@media (max-width: 480px) {
+  nav > ul {
+    display: grid;
+    grid-template-columns: 45vw 45vw;
+    grid-gap: 1vh 5vw;
+  }
+}
+
+@media (max-width: 320px) {
+  nav > ul {
+    display: grid;
+    grid-template-columns: 96vw;
+    grid-gap: 0px;
   }
 }
 
@@ -57,6 +81,7 @@ nav ul li:hover {
   box-shadow: 0px 0px 12px 16px #444;
   border-radius: 5px;
   color: white;
+  background: linear-gradient(#222, black);
 }
 
 nav ul.submenu {
@@ -314,5 +339,21 @@ ul.items li .content .votes .downvote {
   100% {
     opacity: 0.5;
     transform: scale(1);
+  }
+}
+
+@keyframes show-nav-button {
+  0% {
+    opacity: 0;
+    transform: translateY(-50px) scale(0.6);
+    box-shadow: 0px 0px 10px 10px #333;
+  }
+  80% {
+    opacity: 1;
+    box-shadow: 0px 0px 20px 20px #333;
+    transform: translateY(0px) scale(1);
+  }
+  100% {
+    box-shadow: 0px 0px 10px 10px #333;
   }
 }

@@ -21,7 +21,7 @@ const getOrSetRetroId = () => {
   }
 
   const id = uuid();
-  window.history.pushState(null, 'Sprint Retrospective', `/${id}`);
+  window.history.replaceState(null, 'Sprint Retrospective', `/${id}`);
 
   return id;
 };
