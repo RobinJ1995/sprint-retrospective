@@ -48,6 +48,7 @@ function List({ items, addItem, upvoteItem, downvoteItem, voteMode }) {
             onChange={e => setNewItemText(e.target.value)}
             minLength={ITEM_TEXT_MIN_LENGTH}
             maxLength={ITEM_TEXT_MAX_LENGTH}
+            aria-label="Add new item"
           />
         </form>
       </li>
