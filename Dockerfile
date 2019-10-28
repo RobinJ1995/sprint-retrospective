@@ -1,5 +1,5 @@
 FROM node:12
-ARG API_ENDPOINT
+ARG API_ENDPOINT=https://api.sprintretrospective.eu
 WORKDIR /app
 COPY . .
 ENV REACT_APP_API_ENDPOINT=${API_ENDPOINT}
