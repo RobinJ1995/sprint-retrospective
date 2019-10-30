@@ -10,7 +10,7 @@ jobs:
     - name: Publish to Github Docker registry
       uses: elgohr/Publish-Docker-Github-Action@master
       with:
-        name: docker.pkg.github.com/robinj1995/sprint-retrospective
+        name: robinj1995/sprint-retrospective/sprint-retrospective
         registry: docker.pkg.github.com
         username: RobinJ1995
         password: ${{ secrets.GITHUB_PERSONAL_ACCESS_TOKEN }}
