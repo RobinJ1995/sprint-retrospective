@@ -6,7 +6,7 @@ import uuid from 'uuid/v4';
 import { VOTE_MODES, SUBMENUS, PATH_MAX_LENGTH } from './constants';
 import { exportToConfluenceWiki, exportToJson, exportToMarkdown } from './export';
 import Cache from "./Cache";
-import {post, put, copyToClipboard, patch} from './utils';
+import {httpPost, httpPut, copyToClipboard, httpPatch, httpDelete} from './utils';
 
 const trimSlashes = str => str.replace(/^\//, '').replace(/\/$/, '');
 const getRetroIdFromUrl = () => {
@@ -51,7 +51,10 @@ const alertAndCopy = text => copyToClipboard(text)
   .then(() => alert(text))
   .catch(() => alert(text));
 
-const updateItemText = (type, id, text) => patch(`${window.API_BASE}/${type}/${id}`, { text })
+const updateItemText = (type, id, text) => httpPatch(`${window.API_BASE}/${type}/${id}`, { text })
+  .catch(alert);
+
+const deleteItem = (type, id) => httpDelete(`${window.API_BASE}/${type}/${id}`)
   .catch(alert);
 
 function App() {
@@ -79,26 +82,26 @@ function App() {
   };
 
   const addGood = text => {
-    post(`${window.API_BASE}/good`, { text })
+    httpPost(`${window.API_BASE}/good`, { text })
       .catch(alert);
 
     setGood([...good, { text }]);
   };
   const addBad = text => {
-    post(`${window.API_BASE}/bad`, { text })
+    httpPost(`${window.API_BASE}/bad`, { text })
       .catch(alert);
 
     setBad([...bad, { text }]);
   };
   const addAction = text => {
-    post(`${window.API_BASE}/action`, { text })
+    httpPost(`${window.API_BASE}/action`, { text })
       .catch(alert);
 
     setActions([...actions, { text }]);
   };
 
   const upvoteItem = (id, type, setter, list) => {
-    post(`${window.API_BASE}/${type}/${id}/up`)
+    httpPost(`${window.API_BASE}/${type}/${id}/up`)
       .catch(alert);
 
     setter(list.map(item => ({
@@ -107,7 +110,7 @@ function App() {
     })));
   };
   const downvoteItem = (id, type, setter, list) => {
-    post(`${window.API_BASE}/${type}/${id}/down`)
+    httpPost(`${window.API_BASE}/${type}/${id}/down`)
       .catch(alert);
 
     setter(list.map(item => ({
@@ -117,14 +120,14 @@ function App() {
   };
 
   const updateTitle = title => {
-    put(`${window.API_BASE}/title`, { title })
+    httpPut(`${window.API_BASE}/title`, { title })
       .catch(alert);
 
     setTitle(title);
   };
 
   const updateVoteMode = voteMode => {
-    put(`${window.API_BASE}/voteMode`, { voteMode })
+    httpPut(`${window.API_BASE}/voteMode`, { voteMode })
       .catch(alert);
 
     setVoteMode(voteMode);
@@ -204,6 +207,7 @@ function App() {
             upvoteItem={id => upvoteItem(id, 'good', setGood, good)}
             downvoteItem={id => downvoteItem(id, 'good', setGood, good)}
             updateItemText={(id, text) => updateItemText('good', id, text)}
+            deleteItem={id => deleteItem('good', id)}
           />
         </section>
         <section id="bad">
@@ -215,6 +219,7 @@ function App() {
             upvoteItem={id => upvoteItem(id, 'bad', setBad, bad)}
             downvoteItem={id => downvoteItem(id, 'bad', setBad, bad)}
             updateItemText={(id, text) => updateItemText('bad', id, text)}
+            deleteItem={id => deleteItem('bad', id)}
           />
         </section>
         <section id="actions">
@@ -226,6 +231,7 @@ function App() {
             upvoteItem={id => upvoteItem(id, 'action', setActions, actions)}
             downvoteItem={id => downvoteItem(id, 'action', setActions, actions)}
             updateItemText={(id, text) => updateItemText('actions', id, text)}
+            deleteItem={id => deleteItem('actions', id)}
           />
         </section>
       </article>

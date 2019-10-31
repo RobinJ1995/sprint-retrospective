@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import Item from './Item';
 import {ITEM_TEXT_MAX_LENGTH, ITEM_TEXT_MIN_LENGTH} from './constants';
 
-function List({ items, addItem, upvoteItem, downvoteItem, voteMode, updateItemText }) {
+function List({ items, addItem, upvoteItem, downvoteItem, voteMode, updateItemText, deleteItem }) {
   const [newItemText, setNewItemText] = useState('');
 
   const submit = e => {
@@ -39,6 +39,7 @@ function List({ items, addItem, upvoteItem, downvoteItem, voteMode, updateItemTe
             upvoteItem={() => upvoteItem(id)}
             downvoteItem={() => downvoteItem(id)}
             updateText={text => updateItemText(id, text)}
+            deleteItem={() => deleteItem(id)}
           >{text}</Item>)}
       <li class="newItem">
         <form onSubmit={submit}>

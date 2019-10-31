@@ -3,7 +3,7 @@ import {ITEM_TEXT_MAX_LENGTH, ITEM_TEXT_MIN_LENGTH, KEY, VOTE_MODES} from './con
 
 const repeat = (n, content) => Array(n || 0).fill(false).map(() => content);
 
-function Item({ id, children, up, down, upvoteItem, downvoteItem, voteMode, updateText }) {
+function Item({ id, children, up, down, upvoteItem, downvoteItem, voteMode, updateText, deleteItem }) {
   const [ editing, setEditing ] = useState(false);
   const [ text, setText ] = useState(children);
 
@@ -12,14 +12,21 @@ function Item({ id, children, up, down, upvoteItem, downvoteItem, voteMode, upda
   const submit = e => {
     e.preventDefault();
 
+    setEditing(false);
+
     if (!text) {
+      if (window.confirm('Delete this item?')) {
+        return deleteItem();
+      }
+
+      setText(children);
+
       return;
     }
 
-    updateText(text);
-
     setText(children);
-    setEditing(false);
+
+    return updateText(text);
   };
 
   const cancelEdit = e => {
