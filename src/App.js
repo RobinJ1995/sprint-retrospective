@@ -6,6 +6,7 @@ import uuid from 'uuid/v4';
 import { VOTE_MODES, SUBMENUS, PATH_MAX_LENGTH } from './constants';
 import { exportToConfluenceWiki, exportToJson, exportToMarkdown } from './export';
 import Cache from "./Cache";
+import {post, put, copyToClipboard, patch} from './utils';
 
 const trimSlashes = str => str.replace(/^\//, '').replace(/\/$/, '');
 const getRetroIdFromUrl = () => {
@@ -42,29 +43,6 @@ const initialData = {
   ...cache.get(RETRO_ID)
 };
 
-const post = (url, data = {}) => fetch(url, {
-  method: 'POST',
-  body: JSON.stringify(data),
-  headers: {
-    'Content-Type': 'application/json'
-  }
-});
-const put = (url, data = {}) => fetch(url, {
-  method: 'PUT',
-  body: JSON.stringify(data),
-  headers: {
-    'Content-Type': 'application/json'
-  }
-});
-
-const copyToClipboard = text => new Promise((resolve, reject) => {
-  try {
-    return resolve(navigator.clipboard.writeText(text));
-  } catch (ex) {
-    return reject(ex);
-  }
-});
-
 const shareFallback = () => copyToClipboard(window.location)
     .then(() => alert(`Share the following URL to collaborate on this retrospective:\n\n${window.location}\n\nFor your convenience, it has been copied to your clipboard.`))
     .catch(() => alert(`Share the following URL to collaborate on this retrospective:\n\n${window.location}`));
@@ -72,6 +50,9 @@ const shareFallback = () => copyToClipboard(window.location)
 const alertAndCopy = text => copyToClipboard(text)
   .then(() => alert(text))
   .catch(() => alert(text));
+
+const updateItemText = (type, id, text) => patch(`${window.API_BASE}/${type}/${id}`, { text })
+  .catch(alert);
 
 function App() {
   const [ title, setTitle ] = useState(initialData.title);
@@ -99,7 +80,6 @@ function App() {
 
   const addGood = text => {
     post(`${window.API_BASE}/good`, { text })
-      .then(response => response.status)
       .catch(alert);
 
     setGood([...good, { text }]);
@@ -223,6 +203,7 @@ function App() {
             voteMode={voteMode}
             upvoteItem={id => upvoteItem(id, 'good', setGood, good)}
             downvoteItem={id => downvoteItem(id, 'good', setGood, good)}
+            updateItemText={(id, text) => updateItemText('good', id, text)}
           />
         </section>
         <section id="bad">
@@ -233,6 +214,7 @@ function App() {
             voteMode={voteMode}
             upvoteItem={id => upvoteItem(id, 'bad', setBad, bad)}
             downvoteItem={id => downvoteItem(id, 'bad', setBad, bad)}
+            updateItemText={(id, text) => updateItemText('bad', id, text)}
           />
         </section>
         <section id="actions">
@@ -243,6 +225,7 @@ function App() {
             voteMode={voteMode}
             upvoteItem={id => upvoteItem(id, 'action', setActions, actions)}
             downvoteItem={id => downvoteItem(id, 'action', setActions, actions)}
+            updateItemText={(id, text) => updateItemText('actions', id, text)}
           />
         </section>
       </article>
