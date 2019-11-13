@@ -11,8 +11,18 @@ main.error {
   pointer-events: none;
 }
 
+main.theme-light {
+  background: white;
+  color: black;
+  box-shadow: 0px 10px 100px 100px white;
+}
+
 nav {
   background: linear-gradient(#333, black);
+}
+
+.theme-light nav {
+  background: linear-gradient(orange, white);
 }
 
 .error nav {
@@ -35,6 +45,11 @@ nav ul li {
   color: #CCC;
   cursor: pointer;
   margin: 0px 12px;
+}
+.theme-light nav ul li {
+  background: linear-gradient(orange, #EEE);
+  box-shadow: 0px 0px 10px 10px #EEE;
+  color: #444;
 }
 nav > ul > li {
   animation: show-nav-button 1.2s;
@@ -83,6 +98,11 @@ nav ul li:hover {
   color: white;
   background: linear-gradient(#222, black);
 }
+.theme-light nav ul li:hover {
+  box-shadow: 0px 0px 12px 16px white;
+  color: black;
+  background: linear-gradient(orange, white);
+}
 
 nav ul.submenu {
     padding: 4px;
@@ -96,6 +116,10 @@ nav ul.submenu li {
     text-align: center;
     box-shadow: 0px 0px 5px 5px #333;
 }
+.theme-light nav ul.submenu li {
+  background: #EEE;
+  box-shadow: 0px 0px 5px 5px #EEE;
+}
 
 nav ul.submenu li:last-child  {
     margin-bottom: 2px;
@@ -104,6 +128,10 @@ nav ul.submenu li:last-child  {
 nav ul.submenu li:hover {
     background: #333;
     box-shadow: 0px 0px 8px 8px #444;
+}
+.theme-light nav ul.submenu li:hover {
+  background: white;
+  box-shadow: 0px 0px 8px 8px white;
 }
 
 h1 {
@@ -115,6 +143,11 @@ h1 {
   color: #EEE;
   overflow: hidden;
   animation: show-title 0.5s;
+}
+.theme-light h1 {
+  box-shadow: 0px 0px 10px 10px lightblue;
+  background: lightblue;
+  color: black;
 }
 
 p#error {
@@ -159,6 +192,10 @@ article > section {
   width: 100%;
   margin-bottom: 3vh;
 }
+.theme-light article > section {
+  background: #DDF;
+  box-shadow: 0px 0px 20px 20px #DCE;
+}
 
 article > section > h2 {
   text-align: center;
@@ -178,10 +215,18 @@ ul.items li {
   margin: 16px 0px;
   animation: add-item 0.5s ease;
 }
+.theme-light ul.items li {
+  background: white;
+  box-shadow: 0px 0px 6px 6px white;
+}
 
 ul.items li.newItem {
   background: #333;
   box-shadow: 0px 0px 6px 6px #333;
+}
+.theme-light ul.items li.newItem {
+  background: #FDD;
+  box-shadow: 0px 0px 6px 6px #FDD;
 }
 
 ul.items li.newItem form {
@@ -195,9 +240,16 @@ ul.items li.newItem input {
   font-size: 1rem;
   color: white;
 }
+.theme-light ul.items li.newItem input {
+  background: #FDD;
+  color: black;
+}
 
 ul.items li.newItem input::placeholder {
   color: #AAA;
+}
+.theme-light ul.items li.newItem input::placeholder {
+  color: #444;
 }
 
 ul.items li .vote {
@@ -234,6 +286,10 @@ ul.items li.editing {
   background: #333;
   box-shadow: 0px 0px 7px 7px #333;
 }
+.theme-light ul.items li.editing {
+  background: #DEF;
+  box-shadow: 0px 0px 7px 7px #DEF;
+}
 
 ul.items li.editing .content input {
   background: transparent;
@@ -241,6 +297,9 @@ ul.items li.editing .content input {
   color: white;
   font-size: 1em;
   width: 100%;
+}
+.theme-light ul.items li.editing .content input {
+  color: black;
 }
 
 ul.items li .content .votes {

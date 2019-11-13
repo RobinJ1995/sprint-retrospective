@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import './App.css';
 import uuid from 'uuid/v4';
-import { VOTE_MODES, SUBMENUS, PATH_MAX_LENGTH } from './constants';
+import {VOTE_MODES, SUBMENUS, PATH_MAX_LENGTH, THEMES} from './constants';
 import { exportToConfluenceWiki, exportToJson, exportToMarkdown } from './export';
-import Cache from "./Cache";
+import Cache from './Cache';
+import Preferences from './Preferences';
 import {copyToClipboard, httpPut} from './utils';
 import Retrospective from './Retrospective';
 
@@ -32,6 +33,7 @@ const RETRO_ID = getOrSetRetroId();
 const apiEndpoint = process.env.REACT_APP_API_ENDPOINT || 'http://localhost:5432';
 window.API_BASE = `${apiEndpoint}/${RETRO_ID}`;
 
+const prefs = new Preferences();
 const cache = new Cache();
 const initialData = {
   title: null,
@@ -51,13 +53,14 @@ const alertAndCopy = text => copyToClipboard(text)
   .catch(() => alert(text));
 
 function App() {
-  const [good, setGood] = useState(initialData.good);
-  const [bad, setBad] = useState(initialData.bad);
-  const [actions, setActions] = useState(initialData.actions);
+  const [ good, setGood ] = useState(initialData.good);
+  const [ bad, setBad ] = useState(initialData.bad);
+  const [ actions, setActions ] = useState(initialData.actions);
   const [ title, setTitle ] = useState(initialData.title);
   const [ voteMode, setVoteMode ] = useState(initialData.voteMode);
   const [ openedSubmenu, setOpenedSubmenu ] = useState(null);
   const [ error, setError ] = useState(null);
+  const [ theme, setTheme ] = useState(prefs.get(Preferences.THEME, THEMES.DARK));
 
   const updateTitle = title => {
     httpPut(`${window.API_BASE}/title`, { title })
@@ -71,6 +74,11 @@ function App() {
       .catch(alert);
 
     setVoteMode(voteMode);
+  };
+
+  const updateTheme = theme => {
+    prefs.set(Preferences.THEME, theme);
+    setTheme(theme);
   };
 
   const toggleOpenedSubmenu = submenu => {
@@ -98,7 +106,10 @@ function App() {
   };
 
   return (
-    <main className={!!error && 'error'}>
+    <main className={[
+      error && 'error',
+      `theme-${theme}`
+    ].filter(x => x).join(' ')}>
       <nav>
         <ul>
           <li onClick={() => updateTitle(prompt('Name this retrospective:'))}>{title ? 'Change' : 'Set'} name</li>
@@ -127,6 +138,14 @@ function App() {
             }
           </li>
           <li onClick={share}>Share</li>
+          <li onClick={() => toggleOpenedSubmenu(SUBMENUS.THEMES)}>Set theme
+            {openedSubmenu === SUBMENUS.THEMES &&
+            <ul className="submenu">
+              <li onClick={() => updateTheme(THEMES.DARK)} title="Dark">Dark</li>
+              <li onClick={() => updateTheme(THEMES.LIGHT)} title="Light">Light</li>
+            </ul>
+            }
+          </li>
         </ul>
       </nav>
       {!!title &&

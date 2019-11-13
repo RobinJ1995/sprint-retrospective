@@ -13,6 +13,10 @@ const PATH_MAX_LENGTH = 128;
 const KEY = Object.freeze({
   ESCAPE: 'Escape'
 });
+const THEMES = Object.freeze({
+  DARK: 'dark',
+  LIGHT: 'light'
+});
 
 export {
   VOTE_MODES,
@@ -20,5 +24,6 @@ export {
   ITEM_TEXT_MIN_LENGTH,
   ITEM_TEXT_MAX_LENGTH,
   PATH_MAX_LENGTH,
-  KEY
+  KEY,
+  THEMES
 };
