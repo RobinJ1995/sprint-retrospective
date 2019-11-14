@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import './App.css';
+import './App.scss';
 import uuid from 'uuid/v4';
 import {VOTE_MODES, SUBMENUS, PATH_MAX_LENGTH, THEMES} from './constants';
 import { exportToConfluenceWiki, exportToJson, exportToMarkdown } from './export';
@@ -52,7 +52,7 @@ const alertAndCopy = text => copyToClipboard(text)
   .then(() => alert(text))
   .catch(() => alert(text));
 
-function App() {
+function App({ updateAvailable }) {
   const [ good, setGood ] = useState(initialData.good);
   const [ bad, setBad ] = useState(initialData.bad);
   const [ actions, setActions ] = useState(initialData.actions);
@@ -122,6 +122,7 @@ function App() {
               </ul>
             }
           </li>
+          <li onClick={share}>Share</li>
           <li onClick={() => toggleOpenedSubmenu(SUBMENUS.EXPORT)}>Export
             {openedSubmenu === SUBMENUS.EXPORT &&
               <ul class="submenu">
@@ -137,7 +138,6 @@ function App() {
               </ul>
             }
           </li>
-          <li onClick={share}>Share</li>
           <li onClick={() => toggleOpenedSubmenu(SUBMENUS.THEMES)}>Change theme
             {openedSubmenu === SUBMENUS.THEMES &&
             <ul className="submenu">
@@ -166,6 +166,10 @@ function App() {
         setError={setError}
         cache={cache}
       />
+      <footer>
+        {updateAvailable &&
+          <span>Update available</span>}
+      </footer>
     </main>
   );
 }
