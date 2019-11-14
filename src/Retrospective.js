@@ -106,7 +106,7 @@ const Retrospective = ({ good, setGood,
         upvoteItem={id => upvoteItem(id, 'action', setActions, actions)}
         downvoteItem={id => downvoteItem(id, 'action', setActions, actions)}
         updateItemText={(id, text) => updateItemText('action', id, text)}
-        deleteItem={id => deleteItem('actions', id)}
+        deleteItem={id => deleteItem('action', id)}
       />
     </section>
   </article>;

@@ -138,7 +138,7 @@ function App() {
             }
           </li>
           <li onClick={share}>Share</li>
-          <li onClick={() => toggleOpenedSubmenu(SUBMENUS.THEMES)}>Set theme
+          <li onClick={() => toggleOpenedSubmenu(SUBMENUS.THEMES)}>Change theme
             {openedSubmenu === SUBMENUS.THEMES &&
             <ul className="submenu">
               <li onClick={() => updateTheme(THEMES.DARK)} title="Dark">Dark</li>
