@@ -112,7 +112,7 @@ function App({ updateAvailable }) {
     ].filter(x => x).join(' ')}>
       <nav>
         <ul>
-          <li onClick={() => updateTitle(prompt('Name this retrospective:'))}>{title ? 'Change' : 'Set'} name</li>
+          <li onClick={() => updateTitle(prompt('Name this retrospective:', title || ''))}>{title ? 'Change' : 'Set'} name</li>
           <li onClick={() => toggleOpenedSubmenu(SUBMENUS.VOTE_MODE)}>Set voting mode
             {openedSubmenu === SUBMENUS.VOTE_MODE &&
               <ul class="submenu">
