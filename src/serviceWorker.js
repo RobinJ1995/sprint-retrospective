@@ -70,7 +70,7 @@ function registerValidSW(swUrl, config) {
               // but the previous service worker will still serve the older
               // content until all client tabs are closed.
               console.log('New content is available.');
-              window.location.reload();
+              window.location.reload(true);
 
               // Execute callback
               if (config && config.onUpdate) {

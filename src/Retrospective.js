@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import useInterval from 'use-interval';
 import List from './List';
 import { httpDelete, httpPatch, httpPost } from './utils';
@@ -105,7 +105,7 @@ const Retrospective = ({ good, setGood,
         voteMode={voteMode}
         upvoteItem={id => upvoteItem(id, 'action', setActions, actions)}
         downvoteItem={id => downvoteItem(id, 'action', setActions, actions)}
-        updateItemText={(id, text) => updateItemText('actions', id, text)}
+        updateItemText={(id, text) => updateItemText('action', id, text)}
         deleteItem={id => deleteItem('actions', id)}
       />
     </section>
