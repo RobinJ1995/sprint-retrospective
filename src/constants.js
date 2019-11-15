@@ -15,7 +15,8 @@ const KEY = Object.freeze({
 });
 const THEMES = Object.freeze({
   DARK: 'dark',
-  LIGHT: 'light'
+  LIGHT: 'light',
+  COLOURFUL: 'colourful'
 });
 
 export {

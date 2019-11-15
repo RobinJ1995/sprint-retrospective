@@ -17,6 +17,12 @@ main {
     color: black;
     box-shadow: 0px 10px 100px 100px white;
   }
+
+  &.theme-colourful {
+    background: white;
+    color: black;
+    box-shadow: 0px 10px 100px 100px white;
+  }
 }
 
 nav {
@@ -29,6 +35,10 @@ nav {
 
   .theme-light & {
     background: linear-gradient(orange, white);
+  }
+
+  .theme-colourful & {
+    background: linear-gradient(purple, white);
   }
 
   ul {
@@ -104,6 +114,12 @@ nav {
         color: #444;
       }
 
+      .theme-colourful & {
+        background: linear-gradient(#6cd4ff, #EEE);
+        box-shadow: 0px 0px 10px 10px #6cd4ff;
+        color: #444;
+      }
+
       @media (max-width: 600px) {
         text-align: center;
         margin: 6px 0px;
@@ -125,6 +141,12 @@ nav {
           box-shadow: 0px 0px 12px 16px white;
           color: black;
           background: linear-gradient(orange, white);
+        }
+
+        .theme-colourful & {
+          box-shadow: 0px 0px 12px 16px #6cd4ff;
+          color: black;
+          background: linear-gradient(#7ce4ff, white);
         }
       }
     }
@@ -194,9 +216,40 @@ article {
       box-shadow: 0px 0px 20px 20px #DCE;
     }
 
+    .theme-colourful & {
+      &#good {
+        background: darkgreen;
+        box-shadow: 0px 0px 20px 20px lime;
+
+        > h2 {
+          text-shadow: 0px 0px 5px lime;
+        }
+      }
+      &#bad {
+        background: darkred;
+        box-shadow: 0px 0px 20px 20px red;
+
+        > h2 {
+          text-shadow: 0px 0px 5px red;
+        }
+      }
+      &#actions {
+        background: darkblue;
+        box-shadow: 0px 0px 20px 20px blue;
+
+        > h2 {
+          text-shadow: 0px 0px 5px blue;
+        }
+      }
+    }
+
     > h2 {
       text-align: center;
       cursor: default;
+
+      .theme-colourful & {
+        color: white;
+      }
     }
   }
 
@@ -217,6 +270,12 @@ article {
         box-shadow: 0px 0px 6px 6px white;
       }
 
+      .theme-colourful & {
+        background: rgba(0, 0, 0, 0.2);
+        box-shadow: 0px 0px 6px 6px rgba(0, 0, 0, 0.2);
+        color: white;
+      }
+
       &.newItem {
         background: #333;
         box-shadow: 0px 0px 6px 6px #333;
@@ -224,6 +283,11 @@ article {
         .theme-light & {
           background: #FDD;
           box-shadow: 0px 0px 6px 6px #FDD;
+        }
+
+        .theme-colourful & {
+          background: rgba(0, 0, 0, 0.4);
+          box-shadow: 0px 0px 6px 6px rgba(0, 0, 0, 0.4);
         }
 
         form {
@@ -241,11 +305,20 @@ article {
               color: black;
             }
 
+            .theme-colourful & {
+              background: transparent;
+              color: white;
+            }
+
             &::placeholder {
               color: #AAA;
 
               .theme-light & {
                 color: #444;
+              }
+
+              .theme-colourful & {
+                color: #DDD;
               }
             }
           }
@@ -259,6 +332,11 @@ article {
         .theme-light & {
           background: #DEF;
           box-shadow: 0px 0px 7px 7px #DEF;
+        }
+
+        .theme-colourful & {
+          background: rgba(0, 0, 0, 0.4);
+          box-shadow: 0px 0px 7px 7px rgba(0, 0, 0, 0.4);
         }
 
         .content {

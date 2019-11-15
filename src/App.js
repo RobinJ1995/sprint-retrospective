@@ -143,6 +143,7 @@ function App({ updateAvailable }) {
             <ul className="submenu">
               <li onClick={() => updateTheme(THEMES.DARK)} title="Dark">Dark</li>
               <li onClick={() => updateTheme(THEMES.LIGHT)} title="Light">Light</li>
+              <li onClick={() => updateTheme(THEMES.COLOURFUL)} title="Colourful">Colourful</li>
             </ul>
             }
           </li>
