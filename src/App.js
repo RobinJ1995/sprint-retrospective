@@ -52,7 +52,7 @@ const alertAndCopy = text => copyToClipboard(text)
   .then(() => alert(text))
   .catch(() => alert(text));
 
-function App({ updateAvailable }) {
+function App() {
   const [ good, setGood ] = useState(initialData.good);
   const [ bad, setBad ] = useState(initialData.bad);
   const [ actions, setActions ] = useState(initialData.actions);
@@ -167,10 +167,6 @@ function App({ updateAvailable }) {
         setError={setError}
         cache={cache}
       />
-      <footer>
-        {updateAvailable &&
-          <span>Update available</span>}
-      </footer>
     </main>
   );
 }
