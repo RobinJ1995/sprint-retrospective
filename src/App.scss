@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css?family=Delius&display=swap');
+
 html, body {
   background: black;
   color: white;
@@ -22,6 +24,8 @@ main {
     background: white;
     color: black;
     box-shadow: 0px 10px 100px 100px white;
+
+    font-family: 'Comic Sans', 'Comic Sans MS', 'TSCu_Comic', 'Delius', sans-serif;
   }
 }
 
