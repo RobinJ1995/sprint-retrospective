@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import Item from './Item';
-import {ITEM_TEXT_MAX_LENGTH, ITEM_TEXT_MIN_LENGTH} from './constants';
+import {ITEM_TEXT_MAX_LENGTH, ITEM_TEXT_MIN_LENGTH, VOTE_MODES} from './constants';
 
 function List({ items, addItem, upvoteItem, downvoteItem, voteMode, updateItemText, deleteItem }) {
   const [newItemText, setNewItemText] = useState('');
@@ -16,12 +16,19 @@ function List({ items, addItem, upvoteItem, downvoteItem, voteMode, updateItemTe
     setNewItemText('');
   };
 
+  console.log(voteMode);
+
   return (
     <ul class="items">
       {items.map(item => ({
           up: item.up || 0,
           down: item.down || 0,
           ...item
+        }))
+        .map(item => ({
+          ...item,
+          up: (voteMode !== VOTE_MODES.NONE ? item.up : 0),
+          down: (voteMode === VOTE_MODES.UPVOTE_DOWNVOTE ? item.down : 0)
         }))
         // Only show items that have an id or are not duplicates (by text)
         .filter((item, i, arr) => item.id || (arr.findIndex(val => val.text === item.text) === i))
