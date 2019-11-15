@@ -90,7 +90,7 @@ function App() {
     setOpenedSubmenu(submenu);
   };
 
-  const share = ({ title, good, bad, actions }) => {
+  const share = () => {
     if (navigator.share) {
       const nItems = good.length + bad.length + actions.length;
 
@@ -99,7 +99,7 @@ function App() {
         text: `Collaborate on this sprint retrospective! It currently contains ${nItems} items.`,
         url: window.location
       })
-        .catch(() => shareFallback());
+      .catch(() => shareFallback());
     }
 
     return shareFallback();
