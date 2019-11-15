@@ -27,6 +27,8 @@ function List({ items, addItem, upvoteItem, downvoteItem, voteMode, updateItemTe
         .filter((item, i, arr) => item.id || (arr.findIndex(val => val.text === item.text) === i))
         // Add a total to each item
         .map(item => ({total: item.up - item.down, ...item}))
+        // Sort alphabetically
+        .sort((a, b) => a.text < b.text ? -1 : 1)
         // Sort by total, descending
         .sort((a, b) => a.total < b.total ? 1 : -1)
         .map(({ id, text, up, down }) =>
