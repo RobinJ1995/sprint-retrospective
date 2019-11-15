@@ -25,6 +25,7 @@ function List({ items, addItem, upvoteItem, downvoteItem, voteMode, updateItemTe
           down: item.down || 0,
           ...item
         }))
+        // Adjust scores based on vote mode
         .map(item => ({
           ...item,
           up: (voteMode !== VOTE_MODES.NONE ? item.up : 0),
