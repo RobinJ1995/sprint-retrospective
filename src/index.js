@@ -11,6 +11,6 @@ serviceWorker.register({
     onUpdate: () => {
         ReactDOM.render(<Updater />, document.getElementById('root'));
 
-        window.setTimeout(() => window.location.reload(), 2000);
+        window.setTimeout(() => window.location.reload(), 2500);
     }
 });
