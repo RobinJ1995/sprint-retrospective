@@ -50,24 +50,26 @@ nav {
     padding: 16px 24px;
     list-style-type: none;
 
-    @media (max-width: 600px) {
-      padding: 1vh 2vw;
+    &:not(.submenu) {
+      @media (max-width: 660px) {
+        padding: 1vh 2vw;
 
-      display: grid;
-      grid-template-columns: 30vw 30vw 30vw;
-      grid-gap: 3vw;
-    }
+        display: grid;
+        grid-template-columns: 30vw 30vw 30vw;
+        grid-gap: 3vw;
+      }
 
-    @media (max-width: 480px) {
-      display: grid;
-      grid-template-columns: 45vw 45vw;
-      grid-gap: 1vh 5vw;
-    }
+      @media (max-width: 480px) {
+        display: grid;
+        grid-template-columns: 45vw 45vw;
+        grid-gap: 1vh 5vw;
+      }
 
-    @media (max-width: 320px) {
-      display: grid;
-      grid-template-columns: 96vw;
-      grid-gap: 0px;
+      @media (max-width: 320px) {
+        display: grid;
+        grid-template-columns: 96vw;
+        grid-gap: 0px;
+      }
     }
 
     &.submenu {
