@@ -4,7 +4,7 @@ import './Updater.scss';
 const Updater = () => {
   return <main id="updater">
     <div>
-      <span id="icon">⚙️</span>
+      <span id="icon" role="img">⚙️</span>
       <p id="message">Updating...</p>
     </div>
   </main>
