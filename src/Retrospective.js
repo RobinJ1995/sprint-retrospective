@@ -74,7 +74,7 @@ const Retrospective = ({ good, setGood,
 
   return <article>
     <section id="good">
-      <h2>Good 🙂</h2>
+      <h2>What went well 🤩</h2>
       <List
         items={good}
         addItem={addGood}
@@ -86,7 +86,7 @@ const Retrospective = ({ good, setGood,
       />
     </section>
     <section id="bad">
-      <h2>Bad 🙁</h2>
+      <h2>What could we improve 🤨</h2>
       <List
         items={bad}
         addItem={addBad}
@@ -98,7 +98,7 @@ const Retrospective = ({ good, setGood,
       />
     </section>
     <section id="actions">
-      <h2>Actions ☑️</h2>
+      <h2>Actions for next sprint ☑️</h2>
       <List
         items={actions}
         addItem={addAction}

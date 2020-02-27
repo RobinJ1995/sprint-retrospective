@@ -7,13 +7,13 @@ const exportToJson = ({ title, good, bad, actions }) => JSON.stringify({
 const mdItems = items => items.map(({ text, up = 0, down = 0 }) => `* ${text} ${repeat(up, '👍').join('')}${repeat(down, '👎').join('')}`).join('\n');
 const exportToMarkdown = ({ title, good, bad, actions }) => `# ${title || 'Retrospective'}
 
-## Good
+## What went well
 ${mdItems(good)}
 
-## Bad
+## What could we improve
 ${mdItems(bad)}
 
-## Actions
+## Actions for next sprint
 ${mdItems(actions)}
 `;
 
@@ -22,20 +22,20 @@ const exportToConfluenceWiki = ({ title, good, bad, actions }) => `h1. ${title |
 
 {section}
 {column:width=50%}
-{panel:title=Good|borderColor=#91c89c|backgroundColor=#f3f9f4}
+{panel:title=What went well|borderColor=#91c89c|backgroundColor=#f3f9f4}
 ${confluenceItems(good)}
 {panel}
 {column}
 
 {column:width=50%}
-{panel:title=Bad|borderColor=#d04437|backgroundColor=#fff8f7}
+{panel:title=What could we improve|borderColor=#d04437|backgroundColor=#fff8f7}
 ${confluenceItems(bad)}
 {panel}
 {column}
 {section}
 
 {section}
-{panel:title=Actions}
+{panel:title=Actions for next sprint}
 ${confluenceItems(actions)}
 {panel}
 {section}
