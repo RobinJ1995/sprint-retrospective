@@ -56,7 +56,16 @@ const Retrospective = ({ good, setGood,
 
   useInterval(() => {
     fetch(window.API_BASE)
-      .then(res => res.json())
+      .catch(ex => {
+          throw Error('Failed to retrieve retrospective.');
+      })
+      .then(res => {
+          if ([200, 201, 204].includes(res.status)) {
+              return res.json();
+          }
+
+          throw Error(`${res.status} ${res.statusText}`);
+      })
       .then(({id, good, bad, actions, title, voteMode }) => {
         setGood(good);
         setBad(bad);
