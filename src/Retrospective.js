@@ -32,7 +32,7 @@ const Retrospective = ({
 	};
 
 	const upvoteItem = (id, type, setter, list) => {
-		httpPost(`${window.API_BASE}/${type}/${id}/up`, null, getAuthHeaders())
+		httpPost(`${window.API_BASE}/${type}/${id}/up`, {}, getAuthHeaders())
 			.catch(alert);
 
 		setter(list.map(item => ({
@@ -41,7 +41,7 @@ const Retrospective = ({
 		})));
 	};
 	const downvoteItem = (id, type, setter, list) => {
-		httpPost(`${window.API_BASE}/${type}/${id}/down`, null, getAuthHeaders())
+		httpPost(`${window.API_BASE}/${type}/${id}/down`, {}, getAuthHeaders())
 			.catch(alert);
 
 		setter(list.map(item => ({
