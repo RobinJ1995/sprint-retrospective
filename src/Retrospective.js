@@ -33,6 +33,7 @@ const Retrospective = ({
 
 	const upvoteItem = (id, type, setter, list) => {
 		httpPost(`${window.API_BASE}/${type}/${id}/up`, {}, getAuthHeaders())
+			.then(checkHttpStatus)
 			.catch(alert);
 
 		setter(list.map(item => ({
@@ -42,6 +43,7 @@ const Retrospective = ({
 	};
 	const downvoteItem = (id, type, setter, list) => {
 		httpPost(`${window.API_BASE}/${type}/${id}/down`, {}, getAuthHeaders())
+			.then(checkHttpStatus)
 			.catch(alert);
 
 		setter(list.map(item => ({
@@ -52,10 +54,12 @@ const Retrospective = ({
 
 	const updateItemText = (type, id, text) => httpPatch(`${window.API_BASE}/${type}/${id}`,
 		{text},
-		getAuthHeaders());
+		getAuthHeaders())
+		.then(checkHttpStatus);
 
 	const deleteItem = (type, id) => httpDelete(`${window.API_BASE}/${type}/${id}`,
 		getAuthHeaders())
+		.then(checkHttpStatus)
 		.catch(alert);
 
 	const authRequired = () => {
