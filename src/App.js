@@ -193,7 +193,7 @@ function App() {
 						</ul>
 						}
 					</li>
-					<li onClick={() => updateAccessKey(prompt('Set an access key for this retrospective:'))}>🔑 Set access key</li>
+					<li onClick={() => updateAccessKey(prompt('Set an access key for this retrospective:'))}>Set access key</li>
 				</ul>
 			</nav>
 			{!!title &&
