@@ -22,11 +22,20 @@ function Item({ id, children, up, down, upvoteItem, downvoteItem, voteMode, upda
       setText(children);
 
       return;
-    }
+    } else if (text === children) {
+    	return;
+	}
 
     setText(children);
 
-    return updateText(text);
+    return updateText(text)
+		.catch(err => {
+			window.alert(err);
+
+			// Ensure input does not get lost
+			setEditing(true);
+			setText(text);
+		})
   };
 
   const cancelEdit = e => {

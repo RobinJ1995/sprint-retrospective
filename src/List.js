@@ -15,8 +15,9 @@ function List({ items,
       return;
     }
 
-    addItem(newItemText);
-    setNewItemText('');
+    addItem(newItemText)
+		.then(() => setNewItemText(''))
+		.catch(window.alert);
   };
 
   return (

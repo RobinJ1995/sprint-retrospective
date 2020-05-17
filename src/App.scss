@@ -51,7 +51,7 @@ nav {
     list-style-type: none;
 
     &:not(.submenu) {
-      @media (max-width: 660px) {
+      @media (max-width: 860px) {
         padding: 1vh 2vw;
 
         display: grid;
@@ -59,13 +59,13 @@ nav {
         grid-gap: 3vw;
       }
 
-      @media (max-width: 480px) {
+      @media (max-width: 530px) {
         display: grid;
         grid-template-columns: 45vw 45vw;
         grid-gap: 1vh 5vw;
       }
 
-      @media (max-width: 320px) {
+      @media (max-width: 360px) {
         display: grid;
         grid-template-columns: 96vw;
         grid-gap: 0px;
