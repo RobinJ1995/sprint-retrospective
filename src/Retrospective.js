@@ -11,7 +11,8 @@ const Retrospective = ({
 						   voteMode, setVoteMode,
 						   setError,
 						   cache,
-						   getAuthHeaders
+						   getAuthHeaders,
+						   setAccessKeyRequired,
 					   }) => {
 	const [ autorefresh, setAutorefresh ] = useState(true);
 
@@ -72,20 +73,7 @@ const Retrospective = ({
 					return cache.set(`${window.RETRO_ID}:token`, res.token);
 				}
 
-				return httpPost(`${window.API_BASE}/authenticate`, {
-					accessKey: window.prompt('This retrospective requires an access key.')
-				})
-					.then(res => res.json())
-					.then(res => {
-						if (res.token) {
-							return cache.set(`${window.RETRO_ID}:token`, res.token);
-						} else if (res.message) {
-							window.alert(res.message);
-							throw Error(res.message);
-						}
-
-						throw Error('Authentication failed');
-					});
+				return setAccessKeyRequired(true);
 			})
 	};
 

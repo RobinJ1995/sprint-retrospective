@@ -1,5 +1,5 @@
 import React from 'react';
-import './Updater.scss';
+import './style/Updater.scss';
 
 const Updater = () => {
   return <main id="updater">

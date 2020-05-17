@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import './App.scss';
+import './style/App.scss';
 import uuid from 'uuid/v4';
 import {VOTE_MODES, SUBMENUS, PATH_MAX_LENGTH, THEMES, HEADERS} from './constants';
 import {exportToConfluenceWiki, exportToJson, exportToMarkdown} from './export';
@@ -7,6 +7,7 @@ import Cache from './Cache';
 import Preferences from './Preferences';
 import {checkHttpStatus, copyToClipboard, httpPost, httpPut} from './utils';
 import Retrospective from './Retrospective';
+import AccessKeyInput from './AccessKeyInput';
 
 const trimSlashes = str => str.replace(/^\//, '').replace(/\/$/, '');
 const getRetroIdFromUrl = () => {
@@ -64,6 +65,7 @@ function App() {
 	const [openedSubmenu, setOpenedSubmenu] = useState(null);
 	const [error, setError] = useState(null);
 	const [theme, setTheme] = useState(prefs.get(Preferences.THEME, THEMES.DARK));
+	const [accessKeyRequired, setAccessKeyRequired] = useState(false);
 
 	const updateTitle = title => {
 		httpPut(`${window.API_BASE}/title`, {title}, getAuthHeaders())
@@ -124,6 +126,13 @@ function App() {
 
 		return shareFallback();
 	};
+
+	if (accessKeyRequired) {
+		return <AccessKeyInput
+			cache={cache}
+			validKeySubmitted={() => setAccessKeyRequired(false)}
+		/>;
+	}
 
 	return (
 		<main className={[
@@ -197,9 +206,9 @@ function App() {
 				</ul>
 			</nav>
 			{!!title &&
-			<h1>{title}</h1>}
+				<h1>{title}</h1>}
 			{!!error &&
-			<p id="error">{error.message}</p>
+				<p id="error">{error.message}</p>
 			}
 			<Retrospective
 				good={good}
@@ -214,6 +223,7 @@ function App() {
 				setError={setError}
 				cache={cache}
 				getAuthHeaders={getAuthHeaders}
+				setAccessKeyRequired={setAccessKeyRequired}
 			/>
 		</main>
 	);

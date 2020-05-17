@@ -1,0 +1,48 @@
+#accessKeyInput {
+    width: 400px;
+    max-width: 96vw;
+    margin: 10vh auto auto auto;
+    background: linear-gradient(#333, #111);
+    padding: 16px 12px;
+    border-radius: 8px;
+    border: 2px solid #333;
+
+    p:first-child {
+        margin-top: 0px;
+    }
+    
+    p:last-child {
+        margin-bottom: 0px;
+        text-align: center;
+    }
+
+    p#access-key-error {
+        text-align: center;
+        color: red;
+        background: yellow;
+        border: 2px solid red;
+        font-weight: bold;
+        padding: 8px 16px;
+    }
+
+    input {
+        display: block;
+        width: calc(100% - 2*4px - 2*1px);
+        font-size: 1.2em;
+        background: #222;
+        border: 1px solid #444;
+        border-radius: 3px;
+        margin-top: 3px;
+        color: #DDD;
+        padding: 2px 4px;
+    }
+
+    button {
+        background: #333;
+        color: white;
+        border: 1px solid #444;
+        font-size: 1.1em;
+        padding: 4px 12px;
+        border-radius: 3px;
+    }
+}
