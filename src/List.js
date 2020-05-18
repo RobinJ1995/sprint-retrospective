@@ -62,6 +62,7 @@ function List({ items,
             onChange={e => setNewItemText(e.target.value)}
             minLength={ITEM_TEXT_MIN_LENGTH}
             maxLength={ITEM_TEXT_MAX_LENGTH}
+			required
             aria-label="Add new item"
           />
         </form>
