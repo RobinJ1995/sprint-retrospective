@@ -1,13 +1,17 @@
 import React, {useState} from 'react';
 import './style/App.scss';
 import uuid from 'uuid/v4';
-import {VOTE_MODES, SUBMENUS, PATH_MAX_LENGTH, THEMES, HEADERS} from './constants';
+import {VOTE_MODES, SUBMENUS, PATH_MAX_LENGTH, THEMES, HEADERS, PAGES, MODALS} from './constants';
 import {exportToConfluenceWiki, exportToJson, exportToMarkdown} from './export';
 import Cache from './Cache';
 import Preferences from './Preferences';
 import {checkHttpStatus, copyToClipboard, httpPost, httpPut} from './utils';
 import Retrospective from './Retrospective';
 import AccessKeyInput from './AccessKeyInput';
+import Overlay from './Overlay';
+import Modal from './Modal';
+import ShareFallback from './modal/ShareFallback';
+import SetVoteMode from './modal/SetVoteMode';
 
 const trimSlashes = str => str.replace(/^\//, '').replace(/\/$/, '');
 const getRetroIdFromUrl = () => {
@@ -48,10 +52,6 @@ const getAuthHeaders = () => ({
 	[HEADERS.TOKEN]: cache.get(`${window.RETRO_ID}:token`)
 });
 
-const shareFallback = () => copyToClipboard(window.location)
-	.then(() => alert(`Share the following URL to collaborate on this retrospective:\n\n${window.location}\n\nFor your convenience, it has been copied to your clipboard.`))
-	.catch(() => alert(`Share the following URL to collaborate on this retrospective:\n\n${window.location}`));
-
 const alertAndCopy = text => copyToClipboard(text)
 	.then(() => alert(text))
 	.catch(() => alert(text));
@@ -65,7 +65,8 @@ function App() {
 	const [openedSubmenu, setOpenedSubmenu] = useState(null);
 	const [error, setError] = useState(null);
 	const [theme, setTheme] = useState(prefs.get(Preferences.THEME, THEMES.DARK));
-	const [accessKeyRequired, setAccessKeyRequired] = useState(false);
+	const [page, setPage] = useState(PAGES.RETROSPECTIVE);
+	const [modal, setModal] = useState(null);
 
 	const updateTitle = title => {
 		httpPut(`${window.API_BASE}/title`, {title}, getAuthHeaders())
@@ -112,6 +113,11 @@ function App() {
 		setOpenedSubmenu(submenu);
 	};
 
+	const shareFallback = () => copyToClipboard(window.location)
+		.then(() => true)
+		.catch(() => false)
+		.then(copySucceeded => setModal(<ShareFallback copySucceeded={copySucceeded} />));
+
 	const share = () => {
 		if (navigator.share) {
 			const nItems = good.length + bad.length + actions.length;
@@ -127,11 +133,23 @@ function App() {
 		return shareFallback();
 	};
 
-	if (accessKeyRequired) {
-		return <AccessKeyInput
-			cache={cache}
-			validKeySubmitted={() => setAccessKeyRequired(false)}
-		/>;
+	const populateModal = () => {
+		switch (modal) {
+			case MODALS.SET_VOTE_MODE:
+				return <SetVoteMode
+					setMode={updateVoteMode}
+				/>;
+			default:
+				return modal;
+		}
+	}
+
+	switch(page) {
+		case PAGES.ENTER_ACCESS_KEY:
+			return <AccessKeyInput
+				cache={cache}
+				validKeySubmitted={() => setPage(PAGES.RETROSPECTIVE)}
+			/>;
 	}
 
 	return (
@@ -142,21 +160,7 @@ function App() {
 			<nav>
 				<ul>
 					<li onClick={() => updateTitle(prompt('Name this retrospective:', title || ''))}>{title ? 'Change' : 'Set'} name</li>
-					<li onClick={() => toggleOpenedSubmenu(SUBMENUS.VOTE_MODE)}>Set voting mode
-						{openedSubmenu === SUBMENUS.VOTE_MODE &&
-						<ul class="submenu">
-							<li onClick={() => updateVoteMode(VOTE_MODES.UPVOTE_DOWNVOTE)}
-								title="Upvotes and downvotes">👍👎
-							</li>
-							<li onClick={() => updateVoteMode(VOTE_MODES.UPVOTE)}
-								title="Upvotes only">👍
-							</li>
-							<li onClick={() => updateVoteMode(VOTE_MODES.NONE)}
-								title="Disable votes">🚫
-							</li>
-						</ul>
-						}
-					</li>
+					<li onClick={() => setModal(MODALS.SET_VOTE_MODE)}>Set voting mode</li>
 					<li onClick={share}>Share</li>
 					<li onClick={() => toggleOpenedSubmenu(SUBMENUS.EXPORT)}>Export
 						{openedSubmenu === SUBMENUS.EXPORT &&
@@ -223,8 +227,14 @@ function App() {
 				setError={setError}
 				cache={cache}
 				getAuthHeaders={getAuthHeaders}
-				setAccessKeyRequired={setAccessKeyRequired}
+				setPage={setPage}
 			/>
+			{modal && <Overlay>
+				<Modal
+					closeable={true}
+					closeModal={() => setModal(null)}
+				>{populateModal()}</Modal>
+			</Overlay>}
 		</main>
 	);
 }

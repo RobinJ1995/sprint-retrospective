@@ -4,7 +4,6 @@ const VOTE_MODES = Object.freeze({
 	UPVOTE_DOWNVOTE: 'updown'
 });
 const SUBMENUS = Object.freeze({
-	VOTE_MODE: 'voteMode',
 	EXPORT: 'export'
 });
 const ITEM_TEXT_MIN_LENGTH = 1;
@@ -21,6 +20,13 @@ const THEMES = Object.freeze({
 const HEADERS = Object.freeze({
 	TOKEN: 'X-Token'
 });
+const PAGES = Object.freeze({
+	RETROSPECTIVE: 'retro',
+	ENTER_ACCESS_KEY: 'enter_access_key'
+});
+const MODALS = Object.freeze({
+	SET_VOTE_MODE: 'set_vode_mode'
+});
 
 export {
 	VOTE_MODES,
@@ -30,5 +36,7 @@ export {
 	PATH_MAX_LENGTH,
 	KEY,
 	THEMES,
-	HEADERS
+	HEADERS,
+	PAGES,
+	MODALS
 };

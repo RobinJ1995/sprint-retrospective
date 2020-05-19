@@ -410,6 +410,12 @@ article {
             color: white;
             font-size: 1em;
             width: 100%;
+            padding-left: 5px;
+            padding-right: 5px;
+
+            &:focus {
+              outline: none;
+            }
 
             .theme-light & {
               color: black;
@@ -437,4 +443,8 @@ article {
 }
 
 @import '_AccessKeyInput';
+@import '_Overlay';
+@import '_Modal';
+@import '_ShareFallback';
+@import '_SetVoteMode';
 @import '_animation';

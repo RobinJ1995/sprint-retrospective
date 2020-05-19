@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import useInterval from 'use-interval';
 import List from './List';
+import {PAGES} from './constants';
 import {checkHttpStatus, httpDelete, httpPatch, httpPost} from './utils';
 
 const Retrospective = ({
@@ -12,7 +13,7 @@ const Retrospective = ({
 						   setError,
 						   cache,
 						   getAuthHeaders,
-						   setAccessKeyRequired,
+						   setPage,
 					   }) => {
 	const [ autorefresh, setAutorefresh ] = useState(true);
 
@@ -73,7 +74,7 @@ const Retrospective = ({
 					return cache.set(`${window.RETRO_ID}:token`, res.token);
 				}
 
-				return setAccessKeyRequired(true);
+				return setPage(PAGES.ENTER_ACCESS_KEY);
 			})
 	};
 
