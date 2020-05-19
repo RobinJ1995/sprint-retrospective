@@ -2,7 +2,6 @@ import React, {useState} from 'react';
 import './style/App.scss';
 import uuid from 'uuid/v4';
 import {VOTE_MODES, SUBMENUS, PATH_MAX_LENGTH, THEMES, HEADERS, PAGES, MODALS} from './constants';
-import {exportToConfluenceWiki, exportToJson, exportToMarkdown} from './export';
 import Cache from './Cache';
 import Preferences from './Preferences';
 import {checkHttpStatus, copyToClipboard, httpPost, httpPut} from './utils';
@@ -12,6 +11,9 @@ import Overlay from './Overlay';
 import Modal from './Modal';
 import ShareFallback from './modal/ShareFallback';
 import SetVoteMode from './modal/SetVoteMode';
+import SetName from './modal/SetName';
+import SetAccessKey from './modal/SetAccessKey';
+import Export from './modal/Export';
 
 const trimSlashes = str => str.replace(/^\//, '').replace(/\/$/, '');
 const getRetroIdFromUrl = () => {
@@ -51,10 +53,6 @@ const initialData = {
 const getAuthHeaders = () => ({
 	[HEADERS.TOKEN]: cache.get(`${window.RETRO_ID}:token`)
 });
-
-const alertAndCopy = text => copyToClipboard(text)
-	.then(() => alert(text))
-	.catch(() => alert(text));
 
 function App() {
 	const [good, setGood] = useState(initialData.good);
@@ -135,10 +133,28 @@ function App() {
 
 	const populateModal = () => {
 		switch (modal) {
+			case MODALS.SET_NAME:
+				return <SetName
+					setName={updateTitle}
+					current={title}
+				/>
 			case MODALS.SET_VOTE_MODE:
 				return <SetVoteMode
 					setMode={updateVoteMode}
 				/>;
+			case MODALS.SET_ACCESS_KEY:
+				return <SetAccessKey
+					setAccessKey={updateAccessKey}
+				/>
+			case MODALS.EXPORT:
+				return <Export
+					data={{
+						title,
+						good,
+						bad,
+						actions
+					}}
+				/>
 			default:
 				return modal;
 		}
@@ -159,42 +175,10 @@ function App() {
 		].filter(x => x).join(' ')}>
 			<nav>
 				<ul>
-					<li onClick={() => updateTitle(prompt('Name this retrospective:', title || ''))}>{title ? 'Change' : 'Set'} name</li>
+					<li onClick={() => setModal(MODALS.SET_NAME)}>{title ? 'Change' : 'Set'} name</li>
 					<li onClick={() => setModal(MODALS.SET_VOTE_MODE)}>Set voting mode</li>
 					<li onClick={share}>Share</li>
-					<li onClick={() => toggleOpenedSubmenu(SUBMENUS.EXPORT)}>Export
-						{openedSubmenu === SUBMENUS.EXPORT &&
-						<ul class="submenu">
-							<li onClick={() => alertAndCopy(exportToJson({
-								title,
-								good,
-								bad,
-								actions
-							}))}>JSON
-							</li>
-							<li onClick={() => alertAndCopy(exportToMarkdown({
-								title,
-								good,
-								bad,
-								actions
-							}))}>Markdown
-							</li>
-							<li onClick={() => {
-								const exported = exportToConfluenceWiki({
-									title,
-									good,
-									bad,
-									actions
-								});
-
-								copyToClipboard(exported)
-									.then(() => alert(`In Confluence, go to Insert ➡️ Markup, select "Confluence Wiki", and paste the exported data, which has been copied to your clipboard.\n\n${exported}`))
-									.catch(() => alert(`In Confluence, go to Insert ➡️ Markup, select "Confluence Wiki", and paste the exported data.\n\n${exported}`));
-							}}>Confluence Wiki
-							</li>
-						</ul>
-						}
-					</li>
+					<li onClick={() => setModal(MODALS.EXPORT)}>Export</li>
 					<li onClick={() => toggleOpenedSubmenu(SUBMENUS.THEMES)}>Change theme
 						{openedSubmenu === SUBMENUS.THEMES &&
 						<ul className="submenu">
@@ -206,7 +190,7 @@ function App() {
 						</ul>
 						}
 					</li>
-					<li onClick={() => updateAccessKey(prompt('Set an access key for this retrospective:'))}>Set access key</li>
+					<li onClick={() => setModal(MODALS.SET_ACCESS_KEY)}>Set access key</li>
 				</ul>
 			</nav>
 			{!!title &&

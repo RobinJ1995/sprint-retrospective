@@ -1,0 +1,19 @@
+.modal-set-access-key {
+    .modal-set-access-key-more-info {
+        border: 1px solid grey;
+        padding: 4px 8px;
+        background: rgba(255, 255, 255, 0.04);
+
+        p {
+            text-align: left;
+        }
+
+        strong {
+            cursor: pointer;
+
+            &:hover {
+                text-decoration: underline;
+            }
+        }
+    }
+}
