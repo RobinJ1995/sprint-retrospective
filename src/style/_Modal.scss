@@ -28,6 +28,10 @@
         margin-top: 3px;
         color: #DDD;
         padding: 2px 4px;
+
+        &[type=text] {
+            outline: none;
+        }
     }
 
     button {

@@ -252,6 +252,7 @@ article {
     > h2 {
       text-align: center;
       cursor: default;
+      color: #EEE;
 
       .theme-colourful & {
         color: white;
@@ -305,6 +306,7 @@ article {
             border: 0px;
             font-size: 1rem;
             color: white;
+            outline: none;
 
             .theme-light & {
               background: #FDD;
