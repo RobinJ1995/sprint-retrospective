@@ -1,6 +1,4 @@
 import React, {useState} from 'react';
-import {KEY} from '../constants';
-import ModalContext from '../ModalContext';
 import {exportToConfluenceWiki, exportToJson, exportToMarkdown} from '../export';
 
 const OPTIONS = Object.freeze({

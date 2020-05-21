@@ -456,6 +456,11 @@ article {
   }
 }
 
+.emoji {
+  // MacOS is once again the ugly duckling...
+  font-family: 'apple color emoji', 'segoe ui emoji', 'noto color emoji', 'android emoji', 'emojisymbols', 'emojione mozilla', 'twemoji mozilla', 'segoe ui symbol';
+}
+
 @import '_AccessKeyInput';
 @import '_Overlay';
 @import '_Modal';

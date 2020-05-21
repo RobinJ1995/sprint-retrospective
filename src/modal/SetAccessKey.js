@@ -9,8 +9,8 @@ import ModalContext from '../ModalContext';
 const MoreInformation = ({ setShow, show = false }) => (
 	<div class="modal-set-access-key-more-info">
 		{show
-			? <p onClick={() => setShow(false)}>⬇️ <strong>Collapse</strong></p>
-			: <p onClick={() => setShow(true)}>➡️ <strong>More information</strong></p>}
+			? <p onClick={() => setShow(false)}><span role="img" aria-label="Arrow down">⬇️</span> <strong>Collapse</strong></p>
+			: <p onClick={() => setShow(true)}><span role="img" aria-label="Arrow right">➡️</span> <strong>More information</strong></p>}
 		{show && [
 			<p>For retrospectives that do not have an access key set, a user's session token is valid for 2 minutes before it needs to be renewed. At this stage, if an access key has been set, the user will need to enter it in order to continue.</p>,
 			<p>Once a user has authenticated to a retrospective with an access key, their session token remains valid for 20 days. Once a user has entered a retrospective's access key, they will not need to enter one for the next 20 days, regardless of whether the retrospective's access key is changed in the meantime.</p>

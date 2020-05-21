@@ -129,7 +129,7 @@ const Retrospective = ({
 
 	return <article>
 		<section id="good">
-			<h2>What went well 🤩</h2>
+			<h2>What went well <span className="emoji" role="img" aria-label="">🤩</span></h2>
 			<List
 				items={good}
 				addItem={addGood}
@@ -141,7 +141,7 @@ const Retrospective = ({
 			/>
 		</section>
 		<section id="bad">
-			<h2>What could we improve 🤨</h2>
+			<h2>What could we improve <span className="emoji" role="img" aria-label="">🤨</span></h2>
 			<List
 				items={bad}
 				addItem={addBad}
@@ -153,7 +153,7 @@ const Retrospective = ({
 			/>
 		</section>
 		<section id="actions">
-			<h2>Actions for next sprint ☑️</h2>
+			<h2>Actions for next sprint <span className="emoji" role="img" aria-label="">☑️</span></h2>
 			<List
 				items={actions}
 				addItem={addAction}

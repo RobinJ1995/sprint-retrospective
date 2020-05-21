@@ -54,9 +54,9 @@ function Item({id, children, up, down, upvoteItem, downvoteItem, voteMode, updat
 		<li data-id={id} data-up={up} data-down={down} className={!!editing && 'editing'}>
 			{voteMode !== VOTE_MODES.NONE &&
 			<div class="vote">
-				<button onClick={upvoteItem}>👍</button>
+				<button onClick={upvoteItem}><span role="img" aria-label="Thumb up">👍</span></button>
 				{voteMode === VOTE_MODES.UPVOTE_DOWNVOTE &&
-				<button onClick={downvoteItem}>👎</button>
+				<button onClick={downvoteItem}><span role="img" aria-label="Thumb down">👎</span></button>
 				}
 			</div>
 			}
@@ -83,9 +83,9 @@ function Item({id, children, up, down, upvoteItem, downvoteItem, voteMode, updat
 					<span class="votes">
 						{voteMode !== VOTE_MODES.NONE &&
 							[
-								repeat(up, <span class="upvote">👍</span>),
+								repeat(up, <span className="upvote" role="img" aria-label="Thumb up">👍</span>),
 								voteMode === VOTE_MODES.UPVOTE_DOWNVOTE &&
-								repeat(down, <span class="downvote">👎</span>)
+								repeat(down, <span className="downvote" role="img" aria-label="Thumb down">👎</span>)
 							]
 						}
 					</span>

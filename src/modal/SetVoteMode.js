@@ -13,13 +13,13 @@ const SetVoteMode = ({ setMode }) => {
 
 				return (<div class="modal-set-vote-mode">
 					<button onClick={() => setModeAndCloseModal(VOTE_MODES.UPVOTE_DOWNVOTE)}
-							title="Upvotes and downvotes">👍👎 Upvotes and downvotes
+							title="Upvotes and downvotes"><span role="img" aria-label="Thumb up">👍</span><span role="img" aria-label="Thumb down">👎</span> Upvotes and downvotes
 					</button>
 					<button onClick={() => setModeAndCloseModal(VOTE_MODES.UPVOTE)}
-							title="Upvotes only">👍 Upvotes only
+							title="Upvotes only"><span role="img" aria-label="Thumb up">👍</span> Upvotes only
 					</button>
 					<button onClick={() => setModeAndCloseModal(VOTE_MODES.NONE)}
-							title="Disable voting">🚫 Disable voting
+							title="Disable voting"><span role="img" aria-label="Prohibited symbol">🚫</span> Disable voting
 					</button>
 				</div>)
 			}}
