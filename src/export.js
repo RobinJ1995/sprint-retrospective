@@ -17,7 +17,14 @@ ${mdItems(bad)}
 ${mdItems(actions)}
 `;
 
-const confluenceItems = items => items.map(({ text, up = 0, down = 0 }) => `* ${text} ${repeat(up, '👍').join('')}${repeat(down, '👎').join('')}`).join('\n');
+const confluenceItems = items => items.map(({ text, up = 0, down = 0 }) => {
+	const newText = text.replace('[ ] ', '❌ ')
+		.replace('[X] ', '✅ ')
+		.replace('[x] ', '✅ ');
+	const thumbs = repeat(up, '👍').join('') + repeat(down, '👎').join('');
+
+	return `* ${newText} ${thumbs}`;
+}).join('\n');
 const exportToConfluenceWiki = ({ title, good, bad, actions }) => `h1. ${title || 'Retrospective'}
 
 {section}
