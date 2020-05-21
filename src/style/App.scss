@@ -399,6 +399,20 @@ article {
               text-decoration: underline;
             }
           }
+
+          input[type=checkbox] {
+            width: 1.4em;
+            height: 1.4em;
+            margin: 0px 0.4em 0px 0px;
+            vertical-align: middle;
+
+            &:checked {
+              & + label {
+                text-decoration: line-through;
+                opacity: 0.64;
+              }
+            }
+          }
         }
 
         form {

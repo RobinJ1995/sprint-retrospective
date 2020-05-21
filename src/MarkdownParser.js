@@ -1,5 +1,6 @@
 import MarkdownIt from 'markdown-it';
 import EmojiParser from 'markdown-it-emoji';
+import CheckboxParser from 'markdown-it-checkbox';
 
 const MARKDOWNIT_OPTIONS = Object.freeze({
 	html: false, // No HTML input
@@ -19,7 +20,8 @@ class MarkdownParser {
 	constructor() {
 		this.parser = new MarkdownIt(MARKDOWNIT_OPTIONS)
 			.disable(MARKDOWNIT_RULES_DISABLE)
-			.use(EmojiParser);
+			.use(EmojiParser)
+			.use(CheckboxParser);
 	}
 
 	parse = markdown => this.parser.renderInline(markdown);

@@ -33,28 +33,24 @@ const Export = ({ data }) => {
 	}
 
 	return (<div class="modal-export">
-		<ModalContext.Consumer>
-			{({closeModal}) => (
-				<div>
-					<p>Export to...</p>
-					<div class="modal-export-tab-bar">
-						<button
-							className={selected === OPTIONS.JSON && 'selected'}
-							onClick={() => setSelected(OPTIONS.JSON)}
-						>JSON</button>
-						<button
-							className={selected === OPTIONS.MARKDOWN && 'selected'}
-							onClick={() => setSelected(OPTIONS.MARKDOWN)}
-						>Markdown</button>
-						<button
-							className={selected === OPTIONS.CONFLUENCE_WIKI && 'selected'}
-							onClick={() => setSelected(OPTIONS.CONFLUENCE_WIKI)}
-						>Confluence Wiki</button>
-					</div>
-					<div class="modal-export-content">{populate()}</div>
-				</div>
-			)}
-		</ModalContext.Consumer>
+		<div>
+			<p>Export to...</p>
+			<div class="modal-export-tab-bar">
+				<button
+					className={selected === OPTIONS.JSON && 'selected'}
+					onClick={() => setSelected(OPTIONS.JSON)}
+				>JSON</button>
+				<button
+					className={selected === OPTIONS.MARKDOWN && 'selected'}
+					onClick={() => setSelected(OPTIONS.MARKDOWN)}
+				>Markdown</button>
+				<button
+					className={selected === OPTIONS.CONFLUENCE_WIKI && 'selected'}
+					onClick={() => setSelected(OPTIONS.CONFLUENCE_WIKI)}
+				>Confluence Wiki</button>
+			</div>
+			<div class="modal-export-content">{populate()}</div>
+		</div>
 	</div>);
 }
 
