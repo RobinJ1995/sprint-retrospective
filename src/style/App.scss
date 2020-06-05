@@ -388,7 +388,7 @@ article {
           display: inline-block;
           vertical-align: middle;
 
-          &:hover {
+          &:not(.votes):hover {
             padding-left: 5px;
             padding-right: 5px;
           }
