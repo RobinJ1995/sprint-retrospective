@@ -306,7 +306,8 @@ article {
             border: 0px;
             font-size: 1rem;
             color: white;
-            outline: none;
+            outline: none; // Chrome focus outline
+            box-shadow: none; // Firefox validation outline
 
             .theme-light & {
               background: #FDD;
@@ -327,6 +328,43 @@ article {
 
               .theme-colourful & {
                 color: #DDD;
+              }
+            }
+          }
+
+          input:focus + .markdown-formatting-hint {
+            display: block;
+          }
+
+          .markdown-formatting-hint {
+            display: none;
+            font-size: 0.8em;
+            opacity: 0.72;
+            animation: show-markdown-formatting-hint 1s;
+            margin-top: 6px;
+
+            span {
+              white-space: nowrap;
+            }
+
+            .bold {
+              font-weight: bold;
+            }
+
+            .italic {
+              font-style: italic;
+            }
+
+            .monospace {
+              font-family: monospace;
+            }
+
+            .checkbox {
+              input {
+                display: inline;
+                width: unset;
+                margin: 0px;
+                pointer-events: none;
               }
             }
           }

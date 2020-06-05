@@ -143,3 +143,22 @@
     transform: scaleY(1.0);
   }
 }
+
+@keyframes show-markdown-formatting-hint {
+  0% {
+    opacity: 0;
+    overflow-y: hidden;
+    max-height: 0px;
+  }
+  10% {
+    opacity: 0;
+  }
+  99% {
+    opacity: 0.72;
+    overflow-y: visible;
+    max-height: 25vh;
+  }
+  100% {
+    max-height: 100vh;
+  }
+}

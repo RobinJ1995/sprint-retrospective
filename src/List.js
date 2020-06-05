@@ -53,7 +53,7 @@ function List({ items,
             updateText={text => updateItemText(id, text)}
             deleteItem={() => deleteItem(id)}
           >{text}</Item>)}
-      <li class="newItem">
+      <li className="newItem">
         <form onSubmit={submit}>
           <input
             type="text"
@@ -65,6 +65,13 @@ function List({ items,
 			required
             aria-label="Add new item"
           />
+          <div className="markdown-formatting-hint">
+			  <span>Markdown formatting supported:</span> <wbr/>
+			  <span className="bold">**bold**</span>, <wbr/>
+			  <span className="italic">_italic_</span>, <wbr/>
+			  <span className="monospace">`monospace`</span>, <wbr/>
+			  <span className="checkbox"><kbd>[ ]</kbd>/<kbd>[X]</kbd> checkboxes (<input type="checkbox" readOnly />/<input type="checkbox" readOnly checked />)</span>
+		  </div>
         </form>
       </li>
     </ul>
