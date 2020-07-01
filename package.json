@@ -11,7 +11,7 @@
     "react-dom": "^16.10.2",
     "react-scripts": "^3.4.1",
     "use-interval": "^1.1.0",
-    "uuid": "^3.3.3"
+    "uuid": "^3.4.0"
   },
   "scripts": {
     "start": "react-scripts start",

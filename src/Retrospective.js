@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import useInterval from 'use-interval';
+import { v4 as uuid } from 'uuid';
 import List from './List';
 import {PAGES} from './constants';
 import {checkHttpStatus, httpDelete, httpPatch, httpPost} from './utils';
@@ -10,48 +11,39 @@ const Retrospective = ({
 						   actions, setActions,
 						   setTitle,
 						   voteMode, setVoteMode,
+						   websocketUrl, setWebsocketUrl,
 						   setError,
 						   cache,
 						   getAuthHeaders,
 						   setPage,
 					   }) => {
 	const [ autorefresh, setAutorefresh ] = useState(true);
+	const [ autorefreshInterval, setAutorefreshInterval] = useState(1000);
+
+	const websocket = useRef(null);
 
 	const addGood = text => {
 		return httpPost(`${window.API_BASE}/good`, {text}, getAuthHeaders())
-			.then(checkHttpStatus)
-			.then(() => setGood([...good, {text}]));
+			.then(checkHttpStatus);
 	};
 	const addBad = text => {
 		return httpPost(`${window.API_BASE}/bad`, {text}, getAuthHeaders())
-			.then(checkHttpStatus)
-			.then(() => setBad([...bad, {text}]));
+			.then(checkHttpStatus);
 	};
 	const addAction = text => {
 		return httpPost(`${window.API_BASE}/action`, {text}, getAuthHeaders())
-			.then(checkHttpStatus)
-			.then(() => setActions([...actions, {text}]));
+			.then(checkHttpStatus);
 	};
 
-	const upvoteItem = (id, type, setter, list) => {
+	const upvoteItem = (id, type) => {
 		httpPost(`${window.API_BASE}/${type}/${id}/up`, {}, getAuthHeaders())
 			.then(checkHttpStatus)
 			.catch(alert);
-
-		setter(list.map(item => ({
-			...item,
-			up: item.up + (item.id === id ? 1 : 0)
-		})));
 	};
-	const downvoteItem = (id, type, setter, list) => {
+	const downvoteItem = (id, type) => {
 		httpPost(`${window.API_BASE}/${type}/${id}/down`, {}, getAuthHeaders())
 			.then(checkHttpStatus)
 			.catch(alert);
-
-		setter(list.map(item => ({
-			...item,
-			down: item.down + (item.id === id ? 1 : 0)
-		})));
 	};
 
 	const updateItemText = (type, id, text) => httpPatch(`${window.API_BASE}/${type}/${id}`,
@@ -78,54 +70,109 @@ const Retrospective = ({
 			})
 	};
 
+	const refreshState = () => fetch(window.API_BASE, { headers: getAuthHeaders() })
+		.catch(() => {
+			throw Error('Failed to retrieve retrospective.');
+		})
+		.then(res => {
+			if (![200, 201, 204].includes(res.status)) {
+				return res.json()
+					.then(body => {
+						if (body.key) {
+							switch (body.key) {
+								case 'AUTH_REQUIRED':
+									return authRequired();
+								case 'INVALID_AUTH':
+									return authRequired();
+							}
+						}
+
+						if (body.message) {
+							return setError(new Error(body.message));
+						}
+
+						return setError(`${res.status} ${res.statusText}`);
+					});
+			}
+
+			return res.json()
+				.then(({id, good, bad, actions, title, voteMode, socket}) => {
+					setGood(good);
+					setBad(bad);
+					setActions(actions);
+					setTitle(title);
+					setVoteMode(voteMode);
+					setWebsocketUrl(socket);
+					setError(null);
+
+					if (id) {
+						cache.setIfModified(id, {id, good, bad, actions, title, voteMode})
+							.catch(console.error);
+					}
+				});
+		})
+		.catch(setError);
+
+	const wsSend = message => {
+		console.log(`<< ${message}`);
+		websocket.current.send(message);
+	}
+
+	const wsHandle = message => {
+		console.log(`>> ${message.data}`);
+
+		if (message.data === '👋') {
+			// Connection established. Switch to relying on the websocket instead of polling.
+			setAutorefreshInterval(10000);
+		} else if (message.data.toLowerCase().startsWith('ping ')) {
+			const pongValue = message.data.replace(/^ping\s+/i, '');
+			wsSend(`PONG ${pongValue}`);
+			return;
+		}
+
+		refreshState();
+	};
+
 	useInterval(() => {
 		if (!autorefresh) {
 			return;
 		}
 
-		fetch(window.API_BASE, { headers: getAuthHeaders() })
-			.catch(ex => {
-				throw Error('Failed to retrieve retrospective.');
-			})
-			.then(res => {
-				if (![200, 201, 204].includes(res.status)) {
-					return res.json()
-						.then(body => {
-							if (body.key) {
-								switch (body.key) {
-									case 'AUTH_REQUIRED':
-										return authRequired();
-									case 'INVALID_AUTH':
-										return authRequired();
-								}
-							}
+		refreshState().then(
+			() => setAutorefresh(true));
+	}, autorefreshInterval);
 
-							if (body.message) {
-								return setError(new Error(body.message));
-							}
+	useInterval(() => {
+		if (!websocketUrl || !websocket.current || websocket.current.readyState !== WebSocket.OPEN) {
+			return;
+		}
 
-							return setError(`${res.status} ${res.statusText}`);
-						});
-				}
+		wsSend(`PING ${uuid()}`);
+	}, 8000);
 
-				return res.json()
-					.then(({id, good, bad, actions, title, voteMode}) => {
-						setGood(good);
-						setBad(bad);
-						setActions(actions);
-						setTitle(title);
-						setVoteMode(voteMode);
-						setError(null);
+	useEffect(() => {
+		if (!websocketUrl) {
+			return;
+		}
 
-						if (id) {
-							cache.setIfModified(id, {id, good, bad, actions, title, voteMode})
-								.catch(console.error);
-						}
-					});
-			})
-			.catch(setError)
-			.then(() => setAutorefresh(true));
-	}, 1000);
+		websocket.current = new WebSocket(websocketUrl);
+		websocket.current.onmessage = wsHandle;
+		websocket.current.onclose = () => {
+			console.log('Websocket connection closed.');
+			setWebsocketUrl(null); // It'll get populated again on the next poll.
+			websocket.current = null;
+
+			setAutorefresh(true);
+			setAutorefreshInterval(1000);
+		}
+
+		return () => {
+			if (!websocket.current) {
+				return;
+			}
+			websocket.current.close();
+		};
+	}, [websocketUrl, setWebsocketUrl]);
 
 	return <article>
 		<section id="good">
@@ -134,8 +181,8 @@ const Retrospective = ({
 				items={good}
 				addItem={addGood}
 				voteMode={voteMode}
-				upvoteItem={id => upvoteItem(id, 'good', setGood, good)}
-				downvoteItem={id => downvoteItem(id, 'good', setGood, good)}
+				upvoteItem={id => upvoteItem(id, 'good')}
+				downvoteItem={id => downvoteItem(id, 'good')}
 				updateItemText={(id, text) => updateItemText('good', id, text)}
 				deleteItem={id => deleteItem('good', id)}
 			/>
@@ -146,8 +193,8 @@ const Retrospective = ({
 				items={bad}
 				addItem={addBad}
 				voteMode={voteMode}
-				upvoteItem={id => upvoteItem(id, 'bad', setBad, bad)}
-				downvoteItem={id => downvoteItem(id, 'bad', setBad, bad)}
+				upvoteItem={id => upvoteItem(id, 'bad')}
+				downvoteItem={id => downvoteItem(id, 'bad')}
 				updateItemText={(id, text) => updateItemText('bad', id, text)}
 				deleteItem={id => deleteItem('bad', id)}
 			/>
@@ -158,8 +205,8 @@ const Retrospective = ({
 				items={actions}
 				addItem={addAction}
 				voteMode={voteMode}
-				upvoteItem={id => upvoteItem(id, 'action', setActions, actions)}
-				downvoteItem={id => downvoteItem(id, 'action', setActions, actions)}
+				upvoteItem={id => upvoteItem(id, 'action')}
+				downvoteItem={id => downvoteItem(id, 'action')}
 				updateItemText={(id, text) => updateItemText('action', id, text)}
 				deleteItem={id => deleteItem('action', id)}
 			/>

@@ -60,6 +60,7 @@ function App() {
 	const [actions, setActions] = useState(initialData.actions);
 	const [title, setTitle] = useState(initialData.title);
 	const [voteMode, setVoteMode] = useState(initialData.voteMode);
+	const [websocketUrl, setWebsocketUrl] = useState(null);
 	const [openedSubmenu, setOpenedSubmenu] = useState(null);
 	const [error, setError] = useState(null);
 	const [theme, setTheme] = useState(prefs.get(Preferences.THEME, THEMES.DARK));
@@ -208,6 +209,8 @@ function App() {
 				setTitle={setTitle}
 				voteMode={voteMode}
 				setVoteMode={setVoteMode}
+				websocketUrl={websocketUrl}
+				setWebsocketUrl={setWebsocketUrl}
 				setError={setError}
 				cache={cache}
 				getAuthHeaders={getAuthHeaders}
