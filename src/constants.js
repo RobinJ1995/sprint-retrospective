@@ -3,9 +3,6 @@ const VOTE_MODES = Object.freeze({
 	UPVOTE: 'up',
 	UPVOTE_DOWNVOTE: 'updown'
 });
-const SUBMENUS = Object.freeze({
-	EXPORT: 'export'
-});
 const ITEM_TEXT_MIN_LENGTH = 1;
 const ITEM_TEXT_MAX_LENGTH = 1024;
 const RETRO_TITLE_MIN_LENGTH = 3;
@@ -18,7 +15,6 @@ const KEY = Object.freeze({
 });
 const THEMES = Object.freeze({
 	DARK: 'dark',
-	LIGHT: 'light',
 	COLOURFUL: 'colourful'
 });
 const HEADERS = Object.freeze({
@@ -31,13 +27,18 @@ const PAGES = Object.freeze({
 const MODALS = Object.freeze({
 	SET_NAME: 'set_name',
 	SET_VOTE_MODE: 'set_vode_mode',
+	SET_THEME: 'set_theme',
 	SET_ACCESS_KEY: 'set_access_key',
 	EXPORT: 'export'
 });
+const WS_ACTIONS = Object.freeze({
+	ADD_GOOD: 'add_good',
+	ADD_BAD: 'add_bad',
+	ADD_ACTION: 'add_action'
+})
 
 export {
 	VOTE_MODES,
-	SUBMENUS,
 	ITEM_TEXT_MIN_LENGTH,
 	ITEM_TEXT_MAX_LENGTH,
 	RETRO_TITLE_MIN_LENGTH,
@@ -49,5 +50,6 @@ export {
 	THEMES,
 	HEADERS,
 	PAGES,
-	MODALS
+	MODALS,
+	WS_ACTIONS
 };

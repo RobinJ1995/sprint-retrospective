@@ -18,9 +18,9 @@ ${mdItems(actions)}
 `;
 
 const confluenceItems = items => items.map(({ text, up = 0, down = 0 }) => {
-	const newText = text.replace('[ ] ', '❌ ')
-		.replace('[X] ', '✅ ')
-		.replace('[x] ', '✅ ');
+	const newText = text.replace('[ ] ', '⬜ ')
+		.replace('[X] ', '☑️ ')
+		.replace('[x] ', '☑️ ');
 	const thumbs = repeat(up, '👍').join('') + repeat(down, '👎').join('');
 
 	return `* ${newText} ${thumbs}`;

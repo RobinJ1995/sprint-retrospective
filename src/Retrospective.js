@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import useInterval from 'use-interval';
 import { v4 as uuid } from 'uuid';
 import List from './List';
-import {PAGES} from './constants';
+import {PAGES, WS_ACTIONS} from './constants';
 import {checkHttpStatus, httpDelete, httpPatch, httpPost} from './utils';
 
 const Retrospective = ({
@@ -124,10 +124,33 @@ const Retrospective = ({
 		if (message.data === '👋') {
 			// Connection established. Switch to relying on the websocket instead of polling.
 			setAutorefreshInterval(10000);
+			return;
 		} else if (message.data.toLowerCase().startsWith('ping ')) {
 			const pongValue = message.data.replace(/^ping\s+/i, '');
 			wsSend(`PONG ${pongValue}`);
 			return;
+		} else if (message.data.toLowerCase().startsWith('pong ')) {
+			return;
+		}
+
+		try {
+			const parsed = JSON.parse(message.data);
+			const {
+				retro,
+				action,
+				item,
+				value
+			} = parsed;
+
+			if (window.RETRO_ID !== retro) {
+				console.error('Received a message for the wrong retrospective.');
+				return;
+			}
+		} catch (ex) {
+			console.error('Invalid message.', {
+				'message': message.data,
+				'error': ex
+			});
 		}
 
 		refreshState();

@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import './style/App.scss';
 import uuid from 'uuid/v4';
-import {VOTE_MODES, SUBMENUS, PATH_MAX_LENGTH, THEMES, HEADERS, PAGES, MODALS} from './constants';
+import {VOTE_MODES, PATH_MAX_LENGTH, THEMES, HEADERS, PAGES, MODALS} from './constants';
 import Cache from './Cache';
 import Preferences from './Preferences';
 import {checkHttpStatus, copyToClipboard, httpPost, httpPut} from './utils';
@@ -14,6 +14,7 @@ import SetVoteMode from './modal/SetVoteMode';
 import SetName from './modal/SetName';
 import SetAccessKey from './modal/SetAccessKey';
 import Export from './modal/Export';
+import SetTheme from './modal/SetTheme';
 
 const trimSlashes = str => str.replace(/^\//, '').replace(/\/$/, '');
 const getRetroIdFromUrl = () => {
@@ -61,7 +62,6 @@ function App() {
 	const [title, setTitle] = useState(initialData.title);
 	const [voteMode, setVoteMode] = useState(initialData.voteMode);
 	const [websocketUrl, setWebsocketUrl] = useState(null);
-	const [openedSubmenu, setOpenedSubmenu] = useState(null);
 	const [error, setError] = useState(null);
 	const [theme, setTheme] = useState(prefs.get(Preferences.THEME, THEMES.DARK));
 	const [page, setPage] = useState(PAGES.RETROSPECTIVE);
@@ -103,15 +103,6 @@ function App() {
 		setTheme(theme);
 	};
 
-	const toggleOpenedSubmenu = submenu => {
-		if (openedSubmenu === submenu) {
-			setOpenedSubmenu(null);
-			return;
-		}
-
-		setOpenedSubmenu(submenu);
-	};
-
 	const shareFallback = () => copyToClipboard(window.location)
 		.then(() => true)
 		.catch(() => false)
@@ -143,6 +134,11 @@ function App() {
 				return <SetVoteMode
 					setMode={updateVoteMode}
 				/>;
+			case MODALS.SET_THEME:
+				return <SetTheme
+					setTheme={updateTheme}
+					theme={theme}
+				/>
 			case MODALS.SET_ACCESS_KEY:
 				return <SetAccessKey
 					setAccessKey={updateAccessKey}
@@ -180,17 +176,7 @@ function App() {
 					<li onClick={() => setModal(MODALS.SET_VOTE_MODE)}>Set voting mode</li>
 					<li onClick={share}>Share</li>
 					<li onClick={() => setModal(MODALS.EXPORT)}>Export</li>
-					<li onClick={() => toggleOpenedSubmenu(SUBMENUS.THEMES)}>Change theme
-						{openedSubmenu === SUBMENUS.THEMES &&
-						<ul className="submenu">
-							<li onClick={() => updateTheme(THEMES.DARK)} title="Dark">Dark</li>
-							<li onClick={() => updateTheme(THEMES.LIGHT)} title="Light">Light</li>
-							<li onClick={() => updateTheme(THEMES.COLOURFUL)}
-								title="Colourful">Colourful
-							</li>
-						</ul>
-						}
-					</li>
+					<li onClick={() => setModal(MODALS.SET_THEME)}>Change theme</li>
 					<li onClick={() => setModal(MODALS.SET_ACCESS_KEY)}>Set access key</li>
 				</ul>
 			</nav>

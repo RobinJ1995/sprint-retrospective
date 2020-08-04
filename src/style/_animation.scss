@@ -22,7 +22,7 @@
     box-shadow: 0px 0px 30px 30px #444;
   }
   100% {
-    box-shadow: 0px 0px 20px 20px #444;
+    box-shadow: 0px 0px 10px 10px #444;
   }
 }
 
@@ -64,9 +64,9 @@
   }
   100% {
     opacity: 1;
-    margin: 10px auto 40px auto;
+    margin: 8px auto 34px auto;
     max-height: none;
-    box-shadow: 0px 0px 10px 10px #444;
+    box-shadow: 0px 0px 5px 5px #444;
     background: #444;
   }
 }
@@ -103,15 +103,15 @@
   0% {
     opacity: 0;
     transform: translateY(-50px) scale(0.6);
-    box-shadow: 0px 0px 10px 10px #333;
+    box-shadow: 0px 0px 5px 5px #333;
   }
   80% {
     opacity: 1;
-    box-shadow: 0px 0px 20px 20px #333;
+    box-shadow: 0px 0px 10px 10px #333;
     transform: translateY(0px) scale(1);
   }
   100% {
-    box-shadow: 0px 0px 10px 10px #333;
+    box-shadow: 0px 0px 10px 2px #333;
   }
 }
 

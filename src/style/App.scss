@@ -14,12 +14,6 @@ main {
     pointer-events: none;
   }
 
-  &.theme-light {
-    background: white;
-    color: black;
-    box-shadow: 0px 10px 100px 100px white;
-  }
-
   &.theme-colourful {
     background: white;
     color: black;
@@ -37,10 +31,6 @@ nav {
     background: linear-gradient(red, black);
   }
 
-  .theme-light & {
-    background: linear-gradient(orange, white);
-  }
-
   .theme-colourful & {
     background: linear-gradient(purple, white);
   }
@@ -50,75 +40,35 @@ nav {
     padding: 16px 24px;
     list-style-type: none;
 
-    &:not(.submenu) {
-      @media (max-width: 860px) {
-        padding: 1vh 2vw;
+    @media (max-width: 860px) {
+      padding: 1vh 2vw;
 
-        display: grid;
-        grid-template-columns: 30vw 30vw 30vw;
-        grid-gap: 3vw;
-      }
-
-      @media (max-width: 530px) {
-        display: grid;
-        grid-template-columns: 45vw 45vw;
-        grid-gap: 1vh 5vw;
-      }
-
-      @media (max-width: 360px) {
-        display: grid;
-        grid-template-columns: 96vw;
-        grid-gap: 0px;
-      }
+      display: grid;
+      grid-template-columns: 30vw 30vw 30vw;
+      grid-gap: 3vw;
     }
 
-    &.submenu {
-      padding: 4px;
+    @media (max-width: 530px) {
+      display: grid;
+      grid-template-columns: 45vw 45vw;
+      grid-gap: 1vh 5vw;
+    }
 
-      li {
-        display: block;
-        margin: 12px 0px;
-        padding: 2px;
-        background: #333;
-        text-align: center;
-        box-shadow: 0px 0px 5px 5px #333;
-
-        .theme-light & {
-          background: #EEE;
-          box-shadow: 0px 0px 5px 5px #EEE;
-        }
-
-        &:last-child {
-          margin-bottom: 2px;
-        }
-
-        &:hover {
-          background: #333;
-          box-shadow: 0px 0px 8px 8px #444;
-
-          .theme-light & {
-            background: white;
-            box-shadow: 0px 0px 8px 8px white;
-          }
-        }
-      }
+    @media (max-width: 360px) {
+      display: grid;
+      grid-template-columns: 96vw;
+      grid-gap: 0px;
     }
 
     li {
       display: inline-block;
       background: linear-gradient(#222, #111);
-      box-shadow: 0px 0px 10px 10px #333;
+      box-shadow: 0px 0px 10px 2px #333;
       border-radius: 8px;
       padding: 8px 12px;
       color: #CCC;
       cursor: pointer;
-      margin: 0px 12px;
-
-      .theme-light & {
-        background: linear-gradient(orange, #EEE);
-        box-shadow: 0px 0px 10px 10px #EEE;
-        color: #444;
-      }
+      margin: 0px 4px;
 
       .theme-colourful & {
         background: linear-gradient(#6cd4ff, #EEE);
@@ -138,16 +88,10 @@ nav {
       }
 
       &:hover {
-        box-shadow: 0px 0px 12px 16px #444;
+        box-shadow: 0px 0px 5px 5px #444;
         border-radius: 5px;
         color: white;
         background: linear-gradient(#222, black);
-
-        .theme-light & {
-          box-shadow: 0px 0px 12px 16px white;
-          color: black;
-          background: linear-gradient(orange, white);
-        }
 
         .theme-colourful & {
           box-shadow: 0px 0px 12px 16px #6cd4ff;
@@ -165,19 +109,13 @@ nav {
 
 h1 {
   text-align: center;
-  margin: 10px auto 40px auto;
-  box-shadow: 0px 0px 10px 10px #444;
+  margin: 8px auto 34px auto;
+  box-shadow: 0px 0px 5px 5px #444;
   padding: 8px 16px;
   background: #444;
   color: #EEE;
   overflow: hidden;
   animation: show-title 0.5s;
-
-  .theme-light & {
-    box-shadow: 0px 0px 10px 10px lightblue;
-    background: lightblue;
-    color: black;
-  }
 }
 
 p#error {
@@ -211,16 +149,11 @@ article {
 
   > section {
     background: #222;
-    box-shadow: 0px 0px 20px 20px #444;
+    box-shadow: 0px 0px 10px 10px #444;
     overflow: hidden;
     animation: show-section 1.2s ease;
     width: 100%;
     margin-bottom: 3vh;
-
-    .theme-light & {
-      background: #DDF;
-      box-shadow: 0px 0px 20px 20px #DCE;
-    }
 
     .theme-colourful & {
       &#good {
@@ -267,15 +200,10 @@ article {
     li {
       display: flex;
       background: #444;
-      box-shadow: 0px 0px 6px 6px #444;
+      box-shadow: 0px 0px 6px 4px #444;
       padding: 8px 16px;
-      margin: 16px 0px;
+      margin: 12px 0px;
       animation: add-item 0.5s ease;
-
-      .theme-light & {
-        background: white;
-        box-shadow: 0px 0px 6px 6px white;
-      }
 
       .theme-colourful & {
         background: rgba(0, 0, 0, 0.2);
@@ -286,11 +214,6 @@ article {
       &.newItem {
         background: #333;
         box-shadow: 0px 0px 6px 6px #333;
-
-        .theme-light & {
-          background: #FDD;
-          box-shadow: 0px 0px 6px 6px #FDD;
-        }
 
         .theme-colourful & {
           background: rgba(0, 0, 0, 0.4);
@@ -309,11 +232,6 @@ article {
             outline: none; // Chrome focus outline
             box-shadow: none; // Firefox validation outline
 
-            .theme-light & {
-              background: #FDD;
-              color: black;
-            }
-
             .theme-colourful & {
               background: transparent;
               color: white;
@@ -321,10 +239,6 @@ article {
 
             &::placeholder {
               color: #AAA;
-
-              .theme-light & {
-                color: #444;
-              }
 
               .theme-colourful & {
                 color: #DDD;
@@ -374,11 +288,6 @@ article {
       &.editing {
         background: #333;
         box-shadow: 0px 0px 7px 7px #333;
-
-        .theme-light & {
-          background: #DEF;
-          box-shadow: 0px 0px 7px 7px #DEF;
-        }
 
         .theme-colourful & {
           background: rgba(0, 0, 0, 0.4);
@@ -471,10 +380,6 @@ article {
             &:focus {
               outline: none;
             }
-
-            .theme-light & {
-              color: black;
-            }
           }
         }
 
@@ -507,6 +412,7 @@ article {
 @import '_Modal';
 @import '_ShareFallback';
 @import '_SetVoteMode';
+@import '_SetTheme';
 @import '_SetAccessKey';
 @import '_Export';
 @import '_animation';
