@@ -1,4 +1,4 @@
-name: Build ARM Docker images
+name: Build multi-arch Docker images
 
 on:
   push:
@@ -32,7 +32,7 @@ jobs:
           docker buildx build \
             --cache-from "type=local,src=/tmp/.buildx-cache" \
             --cache-to "type=local,dest=/tmp/.buildx-cache" \
-            --platform linux/arm/v7,linux/arm64,linux/386,linux/amd64 \
+            --platform linux/arm/v7,linux/arm64,linux/amd64 \
             --output "type=image,push=false" \
             --tag robinj1995/sprint-retrospective:latest \
             --tag robinj1995/sprint-retrospective:${{ github.sha }} ./
@@ -47,7 +47,7 @@ jobs:
         run: |
           docker buildx build \
             --cache-from "type=local,src=/tmp/.buildx-cache" \
-            --platform linux/arm/v7,linux/arm64,linux/386,linux/amd64 \
+            --platform linux/arm/v7,linux/arm64,linux/amd64 \
             --output "type=image,push=true" \
             --tag robinj1995/sprint-retrospective:latest \
             --tag robinj1995/sprint-retrospective:${{ github.sha }} ./
