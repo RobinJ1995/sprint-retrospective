@@ -37,7 +37,7 @@ jobs:
             --tag robinj1995/sprint-retrospective:latest \
             --tag robinj1995/sprint-retrospective:${{ github.sha }} ./
       -
-        name: Login to GitHub Docker Registry
+        name: Login to Docker Hub
         uses: crazy-max/ghaction-docker-login@v1
         with:
           username: robinj1995
@@ -54,4 +54,4 @@ jobs:
       -
         name: Inspect image
         run: |
-          docker buildx imagetools inspect ${{ github.repository }}:${{ github.sha }}
+          docker buildx imagetools inspect robinj1995/sprint-retrospective:${{ github.sha }}
