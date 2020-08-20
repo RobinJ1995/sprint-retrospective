@@ -1,11 +1,14 @@
 FROM node:14 AS build
 ARG API_ENDPOINT=https://api.sprintretrospective.eu
+
 WORKDIR /app
+COPY package.json package-lock.json ./
+RUN npm install
+
 COPY . .
 ENV REACT_APP_API_ENDPOINT=${API_ENDPOINT}
-RUN npm install && \
-    npm run build && \
-    rm -rf node_modules
+RUN npm run build
+RUN rm -rf node_modules
 
 FROM nginx:stable
 COPY --from=build /app/build/ /var/www/
