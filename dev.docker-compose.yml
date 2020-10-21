@@ -1,0 +1,84 @@
+version: '3.7'
+
+services:
+  database:
+    image: 'mongo'
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: root
+      MONGO_INITDB_DATABASE: sprint-retrospective
+      MONGO_DATA_DIR: /var/lib/mongodb
+    volumes:
+      - data-mongo:/var/lib/mongodb
+    restart: always
+
+  redis:
+    image: 'redis'
+    restart: always
+    ports:
+      - '6379'
+
+  message-queue:
+    image: 'rabbitmq:3.8.9'
+    environment:
+      RABBITMQ_DEFAULT_USER: 'rabbit'
+      RABBITMQ_DEFAULT_PASS: 'rabbit'
+    ports:
+      - '5672'
+    stop_grace_period: 1s
+    restart: always
+
+  api:
+    build: https://github.com/RobinJ1995/sprint-retrospective-server.git
+    image: robinj/sprintretrospective-api
+    ports:
+      - 5432:5432
+    environment:
+      DB_HOST: 'database'
+      MQ_CONNECTION_URL: 'amqp://rabbit:rabbit@message-queue:5672/'
+      MQ_QUEUE_NAME: 'updates'
+      REDIS_URL: 'redis://redis'
+      WEBSOCKET_PUBLIC_BASE_URL: 'ws://localhost:5433/'
+      PORT: 5432
+    depends_on:
+      - database
+      - redis
+      - message-queue
+      - websocket
+    restart: always
+
+  websocket:
+    build: https://github.com/RobinJ1995/sprint-retrospective-websocket-server.git
+    image: robinj/sprintretrospective-websocket-server
+    ports:
+      - 5433:5433
+    environment:
+      MQ_CONNECTION_URL: 'amqp://rabbit:rabbit@message-queue:5672/'
+      MQ_QUEUE_NAME: 'updates'
+      REDIS_URL: 'redis://redis'
+      PORT: 5433
+    depends_on:
+      - message-queue
+    restart: always
+
+  frontend:
+    image: node:14
+    working_dir: /app
+    environment:
+      API_ENDPOINT: 'http://localhost:5432'
+    ports:
+      - 5431:3000
+    depends_on:
+      - api
+    restart: always
+    stdin_open: true
+    volumes:
+      - ./:/app:z
+    command:
+      - npm
+      - start
+      - --host
+      - 0.0.0.0
+
+volumes:
+  data-mongo:
