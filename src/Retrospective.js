@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import useInterval from 'use-interval';
+import { useToasts } from 'react-toast-notifications';
 import { v4 as uuid } from 'uuid';
 import List from './List';
 import {PAGES, WS_ACTIONS} from './constants';
@@ -21,6 +22,8 @@ const Retrospective = ({
 	const [ autorefreshInterval, setAutorefreshInterval] = useState(1000);
 
 	const websocket = useRef(null);
+
+	const { addToast } = useToasts();
 
 	const addGood = text => {
 		return httpPost(`${window.API_BASE}/good`, {text}, getAuthHeaders())
@@ -131,6 +134,13 @@ const Retrospective = ({
 			return;
 		} else if (message.data.toLowerCase().startsWith('pong ')) {
 			return;
+		} else if (message.data.startsWith('#')) {
+			const text = message.data.substr(1).trim();
+
+			addToast(text, {
+				appearance: 'info',
+				autoDismiss: true,
+			});
 		}
 
 		try {

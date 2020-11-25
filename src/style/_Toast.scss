@@ -1,0 +1,10 @@
+.toast {
+	background: rgba(0, 0, 0, 0.84);
+	color: #DADADA;
+	padding: 10px 12px;
+	margin: 8px 8px 12px 8px;
+	box-shadow: 0px 0px 10px 2px #555;
+	border-radius: 3px;
+	text-align: right;
+	animation: show-toast 0.4s;
+}

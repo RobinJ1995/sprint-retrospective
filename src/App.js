@@ -1,6 +1,7 @@
 import React, {useState} from 'react';
 import './style/App.scss';
 import uuid from 'uuid/v4';
+import { ToastProvider } from 'react-toast-notifications';
 import {VOTE_MODES, PATH_MAX_LENGTH, THEMES, HEADERS, PAGES, MODALS} from './constants';
 import Cache from './Cache';
 import Preferences from './Preferences';
@@ -15,6 +16,7 @@ import SetName from './modal/SetName';
 import SetAccessKey from './modal/SetAccessKey';
 import Export from './modal/Export';
 import SetTheme from './modal/SetTheme';
+import Toast from './Toast';
 
 const trimSlashes = str => str.replace(/^\//, '').replace(/\/$/, '');
 const getRetroIdFromUrl = () => {
@@ -166,49 +168,53 @@ function App() {
 	}
 
 	return (
-		<main className={[
-			error && 'error',
-			`theme-${theme}`
-		].filter(x => x).join(' ')}>
-			<nav>
-				<ul>
-					<li onClick={() => setModal(MODALS.SET_NAME)}>{title ? 'Change' : 'Set'} name</li>
-					<li onClick={() => setModal(MODALS.SET_VOTE_MODE)}>Set voting mode</li>
-					<li onClick={share}>Share</li>
-					<li onClick={() => setModal(MODALS.EXPORT)}>Export</li>
-					<li onClick={() => setModal(MODALS.SET_THEME)}>Change theme</li>
-					<li onClick={() => setModal(MODALS.SET_ACCESS_KEY)}>Set access key</li>
-				</ul>
-			</nav>
-			{!!title &&
-				<h1>{title}</h1>}
-			{!!error &&
-				<p id="error">{error.message}</p>
-			}
-			<Retrospective
-				good={good}
-				setGood={setGood}
-				bad={bad}
-				setBad={setBad}
-				actions={actions}
-				setActions={setActions}
-				setTitle={setTitle}
-				voteMode={voteMode}
-				setVoteMode={setVoteMode}
-				websocketUrl={websocketUrl}
-				setWebsocketUrl={setWebsocketUrl}
-				setError={setError}
-				cache={cache}
-				getAuthHeaders={getAuthHeaders}
-				setPage={setPage}
-			/>
-			{modal && <Overlay>
-				<Modal
-					closeable={true}
-					closeModal={() => setModal(null)}
-				>{populateModal()}</Modal>
-			</Overlay>}
-		</main>
+		<ToastProvider
+			components={{ Toast }}
+			autoDismissTimeout={5_000}>
+			<main className={[
+				error && 'error',
+				`theme-${theme}`
+			].filter(x => x).join(' ')}>
+				<nav>
+					<ul>
+						<li onClick={() => setModal(MODALS.SET_NAME)}>{title ? 'Change' : 'Set'} name</li>
+						<li onClick={() => setModal(MODALS.SET_VOTE_MODE)}>Set voting mode</li>
+						<li onClick={share}>Share</li>
+						<li onClick={() => setModal(MODALS.EXPORT)}>Export</li>
+						<li onClick={() => setModal(MODALS.SET_THEME)}>Change theme</li>
+						<li onClick={() => setModal(MODALS.SET_ACCESS_KEY)}>Set access key</li>
+					</ul>
+				</nav>
+				{!!title &&
+					<h1>{title}</h1>}
+				{!!error &&
+					<p id="error">{error.message}</p>
+				}
+				<Retrospective
+					good={good}
+					setGood={setGood}
+					bad={bad}
+					setBad={setBad}
+					actions={actions}
+					setActions={setActions}
+					setTitle={setTitle}
+					voteMode={voteMode}
+					setVoteMode={setVoteMode}
+					websocketUrl={websocketUrl}
+					setWebsocketUrl={setWebsocketUrl}
+					setError={setError}
+					cache={cache}
+					getAuthHeaders={getAuthHeaders}
+					setPage={setPage}
+				/>
+				{modal && <Overlay>
+					<Modal
+						closeable={true}
+						closeModal={() => setModal(null)}
+					>{populateModal()}</Modal>
+				</Overlay>}
+			</main>
+		</ToastProvider>
 	);
 }
 
