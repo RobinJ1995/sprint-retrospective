@@ -1,10 +1,24 @@
 import React, {useState} from 'react';
 import {
+	uniqueNamesGenerator,
+	adjectives,
+	animals
+} from 'unique-names-generator';
+import {
 	KEY,
 	RETRO_ACCESS_KEY_MAX_LENGTH,
 	RETRO_ACCESS_KEY_MIN_LENGTH,
 } from '../constants';
 import ModalContext from '../ModalContext';
+
+const generateRandom = () => uniqueNamesGenerator({
+	dictionaries: [
+		adjectives,
+		animals
+	],
+	separator: ' ',
+	style: 'lowerCase'
+});
 
 const MoreInformation = ({ setShow, show = false }) => (
 	<div class="modal-set-access-key-more-info">
@@ -50,6 +64,10 @@ const SetAccessKey = ({ setAccessKey }) => {
 							onChange={e => setText(e.target.value)}
 							onKeyUp={e => e.key === KEY.ESCAPE && closeModal()}
 						/>
+						<p
+							className="access-key-generate"
+							onClick={() => setText(generateRandom)}
+						>Or <em>click here</em> to generate a random access key.</p>
 					</p>
 					<p>
 						<button>Set access key</button>
