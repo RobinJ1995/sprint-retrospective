@@ -50,11 +50,14 @@ const checkHttpStatus = res => {
 	throw Error(`${res.status} ${res.statusText}`);
 };
 
+const repeat = (n, content) => Array(n || 0).fill(false).map(() => content);
+
 export {
 	httpPost,
 	httpPut,
 	httpPatch,
 	httpDelete,
 	copyToClipboard,
-	checkHttpStatus
+	checkHttpStatus,
+	repeat
 };

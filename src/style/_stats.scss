@@ -1,0 +1,14 @@
+.stats {
+	cursor: initial;
+	pointer-events: none;
+	
+	> ul {
+		display: inline-block;
+		list-style-type: none;
+		padding: 0px;
+
+		> li {
+			display: inline-block;
+		}
+	}
+}

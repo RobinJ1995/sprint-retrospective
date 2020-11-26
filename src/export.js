@@ -1,4 +1,4 @@
-import { repeat } from './Item';
+import { repeat } from './utils';
 
 const exportToJson = ({ title, good, bad, actions }) => JSON.stringify({
   title, good, bad, actions

@@ -17,6 +17,7 @@ import SetAccessKey from './modal/SetAccessKey';
 import Export from './modal/Export';
 import SetTheme from './modal/SetTheme';
 import Toast from './Toast';
+import {repeat} from "./utils";
 
 const trimSlashes = str => str.replace(/^\//, '').replace(/\/$/, '');
 const getRetroIdFromUrl = () => {
@@ -68,6 +69,9 @@ function App() {
 	const [theme, setTheme] = useState(prefs.get(Preferences.THEME, THEMES.DARK));
 	const [page, setPage] = useState(PAGES.RETROSPECTIVE);
 	const [modal, setModal] = useState(null);
+	const [nParticipants, setNParticipants] = useState(null);
+
+	const hasStats = !!nParticipants;
 
 	const updateTitle = title => {
 		httpPut(`${window.API_BASE}/title`, {title}, getAuthHeaders())
@@ -183,6 +187,12 @@ function App() {
 						<li onClick={() => setModal(MODALS.EXPORT)}>Export</li>
 						<li onClick={() => setModal(MODALS.SET_THEME)}>Change theme</li>
 						<li onClick={() => setModal(MODALS.SET_ACCESS_KEY)}>Set access key</li>
+						{hasStats && <li className={"stats"}>
+							<ul>
+								{nParticipants &&
+								<li>{repeat(nParticipants, <span role="img">🧑</span>)}</li>}
+							</ul>
+						</li>}
 					</ul>
 				</nav>
 				{!!title &&
@@ -206,6 +216,8 @@ function App() {
 					cache={cache}
 					getAuthHeaders={getAuthHeaders}
 					setPage={setPage}
+					nParticipants={nParticipants}
+					setNParticipants={setNParticipants}
 				/>
 				{modal && <Overlay>
 					<Modal

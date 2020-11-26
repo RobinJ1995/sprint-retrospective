@@ -7,16 +7,17 @@ import {PAGES, WS_ACTIONS} from './constants';
 import {checkHttpStatus, httpDelete, httpPatch, httpPost} from './utils';
 
 const Retrospective = ({
-						   good, setGood,
-						   bad, setBad,
-						   actions, setActions,
-						   setTitle,
-						   voteMode, setVoteMode,
-						   websocketUrl, setWebsocketUrl,
-						   setError,
-						   cache,
-						   getAuthHeaders,
-						   setPage,
+						good, setGood,
+						bad, setBad,
+						actions, setActions,
+						setTitle,
+						voteMode, setVoteMode,
+						websocketUrl, setWebsocketUrl,
+						setError,
+						cache,
+						getAuthHeaders,
+						setPage,
+						nParticipants, setNParticipants
 					   }) => {
 	const [ autorefresh, setAutorefresh ] = useState(true);
 	const [ autorefreshInterval, setAutorefreshInterval] = useState(1000);
@@ -134,6 +135,10 @@ const Retrospective = ({
 			return;
 		} else if (message.data.toLowerCase().startsWith('pong ')) {
 			return;
+		} else if (message.data.toLowerCase().startsWith('participants ')) {
+			const n = parseInt(message.data.replace(/^participants\s+/i, ''));
+			setNParticipants(n);
+			return;
 		} else if (message.data.startsWith('#')) {
 			const text = message.data.substr(1).trim();
 
@@ -141,6 +146,7 @@ const Retrospective = ({
 				appearance: 'info',
 				autoDismiss: true,
 			});
+			return;
 		}
 
 		try {
