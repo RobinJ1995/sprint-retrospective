@@ -1,14 +1,15 @@
-.stats {
-	cursor: initial;
-	pointer-events: none;
-	
-	> ul {
-		display: inline-block;
-		list-style-type: none;
-		padding: 0px;
+#stats-n-participants {
+	position: fixed;
+	bottom: -5px;
+	left: 0px;
+	right: 0px;
+	text-align: center;
 
-		> li {
+	> span {
+		> span {
+			font-size: 28px;
 			display: inline-block;
+			animation: show-participant 3.6s;
 		}
 	}
 }

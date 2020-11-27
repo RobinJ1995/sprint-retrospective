@@ -4,7 +4,7 @@ import { useToasts } from 'react-toast-notifications';
 import { v4 as uuid } from 'uuid';
 import List from './List';
 import {PAGES, WS_ACTIONS} from './constants';
-import {checkHttpStatus, httpDelete, httpPatch, httpPost} from './utils';
+import {checkHttpStatus, httpDelete, httpPatch, httpPost, repeat} from './utils';
 
 const Retrospective = ({
 						good, setGood,
@@ -17,10 +17,10 @@ const Retrospective = ({
 						cache,
 						getAuthHeaders,
 						setPage,
-						nParticipants, setNParticipants
 					   }) => {
 	const [ autorefresh, setAutorefresh ] = useState(true);
 	const [ autorefreshInterval, setAutorefreshInterval] = useState(1000);
+	const [nParticipants, setNParticipants] = useState(null);
 
 	const websocket = useRef(null);
 
@@ -250,6 +250,10 @@ const Retrospective = ({
 				deleteItem={id => deleteItem('action', id)}
 			/>
 		</section>
+		{nParticipants &&
+			<div id="stats-n-participants">
+				<span>{repeat(nParticipants, <span role="img">🙎‍♂️</span>)}</span>
+			</div>}
 	</article>;
 };
 
