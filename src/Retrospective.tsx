@@ -1,10 +1,12 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, {useState, useRef, useEffect, useContext} from 'react';
 import useInterval from 'use-interval';
 import { useToasts } from 'react-toast-notifications';
 import { v4 as uuid } from 'uuid';
 import List from './List';
 import {PAGES, WS_ACTIONS} from './constants';
 import {checkHttpStatus, httpDelete, httpPatch, httpPost, repeat} from './utils';
+import RetrospectiveContext from "./RetrospectiveContext";
+import RetrospectiveSection from "./type/RetrospectiveSection";
 
 const Retrospective = ({
 						good, setGood,
@@ -18,63 +20,68 @@ const Retrospective = ({
 						getAuthHeaders,
 						setPage,
 					   }) => {
+	const { apiBaseUrl, retroId } = useContext(RetrospectiveContext);
+	
 	const [ autorefresh, setAutorefresh ] = useState(true);
 	const [ autorefreshInterval, setAutorefreshInterval] = useState(1000);
 	const [nParticipants, setNParticipants] = useState(null);
+	const [latency, setLatency] = useState(null);
 
 	const websocket = useRef(null);
 
 	const { addToast } = useToasts();
 
-	const addGood = text => {
-		return httpPost(`${window.API_BASE}/good`, {text}, getAuthHeaders())
+	const addGood = (text: string) => {
+		return httpPost(`${apiBaseUrl}/good`, {text}, getAuthHeaders())
 			.then(checkHttpStatus);
 	};
-	const addBad = text => {
-		return httpPost(`${window.API_BASE}/bad`, {text}, getAuthHeaders())
+	const addBad = (text: string) => {
+		return httpPost(`${apiBaseUrl}/bad`, {text}, getAuthHeaders())
 			.then(checkHttpStatus);
 	};
-	const addAction = text => {
-		return httpPost(`${window.API_BASE}/action`, {text}, getAuthHeaders())
+	const addAction = (text: string) => {
+		return httpPost(`${apiBaseUrl}/action`, {text}, getAuthHeaders())
 			.then(checkHttpStatus);
 	};
 
-	const upvoteItem = (id, type) => {
-		httpPost(`${window.API_BASE}/${type}/${id}/up`, {}, getAuthHeaders())
+	const upvoteItem = (id: string, type: RetrospectiveSection) => {
+		httpPost(`${apiBaseUrl}/${type}/${id}/up`, {}, getAuthHeaders())
 			.then(checkHttpStatus)
 			.catch(alert);
 	};
-	const downvoteItem = (id, type) => {
-		httpPost(`${window.API_BASE}/${type}/${id}/down`, {}, getAuthHeaders())
+	const downvoteItem = (id: string, type: RetrospectiveSection) => {
+		httpPost(`${apiBaseUrl}/${type}/${id}/down`, {}, getAuthHeaders())
 			.then(checkHttpStatus)
 			.catch(alert);
 	};
 
-	const updateItemText = (type, id, text) => httpPatch(`${window.API_BASE}/${type}/${id}`,
-		{text},
-		getAuthHeaders())
+	const updateItemText = (type: RetrospectiveSection, id: string, text: string) =>
+		httpPatch(`${apiBaseUrl}/${type}/${id}`,
+			{text},
+			getAuthHeaders())
 		.then(checkHttpStatus);
 
-	const deleteItem = (type, id) => httpDelete(`${window.API_BASE}/${type}/${id}`,
-		getAuthHeaders())
+	const deleteItem = (type: RetrospectiveSection, id: string) =>
+		httpDelete(`${apiBaseUrl}/${type}/${id}`,
+			getAuthHeaders())
 		.then(checkHttpStatus)
 		.catch(alert);
 
 	const authRequired = () => {
 		setAutorefresh(false);
 
-		return httpPost(`${window.API_BASE}/authenticate`, {})
+		return httpPost(`${apiBaseUrl}/authenticate`, {})
 			.then(res => res.json())
 			.then(res => {
 				if (res.token) {
-					return cache.set(`${window.RETRO_ID}:token`, res.token);
+					return cache.set(`${retroId}:token`, res.token);
 				}
 
 				return setPage(PAGES.ENTER_ACCESS_KEY);
 			})
 	};
 
-	const refreshState = () => fetch(window.API_BASE, { headers: getAuthHeaders() })
+	const refreshState = () => fetch(apiBaseUrl, { headers: getAuthHeaders() })
 		.catch(() => {
 			throw Error('Failed to retrieve retrospective.');
 		})
@@ -123,53 +130,64 @@ const Retrospective = ({
 	}
 
 	const wsHandle = message => {
-		console.log(`>> ${message.data}`);
-
-		if (message.data === '👋') {
-			// Connection established. Switch to relying on the websocket instead of polling.
-			setAutorefreshInterval(10000);
-			return;
-		} else if (message.data.toLowerCase().startsWith('ping ')) {
-			const pongValue = message.data.replace(/^ping\s+/i, '');
-			wsSend(`PONG ${pongValue}`);
-			return;
-		} else if (message.data.toLowerCase().startsWith('pong ')) {
-			return;
-		} else if (message.data.toLowerCase().startsWith('participants ')) {
-			const n = parseInt(message.data.replace(/^participants\s+/i, ''));
-			setNParticipants(n);
-			return;
-		} else if (message.data.startsWith('#')) {
-			const text = message.data.substr(1).trim();
-
-			addToast(text, {
-				appearance: 'info',
-				autoDismiss: true,
-			});
-			return;
-		}
-
 		try {
-			const parsed = JSON.parse(message.data);
-			const {
-				retro,
-				action,
-				item,
-				value
-			} = parsed;
+			console.log(`>> ${message.data}`);
 
-			if (window.RETRO_ID !== retro) {
-				console.error('Received a message for the wrong retrospective.');
+			if (message.data === '👋') {
+				// Connection established. Switch to relying on the websocket instead of polling.
+				setAutorefreshInterval(10000);
+				return;
+			} else if (message.data.toLowerCase().startsWith('ping ')) {
+				const pongValue = message.data.replace(/^ping\s+/i, '');
+				wsSend(`PONG ${pongValue}`);
+				return;
+			} else if (message.data.toLowerCase().startsWith('pong ')) {
+				return;
+			} else if (message.data.toLowerCase().startsWith('participants ')) {
+				const n = parseInt(message.data.replace(/^participants\s+/i, ''));
+				setNParticipants(n);
+				return;
+			} else if (message.data.toLowerCase().startsWith('latency ')) {
+				const x = parseInt(message.data.replace(/^latency\s+/i, ''));
+				setLatency(x);
+				return;
+			} else if (message.data.startsWith('#')) {
+				const text = message.data.substr(1).trim();
+
+				addToast(text, {
+					appearance: 'info',
+					autoDismiss: true,
+				});
 				return;
 			}
-		} catch (ex) {
-			console.error('Invalid message.', {
-				'message': message.data,
-				'error': ex
+
+			try {
+				const parsed = JSON.parse(message.data);
+				const {
+					retro,
+					action,
+					item,
+					value
+				} = parsed;
+
+				if (retroId !== retro) {
+					console.error('Received a message for the wrong retrospective.');
+					return;
+				}
+			} catch (ex) {
+				console.error('Invalid message.', {
+					'message': message.data,
+					'error': ex
+				});
+			}
+
+			refreshState();
+		} catch (err) {
+			console.error('Failed to handle websocket message.', {
+				'message': message?.data,
+				'error': err
 			});
 		}
-
-		refreshState();
 	};
 
 	useInterval(() => {

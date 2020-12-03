@@ -18,6 +18,7 @@ import Export from './modal/Export';
 import SetTheme from './modal/SetTheme';
 import Toast from './Toast';
 import {repeat} from "./utils";
+import RetrospectiveContext from './RetrospectiveContext';
 
 const trimSlashes = str => str.replace(/^\//, '').replace(/\/$/, '');
 const getRetroIdFromUrl = () => {
@@ -39,10 +40,10 @@ const getOrSetRetroId = () => {
 	return id;
 };
 
-window.RETRO_ID = getOrSetRetroId();
+const RETRO_ID = getOrSetRetroId();
 
 const apiEndpoint = process.env.REACT_APP_API_ENDPOINT || 'http://localhost:5432';
-window.API_BASE = `${apiEndpoint}/${window.RETRO_ID}`;
+const API_BASE = `${apiEndpoint}/${RETRO_ID}`;
 
 const prefs = new Preferences();
 const cache = new Cache();
@@ -52,10 +53,10 @@ const initialData = {
 	bad: [],
 	actions: [],
 	voteMode: VOTE_MODES.UPVOTE,
-	...cache.get(window.RETRO_ID)
+	...cache.get(RETRO_ID)
 };
 const getAuthHeaders = () => ({
-	[HEADERS.TOKEN]: cache.get(`${window.RETRO_ID}:token`)
+	[HEADERS.TOKEN]: cache.get(`${RETRO_ID}:token`)
 });
 
 function App() {
@@ -71,23 +72,23 @@ function App() {
 	const [modal, setModal] = useState(null);
 
 	const updateTitle = title => {
-		httpPut(`${window.API_BASE}/title`, {title}, getAuthHeaders())
+		httpPut(`${API_BASE}/title`, {title}, getAuthHeaders())
 			.catch(alert);
 
 		setTitle(title);
 	};
 
 	const updateVoteMode = voteMode => {
-		httpPut(`${window.API_BASE}/voteMode`, {voteMode}, getAuthHeaders())
+		httpPut(`${API_BASE}/voteMode`, {voteMode}, getAuthHeaders())
 			.catch(alert);
 
 		setVoteMode(voteMode);
 	};
 
 	const updateAccessKey = accessKey => {
-		httpPut(`${window.API_BASE}/accessKey`, {accessKey}, getAuthHeaders())
+		httpPut(`${API_BASE}/accessKey`, {accessKey}, getAuthHeaders())
 			.then(checkHttpStatus)
-			.then(() => httpPost(`${window.API_BASE}/authenticate`, {
+			.then(() => httpPost(`${API_BASE}/authenticate`, {
 				accessKey
 			}))
 			.then(res => res.json())
@@ -96,7 +97,7 @@ function App() {
 					throw Error('Authentication failure');
 				}
 
-				return cache.set(`${window.RETRO_ID}:token`, res.token);
+				return cache.set(`${RETRO_ID}:token`, res.token);
 			})
 			.catch(alert);
 	};
@@ -163,59 +164,66 @@ function App() {
 	switch(page) {
 		case PAGES.ENTER_ACCESS_KEY:
 			return <AccessKeyInput
+				apiBaseUrl={API_BASE}
+				retroId={RETRO_ID}
 				cache={cache}
 				validKeySubmitted={() => setPage(PAGES.RETROSPECTIVE)}
 			/>;
 	}
 
 	return (
-		<ToastProvider
-			components={{ Toast }}
-			autoDismissTimeout={5_000}>
-			<main className={[
-				error && 'error',
-				`theme-${theme}`
-			].filter(x => x).join(' ')}>
-				<nav>
-					<ul>
-						<li onClick={() => setModal(MODALS.SET_NAME)}>{title ? 'Change' : 'Set'} name</li>
-						<li onClick={() => setModal(MODALS.SET_VOTE_MODE)}>Set voting mode</li>
-						<li onClick={share}>Share</li>
-						<li onClick={() => setModal(MODALS.EXPORT)}>Export</li>
-						<li onClick={() => setModal(MODALS.SET_THEME)}>Change theme</li>
-						<li onClick={() => setModal(MODALS.SET_ACCESS_KEY)}>Set access key</li>
-					</ul>
-				</nav>
-				{!!title &&
-					<h1>{title}</h1>}
-				{!!error &&
-					<p id="error">{error.message}</p>
-				}
-				<Retrospective
-					good={good}
-					setGood={setGood}
-					bad={bad}
-					setBad={setBad}
-					actions={actions}
-					setActions={setActions}
-					setTitle={setTitle}
-					voteMode={voteMode}
-					setVoteMode={setVoteMode}
-					websocketUrl={websocketUrl}
-					setWebsocketUrl={setWebsocketUrl}
-					setError={setError}
-					cache={cache}
-					getAuthHeaders={getAuthHeaders}
-					setPage={setPage}
-				/>
-				{modal && <Overlay>
-					<Modal
-						closeable={true}
-						closeModal={() => setModal(null)}
-					>{populateModal()}</Modal>
-				</Overlay>}
-			</main>
-		</ToastProvider>
+		<RetrospectiveContext.Provider value={{
+			apiBaseUrl: API_BASE,
+			retroId: RETRO_ID
+		}}>
+			<ToastProvider
+				components={{ Toast }}
+				autoDismissTimeout={5_000}>
+				<main className={[
+					error && 'error',
+					`theme-${theme}`
+				].filter(x => x).join(' ')}>
+					<nav>
+						<ul>
+							<li onClick={() => setModal(MODALS.SET_NAME)}>{title ? 'Change' : 'Set'} name</li>
+							<li onClick={() => setModal(MODALS.SET_VOTE_MODE)}>Set voting mode</li>
+							<li onClick={share}>Share</li>
+							<li onClick={() => setModal(MODALS.EXPORT)}>Export</li>
+							<li onClick={() => setModal(MODALS.SET_THEME)}>Change theme</li>
+							<li onClick={() => setModal(MODALS.SET_ACCESS_KEY)}>Set access key</li>
+						</ul>
+					</nav>
+					{!!title &&
+						<h1>{title}</h1>}
+					{!!error &&
+						<p id="error">{error.message}</p>
+					}
+					<Retrospective
+						good={good}
+						setGood={setGood}
+						bad={bad}
+						setBad={setBad}
+						actions={actions}
+						setActions={setActions}
+						setTitle={setTitle}
+						voteMode={voteMode}
+						setVoteMode={setVoteMode}
+						websocketUrl={websocketUrl}
+						setWebsocketUrl={setWebsocketUrl}
+						setError={setError}
+						cache={cache}
+						getAuthHeaders={getAuthHeaders}
+						setPage={setPage}
+					/>
+					{modal && <Overlay>
+						<Modal
+							closeable={true}
+							closeModal={() => setModal(null)}
+						>{populateModal()}</Modal>
+					</Overlay>}
+				</main>
+			</ToastProvider>
+		</RetrospectiveContext.Provider>
 	);
 }
 

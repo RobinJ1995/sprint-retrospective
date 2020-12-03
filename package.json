@@ -3,6 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@types/jest": "^26.0.16",
+    "@types/node": "^14.14.10",
+    "@types/react": "^17.0.0",
+    "@types/react-dom": "^17.0.0",
     "markdown-it": "^10.0.0",
     "markdown-it-checkbox": "^1.1.0",
     "markdown-it-emoji": "^1.4.0",
@@ -11,6 +15,7 @@
     "react-dom": "^16.10.2",
     "react-scripts": "^3.4.3",
     "react-toast-notifications": "^2.4.0",
+    "typescript": "^4.1.2",
     "unique-names-generator": "^4.3.1",
     "use-interval": "^1.1.0",
     "uuid": "^3.4.0"

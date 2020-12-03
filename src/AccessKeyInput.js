@@ -5,17 +5,19 @@ import {checkHttpStatus, httpDelete, httpPatch, httpPost} from './utils';
 const AccessKeyInput = ({
                            cache,
                            validKeySubmitted,
+                           retroId,
+                           apiBaseUrl
 					   }) => {
-    const [ text, setText ] = useState('');
+	const [ text, setText ] = useState('');
     const [ error, setError ] = useState(null);
 
-    const tryAuthenticate = accessKey => httpPost(`${window.API_BASE}/authenticate`, {
+    const tryAuthenticate = accessKey => httpPost(`${apiBaseUrl}/authenticate`, {
         accessKey
     })
         .then(res => res.json())
         .then(res => {
             if (res.token) {
-                return cache.set(`${window.RETRO_ID}:token`, res.token);
+                return cache.set(`${retroId}:token`, res.token);
             } else if (res.message) {
                 throw Error(res.message);
             }
