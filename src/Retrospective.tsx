@@ -20,7 +20,7 @@ const Retrospective = ({
 						getAuthHeaders,
 						setPage,
 					   }) => {
-	const { apiBaseUrl, retroId } = useContext(RetrospectiveContext);
+	const { apiBaseUrl, retroId, lastSetAccessKey } = useContext(RetrospectiveContext);
 	
 	const [ autorefresh, setAutorefresh ] = useState(true);
 	const [ autorefreshInterval, setAutorefreshInterval] = useState(1000);
@@ -29,6 +29,10 @@ const Retrospective = ({
 
 	const websocket = useRef(null);
 	const isWebsocketConnected = () : boolean => websocketUrl && websocket.current && websocket.current.readyState === WebSocket.OPEN;
+	const disconnectWebsocket = useCallback(() => {
+		websocket.current.close();
+		websocket.current = null;
+	}, [websocket]);
 
 	const { addToast } = useToasts();
 
@@ -180,6 +184,24 @@ const Retrospective = ({
 					console.error('Received a message for the wrong retrospective.');
 					return;
 				}
+
+				if (parsed?.action === 'set_access_key') {
+					/*
+					 * Try authenticate with the access key that is in cache.
+					 * If it succeeds, we're the ones that set the access key.
+					 * If it doesn't, disconnect.
+					 */
+					httpPost(`${apiBaseUrl}/authenticate`, {
+						accessKey: lastSetAccessKey
+					})
+						.then(checkHttpStatus)
+						.catch(() => {
+							disconnectWebsocket();
+							setWebsocketUrl(null);
+							cache.remove(retroId);
+							cache.remove(`${retroId}:token`);
+						});
+				}
 			} catch (ex) {
 				console.error('Invalid message.', {
 					'message': message.data,
@@ -237,8 +259,7 @@ const Retrospective = ({
 			if (!websocket.current) {
 				return;
 			} else if (!isWebsocketConnected()) {
-				websocket.current.close();
-				websocket.current = null;
+				disconnectWebsocket();
 			}
 		};
 	}, [websocketUrl, setWebsocketUrl, wsHandle]);

@@ -70,6 +70,7 @@ function App() {
 	const [theme, setTheme] = useState(prefs.get(Preferences.THEME, THEMES.DARK));
 	const [page, setPage] = useState(PAGES.RETROSPECTIVE);
 	const [modal, setModal] = useState(null);
+	const [lastSetAccessKey, setLastSetAccessKey] = useState(null);
 
 	const updateTitle = title => {
 		httpPut(`${API_BASE}/title`, {title}, getAuthHeaders())
@@ -86,7 +87,7 @@ function App() {
 	};
 
 	const updateAccessKey = accessKey => {
-		httpPut(`${API_BASE}/accessKey`, {accessKey}, getAuthHeaders())
+		return httpPut(`${API_BASE}/accessKey`, {accessKey}, getAuthHeaders())
 			.then(checkHttpStatus)
 			.then(() => httpPost(`${API_BASE}/authenticate`, {
 				accessKey
@@ -97,6 +98,7 @@ function App() {
 					throw Error('Authentication failure');
 				}
 
+				setLastSetAccessKey(accessKey);
 				return cache.set(`${RETRO_ID}:token`, res.token);
 			})
 			.catch(alert);
@@ -174,7 +176,8 @@ function App() {
 	return (
 		<RetrospectiveContext.Provider value={{
 			apiBaseUrl: API_BASE,
-			retroId: RETRO_ID
+			retroId: RETRO_ID,
+			lastSetAccessKey
 		}}>
 			<ToastProvider
 				components={{ Toast }}

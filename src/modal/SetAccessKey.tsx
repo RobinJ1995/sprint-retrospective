@@ -21,13 +21,13 @@ const generateRandom = () => uniqueNamesGenerator({
 });
 
 const MoreInformation = ({ setShow, show = false }) => (
-	<div class="modal-set-access-key-more-info">
+	<div className="modal-set-access-key-more-info">
 		{show
 			? <p onClick={() => setShow(false)}><span role="img" aria-label="Arrow down">⬇️</span> <strong>Collapse</strong></p>
 			: <p onClick={() => setShow(true)}><span role="img" aria-label="Arrow right">➡️</span> <strong>More information</strong></p>}
 		{show && [
 			<p>For retrospectives that do not have an access key set, a user's session token is valid for 2 minutes before it needs to be renewed. At this stage, if an access key has been set, the user will need to enter it in order to continue.</p>,
-			<p>Once a user has authenticated to a retrospective with an access key, their session token remains valid for 20 days. Once a user has entered a retrospective's access key, they will not need to enter one for the next 20 days, regardless of whether the retrospective's access key is changed in the meantime.</p>
+			<p>Once a user has authenticated to a retrospective with an access key, their session token remains valid for 20 days. After this, they will not need to enter one for the next 20 days, regardless of whether the retrospective's access key has changed in the meantime.</p>
 		]}
 	</div>
 );
@@ -36,7 +36,7 @@ const SetAccessKey = ({ setAccessKey }) => {
 	const [text, setText] = useState('');
 	const [moreInfo, setMoreInfo] = useState(false);
 
-	return (<div class="modal-set-access-key">
+	return (<div className="modal-set-access-key">
 		<ModalContext.Consumer>
 			{({ closeModal }) => [
 				<p>An access key allows you to prevent this retrospective from being viewed/edited by anyone who does not have the access key for it.</p>,
