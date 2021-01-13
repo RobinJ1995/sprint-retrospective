@@ -1,4 +1,4 @@
-import React, {useState, useRef, useEffect, useContext} from 'react';
+import React, {useState, useRef, useEffect, useContext, useCallback} from 'react';
 import useInterval from 'use-interval';
 import { useToasts } from 'react-toast-notifications';
 import { v4 as uuid } from 'uuid';
@@ -28,6 +28,7 @@ const Retrospective = ({
 	const [latency, setLatency] = useState(null);
 
 	const websocket = useRef(null);
+	const isWebsocketConnected = () : boolean => websocketUrl && websocket.current && websocket.current.readyState === WebSocket.OPEN;
 
 	const { addToast } = useToasts();
 
@@ -124,14 +125,19 @@ const Retrospective = ({
 		})
 		.catch(setError);
 
-	const wsSend = message => {
-		console.log(`<< ${message}`);
-		websocket.current.send(message);
-	}
+	const wsSend = useCallback(message => {
+		if (!websocket.current) {
+			console.error('There is currently no websocket. Failed to send message.', { message });
+			return;
+		}
 
-	const wsHandle = message => {
+		console.log(`👨‍💻 ${message}`);
+		websocket.current.send(message);
+	}, [websocket]);
+
+	const wsHandle = useCallback(message => {
 		try {
-			console.log(`>> ${message.data}`);
+			console.log(`💌 ${message.data}`);
 
 			if (message.data === '👋') {
 				// Connection established. Switch to relying on the websocket instead of polling.
@@ -188,7 +194,7 @@ const Retrospective = ({
 				'error': err
 			});
 		}
-	};
+	}, [addToast, refreshState, retroId, wsSend]);
 
 	useInterval(() => {
 		if (!autorefresh) {
@@ -200,7 +206,7 @@ const Retrospective = ({
 	}, autorefreshInterval);
 
 	useInterval(() => {
-		if (!websocketUrl || !websocket.current || websocket.current.readyState !== WebSocket.OPEN) {
+		if (!isWebsocketConnected()) {
 			return;
 		}
 
@@ -209,27 +215,33 @@ const Retrospective = ({
 
 	useEffect(() => {
 		if (!websocketUrl) {
+			// There is no websocket URL to connect to.
+			return;
+		} else if (isWebsocketConnected()) {
+			// Still connected to an active/open websocket.
 			return;
 		}
 
-		websocket.current = new WebSocket(websocketUrl);
-		websocket.current.onmessage = wsHandle;
-		websocket.current.onclose = () => {
+		const socket = new WebSocket(websocketUrl);
+		socket.onmessage = wsHandle;
+		socket.onclose = () => {
 			console.log('Websocket connection closed.');
 			setWebsocketUrl(null); // It'll get populated again on the next poll.
-			websocket.current = null;
 
 			setAutorefresh(true);
 			setAutorefreshInterval(1000);
-		}
+		};
+		websocket.current = socket;
 
 		return () => {
 			if (!websocket.current) {
 				return;
+			} else if (!isWebsocketConnected()) {
+				websocket.current.close();
+				websocket.current = null;
 			}
-			websocket.current.close();
 		};
-	}, [websocketUrl, setWebsocketUrl]);
+	}, [websocketUrl, setWebsocketUrl, wsHandle]);
 
 	return <article>
 		<section id="good">
