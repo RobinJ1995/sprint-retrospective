@@ -25,6 +25,7 @@ const Retrospective = ({
 	const [ autorefresh, setAutorefresh ] = useState(true);
 	const [ autorefreshInterval, setAutorefreshInterval] = useState(1000);
 	const [nParticipants, setNParticipants] = useState(null);
+	const [participantAvatars, setParticipantAvatars] = useState([]);
 	const [latency, setLatency] = useState(null);
 
 	const websocket = useRef(null);
@@ -156,6 +157,11 @@ const Retrospective = ({
 			} else if (message.data.toLowerCase().startsWith('participants ')) {
 				const n = parseInt(message.data.replace(/^participants\s+/i, ''));
 				setNParticipants(n);
+				return;
+			} else if (message.data.toLowerCase().startsWith('avatars ')) {
+				const avatarsStr = message.data.replace(/^avatars\s+/i, '');
+				const avatars = avatarsStr.split(',');
+				setParticipantAvatars(avatars);
 				return;
 			} else if (message.data.toLowerCase().startsWith('latency ')) {
 				const x = parseInt(message.data.replace(/^latency\s+/i, ''));
@@ -303,7 +309,7 @@ const Retrospective = ({
 		</section>
 		{nParticipants &&
 			<div id="stats-n-participants">
-				<span>{repeat(nParticipants, <span role="img">🙎‍♂️</span>)}</span>
+				<span>{participantAvatars.map(avatar => <span role="img">{avatar}</span>)}</span>
 			</div>}
 	</article>;
 };

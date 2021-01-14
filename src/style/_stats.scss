@@ -7,9 +7,16 @@
 
 	> span {
 		> span {
+			cursor: default;
 			font-size: 28px;
 			display: inline-block;
 			animation: show-participant 3.6s;
+
+			&:hover {
+				margin-left: 8px;
+				margin-right: 8px;
+				transform: translateY(-10px) scale(1.8);
+			}
 		}
 	}
 }
