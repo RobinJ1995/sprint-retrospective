@@ -54,8 +54,8 @@ ${confluenceItems(actions)}
 
 const htmlItems = items => items.map(({ text, up, down }) => {
 	const renderedText = mdParser.parse(text);
-	const thumbs = repeat(up, '<span role="img" aria-label="Thumb up">👍</span>')
-		+ repeat(down, '<span role="img" aria-label="Thumb down">👎</span>');
+	const thumbs = repeat(up, '<span role="img" aria-label="Thumb up">👍</span>').join('')
+		+ repeat(down, '<span role="img" aria-label="Thumb down">👎</span>').join('');
 
 	return `<li>${renderedText} ${thumbs}</li>`;
 }).join('\n');
