@@ -1,6 +1,7 @@
 import { repeat } from './utils';
 import MarkdownParser from './MarkdownParser';
 import React from 'react';
+import { indent } from 'indent.js';
 
 const mdParser = new MarkdownParser();
 
@@ -59,7 +60,7 @@ const htmlItems = items => items.map(({ text, up, down }) => {
 
 	return `<li>${renderedText} ${thumbs}</li>`;
 }).join('\n');
-const exportToHtml = ({ title, good, bad, actions }) => `<h1>${title || 'Retrospective'}</h1>
+const exportToHtml = ({ title, good, bad, actions }) => indent.html(`<h1>${title || 'Retrospective'}</h1>
 
 <article style="display: flex; flex-direction: row;">
 	<section style="flex: 1;">
@@ -81,6 +82,6 @@ const exportToHtml = ({ title, good, bad, actions }) => `<h1>${title || 'Retrosp
 		</ul>
 	</section>
 </article>
-`;
+`);
 
 export { exportToJson, exportToMarkdown, exportToConfluenceWiki, exportToHtml };
