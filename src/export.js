@@ -1,4 +1,8 @@
 import { repeat } from './utils';
+import MarkdownParser from './MarkdownParser';
+import React from 'react';
+
+const mdParser = new MarkdownParser();
 
 const exportToJson = ({ title, good, bad, actions }) => JSON.stringify({
   title, good, bad, actions
@@ -48,4 +52,35 @@ ${confluenceItems(actions)}
 {section}
 `;
 
-export { exportToJson, exportToMarkdown, exportToConfluenceWiki };
+const htmlItems = items => items.map(({ text, up, down }) => {
+	const renderedText = mdParser.parse(text);
+	const thumbs = repeat(up, '<span role="img" aria-label="Thumb up">👍</span>')
+		+ repeat(down, '<span role="img" aria-label="Thumb down">👎</span>');
+
+	return `<li>${renderedText} ${thumbs}</li>`;
+}).join('\n');
+const exportToHtml = ({ title, good, bad, actions }) => `<h1>${title || 'Retrospective'}</h1>
+
+<article style="display: flex; flex-direction: row;">
+	<section style="flex: 1;">
+		<h2>What went well</h2>
+		<ul>
+			${htmlItems(good)}
+		</ul>
+	</section>
+	<section style="flex: 1;">
+		<h2>What could we improve</h2>
+		<ul>
+			${htmlItems(bad)}
+		</ul>
+	</section>
+	<section style="flex: 1;">
+		<h2>Actions for next sprint</h2>
+		<ul>
+			${htmlItems(actions)}
+		</ul>
+	</section>
+</article>
+`;
+
+export { exportToJson, exportToMarkdown, exportToConfluenceWiki, exportToHtml };
