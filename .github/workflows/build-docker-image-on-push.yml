@@ -11,7 +11,7 @@ jobs:
       uses: elgohr/Publish-Docker-Github-Action@master
       with:
         name: robinj1995/sprint-retrospective/sprint-retrospective
-        registry: docker.pkg.github.com
+        registry: ghcr.io
         username: RobinJ1995
         password: ${{ secrets.GITHUB_PERSONAL_ACCESS_TOKEN }}
         snapshot: true
