@@ -305,6 +305,11 @@ article {
 				margin-right: 4px;
 				white-space: nowrap;
 
+				.already-voted {
+					pointer-events: none;
+					filter: saturate(0);
+				}
+
 				button {
 					display: inline-block;
 					opacity: 0.5;

@@ -9,6 +9,12 @@
     position: relative;
     animation: show-modal 0.6s;
 
+	.modal-content {
+		overflow-x: visible;
+		overflow-y: auto;
+		max-height: 90vh;
+	}
+
     .theme-colourful & {
         background: linear-gradient(yellow, orange);
     }

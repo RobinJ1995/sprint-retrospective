@@ -50,6 +50,8 @@ const checkHttpStatus = res => {
 	throw Error(`${res.status} ${res.statusText}`);
 };
 
+const httpCheckParse = res => checkHttpStatus(res).json();
+
 const repeat = (n, content) => Array(n || 0).fill(false).map(() => content);
 
 export {
@@ -59,5 +61,6 @@ export {
 	httpDelete,
 	copyToClipboard,
 	checkHttpStatus,
+	httpCheckParse,
 	repeat
 };

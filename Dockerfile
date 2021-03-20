@@ -1,4 +1,4 @@
-FROM node:14 AS build
+FROM node:15 AS build
 ARG API_ENDPOINT=https://api.sprintretrospective.eu
 
 WORKDIR /app

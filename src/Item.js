@@ -3,9 +3,12 @@ import Markdown from './Markdown';
 import {ITEM_TEXT_MAX_LENGTH, ITEM_TEXT_MIN_LENGTH, KEY, VOTE_MODES} from './constants';
 import {repeat} from './utils';
 
-function Item({id, children, up, down, upvoteItem, downvoteItem, voteMode, updateText, deleteItem}) {
+function Item({id, children, up, down, upvoteItem, downvoteItem, voteMode, updateText, deleteItem, myVotes}) {
 	const [editing, setEditing] = useState(false);
 	const [text, setText] = useState(children);
+	
+	const itemUpvoteActionId = myVotes.find(vote => vote.itemId === id && vote.up);
+	const itemDownvoteActionId = myVotes.find(vote => vote.itemId === id && !vote.up);
 
 	const inputField = React.createRef();
 
@@ -53,9 +56,9 @@ function Item({id, children, up, down, upvoteItem, downvoteItem, voteMode, updat
 		<li data-id={id} data-up={up} data-down={down} className={!!editing && 'editing'}>
 			{voteMode !== VOTE_MODES.NONE &&
 			<div class="vote">
-				<button onClick={upvoteItem}><span role="img" aria-label="Thumb up">👍</span></button>
+				<button onClick={upvoteItem} className={itemUpvoteActionId ? 'already-voted' : ''}><span role="img" aria-label="Thumb up">👍</span></button>
 				{voteMode === VOTE_MODES.UPVOTE_DOWNVOTE &&
-				<button onClick={downvoteItem}><span role="img" aria-label="Thumb down">👎</span></button>
+					<button onClick={downvoteItem} className={itemDownvoteActionId ? 'already-voted' : ''}><span role="img" aria-label="Thumb down">👎</span></button>
 				}
 			</div>
 			}

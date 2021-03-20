@@ -24,7 +24,9 @@ const Modal = ({ children, closeable = false, closeModal = null }) => {
 		<ModalContext.Provider
 			value={{ closeModal}}
 		>
-			{children}
+			<div className="modal-content">
+				{children}
+			</div>
 		</ModalContext.Provider>
 	</div>);
 };

@@ -1,6 +1,6 @@
 import MarkdownIt from 'markdown-it';
 import EmojiParser from 'markdown-it-emoji';
-import CheckboxParser from 'markdown-it-checkbox';
+const CheckboxParser = require('markdown-it-checkbox');
 
 const MARKDOWNIT_OPTIONS = Object.freeze({
 	html: false, // No HTML input
@@ -9,14 +9,16 @@ const MARKDOWNIT_OPTIONS = Object.freeze({
 	typographer: false, // Smart quotes, ellipses, dashes, ...
 	maxNesting: 10, // Recursion limit
 });
-const MARKDOWNIT_RULES_DISABLE = Object.freeze([
+const MARKDOWNIT_RULES_DISABLE = [
 	'newline', // No newlines
 	'image', // No images
 	'html_inline', // No HTML input
 	'entity', // Don't parse HTML entities (e.g. &eur;)
-]);
+];
 
 class MarkdownParser {
+	private parser : MarkdownIt;
+
 	constructor() {
 		this.parser = new MarkdownIt(MARKDOWNIT_OPTIONS)
 			.disable(MARKDOWNIT_RULES_DISABLE)

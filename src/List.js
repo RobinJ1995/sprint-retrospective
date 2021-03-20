@@ -5,7 +5,8 @@ import {ITEM_TEXT_MAX_LENGTH, ITEM_TEXT_MIN_LENGTH, VOTE_MODES} from './constant
 function List({ items,
                 addItem, updateItemText, deleteItem,
                 upvoteItem, downvoteItem,
-                voteMode }) {
+                voteMode,
+                myVotes }) {
   const [newItemText, setNewItemText] = useState('');
 
   const submit = e => {
@@ -48,6 +49,7 @@ function List({ items,
             up={up}
             down={down}
             voteMode={voteMode}
+            myVotes={myVotes}
             upvoteItem={() => upvoteItem(id)}
             downvoteItem={() => downvoteItem(id)}
             updateText={text => updateItemText(id, text)}

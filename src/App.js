@@ -1,11 +1,10 @@
 import React, {useState} from 'react';
 import './style/App.scss';
-import uuid from 'uuid/v4';
+import {v4 as uuid} from 'uuid';
 import { ToastProvider } from 'react-toast-notifications';
 import {VOTE_MODES, PATH_MAX_LENGTH, THEMES, HEADERS, PAGES, MODALS} from './constants';
-import Cache from './Cache';
-import Preferences from './Preferences';
-import {checkHttpStatus, copyToClipboard, httpPost, httpPut} from './utils';
+import cache from './Cache';
+import {checkHttpStatus, copyToClipboard, httpCheckParse, httpPost, httpPut} from './utils';
 import Retrospective from './Retrospective';
 import AccessKeyInput from './AccessKeyInput';
 import Overlay from './Overlay';
@@ -19,6 +18,7 @@ import SetTheme from './modal/SetTheme';
 import Toast from './Toast';
 import {repeat} from "./utils";
 import RetrospectiveContext from './RetrospectiveContext';
+import {useLocalStorage} from "./useCache";
 
 const trimSlashes = str => str.replace(/^\//, '').replace(/\/$/, '');
 const getRetroIdFromUrl = () => {
@@ -45,8 +45,6 @@ const RETRO_ID = getOrSetRetroId();
 const apiEndpoint = process.env.REACT_APP_API_ENDPOINT || 'http://localhost:5432';
 const API_BASE = `${apiEndpoint}/${RETRO_ID}`;
 
-const prefs = new Preferences();
-const cache = new Cache();
 const initialData = {
 	title: null,
 	good: [],
@@ -67,10 +65,12 @@ function App() {
 	const [voteMode, setVoteMode] = useState(initialData.voteMode);
 	const [websocketUrl, setWebsocketUrl] = useState(null);
 	const [error, setError] = useState(null);
-	const [theme, setTheme] = useState(prefs.get(Preferences.THEME, THEMES.DARK));
+	const [theme, setTheme] = useLocalStorage('theme', THEMES.DARK);
 	const [page, setPage] = useState(PAGES.RETROSPECTIVE);
 	const [modal, setModal] = useState(null);
 	const [lastSetAccessKey, setLastSetAccessKey] = useState(null);
+	const [advancedMode, setAdvancedMode] = useLocalStorage('advanced_mode', false);
+	window.therebedragons = () => setAdvancedMode(true);
 
 	const updateTitle = title => {
 		httpPut(`${API_BASE}/title`, {title}, getAuthHeaders())
@@ -105,7 +105,6 @@ function App() {
 	};
 
 	const updateTheme = theme => {
-		prefs.set(Preferences.THEME, theme);
 		setTheme(theme);
 	};
 
@@ -177,7 +176,8 @@ function App() {
 		<RetrospectiveContext.Provider value={{
 			apiBaseUrl: API_BASE,
 			retroId: RETRO_ID,
-			lastSetAccessKey
+			lastSetAccessKey,
+			advancedMode
 		}}>
 			<ToastProvider
 				components={{ Toast }}
@@ -194,6 +194,12 @@ function App() {
 							<li onClick={() => setModal(MODALS.EXPORT)}>Export</li>
 							<li onClick={() => setModal(MODALS.SET_THEME)}>Change theme</li>
 							<li onClick={() => setModal(MODALS.SET_ACCESS_KEY)}>Set access key</li>
+							{advancedMode &&
+							<li onClick={() => fetch(`${API_BASE}/_actions`, {
+								headers: getAuthHeaders()
+							})
+								.then(httpCheckParse)
+								.then(logs => setModal(<pre>{JSON.stringify(logs, undefined, 4)}</pre>))}>Logs</li>}
 						</ul>
 					</nav>
 					{!!title &&

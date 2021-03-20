@@ -4,9 +4,10 @@ import { useToasts } from 'react-toast-notifications';
 import { v4 as uuid } from 'uuid';
 import List from './List';
 import {PAGES, WS_ACTIONS} from './constants';
-import {checkHttpStatus, httpDelete, httpPatch, httpPost, repeat} from './utils';
+import {checkHttpStatus, httpCheckParse, httpDelete, httpPatch, httpPost, repeat} from './utils';
 import RetrospectiveContext from "./RetrospectiveContext";
 import RetrospectiveSection from "./type/RetrospectiveSection";
+import useCache from "./useCache";
 
 const Retrospective = ({
 						good, setGood,
@@ -22,11 +23,12 @@ const Retrospective = ({
 					   }) => {
 	const { apiBaseUrl, retroId, lastSetAccessKey } = useContext(RetrospectiveContext);
 	
-	const [ autorefresh, setAutorefresh ] = useState(true);
-	const [ autorefreshInterval, setAutorefreshInterval] = useState(1000);
+	const [autorefresh, setAutorefresh] = useState(true);
+	const [autorefreshInterval, setAutorefreshInterval] = useState(1000);
 	const [nParticipants, setNParticipants] = useState(null);
 	const [participantAvatars, setParticipantAvatars] = useState([]);
 	const [latency, setLatency] = useState(null);
+	const [myVotes, setMyVotes] = useCache(`${retroId}:votes`, []);
 
 	const websocket = useRef(null);
 	const isWebsocketConnected = () : boolean => websocketUrl && websocket.current && websocket.current.readyState === WebSocket.OPEN;
@@ -52,12 +54,36 @@ const Retrospective = ({
 
 	const upvoteItem = (id: string, type: RetrospectiveSection) => {
 		httpPost(`${apiBaseUrl}/${type}/${id}/up`, {}, getAuthHeaders())
-			.then(checkHttpStatus)
+			.then(httpCheckParse)
+			.then(res => {
+				if (res.actionId) {
+					setMyVotes([
+						...myVotes,
+						{
+							type,
+							itemId: id,
+							up: true
+						}
+					])
+				}
+			})
 			.catch(alert);
 	};
 	const downvoteItem = (id: string, type: RetrospectiveSection) => {
 		httpPost(`${apiBaseUrl}/${type}/${id}/down`, {}, getAuthHeaders())
-			.then(checkHttpStatus)
+			.then(httpCheckParse)
+			.then(res => {
+				if (res.actionId) {
+					setMyVotes([
+						...myVotes,
+						{
+							type,
+							itemId: id,
+							up: false
+						}
+					])
+				}
+			})
 			.catch(alert);
 	};
 
@@ -277,6 +303,7 @@ const Retrospective = ({
 				items={good}
 				addItem={addGood}
 				voteMode={voteMode}
+				myVotes={myVotes}
 				upvoteItem={id => upvoteItem(id, 'good')}
 				downvoteItem={id => downvoteItem(id, 'good')}
 				updateItemText={(id, text) => updateItemText('good', id, text)}
@@ -289,6 +316,7 @@ const Retrospective = ({
 				items={bad}
 				addItem={addBad}
 				voteMode={voteMode}
+				myVotes={myVotes}
 				upvoteItem={id => upvoteItem(id, 'bad')}
 				downvoteItem={id => downvoteItem(id, 'bad')}
 				updateItemText={(id, text) => updateItemText('bad', id, text)}
@@ -301,6 +329,7 @@ const Retrospective = ({
 				items={actions}
 				addItem={addAction}
 				voteMode={voteMode}
+				myVotes={myVotes}
 				upvoteItem={id => upvoteItem(id, 'action')}
 				downvoteItem={id => downvoteItem(id, 'action')}
 				updateItemText={(id, text) => updateItemText('action', id, text)}

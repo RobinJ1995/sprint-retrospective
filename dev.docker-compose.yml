@@ -18,16 +18,6 @@ services:
     ports:
       - '6379'
 
-  message-queue:
-    image: 'rabbitmq:3.8.9'
-    environment:
-      RABBITMQ_DEFAULT_USER: 'rabbit'
-      RABBITMQ_DEFAULT_PASS: 'rabbit'
-    ports:
-      - '5672'
-    stop_grace_period: 1s
-    restart: always
-
   api:
     build: https://github.com/RobinJ1995/sprint-retrospective-server.git
     image: robinj/sprintretrospective-api
@@ -35,15 +25,12 @@ services:
       - 5432:5432
     environment:
       DB_HOST: 'database'
-      MQ_CONNECTION_URL: 'amqp://rabbit:rabbit@message-queue:5672/'
-      MQ_QUEUE_NAME: 'updates'
       REDIS_URL: 'redis://redis'
       WEBSOCKET_PUBLIC_BASE_URL: 'ws://localhost:5433/'
       PORT: 5432
     depends_on:
       - database
       - redis
-      - message-queue
       - websocket
     restart: always
 
@@ -53,16 +40,16 @@ services:
     ports:
       - 5433:5433
     environment:
-      MQ_CONNECTION_URL: 'amqp://rabbit:rabbit@message-queue:5672/'
-      MQ_QUEUE_NAME: 'updates'
       REDIS_URL: 'redis://redis'
       PORT: 5433
     depends_on:
-      - message-queue
+      - redis
     restart: always
 
   frontend:
-    image: node:14
+    build:
+      context: .
+      dockerfile: dev.Dockerfile
     working_dir: /app
     environment:
       API_ENDPOINT: 'http://localhost:5432'
