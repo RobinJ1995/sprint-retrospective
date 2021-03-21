@@ -180,6 +180,8 @@ const Retrospective = ({
 				return;
 			} else if (message.data.toLowerCase().startsWith('pong ')) {
 				return;
+			} else if (message.data.toLowerCase().startsWith('connected_to ')) {
+				return;
 			} else if (message.data.toLowerCase().startsWith('participants ')) {
 				const n = parseInt(message.data.replace(/^participants\s+/i, ''));
 				setNParticipants(n);
