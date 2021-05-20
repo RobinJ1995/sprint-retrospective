@@ -3,7 +3,7 @@ import useInterval from 'use-interval';
 import { useToasts } from 'react-toast-notifications';
 import { v4 as uuid } from 'uuid';
 import List from './List';
-import {PAGES, WS_ACTIONS} from './constants';
+import {PAGES, SECTIONS, WS_ACTIONS} from './constants';
 import {checkHttpStatus, httpCheckParse, httpDelete, httpPatch, httpPost, repeat} from './utils';
 import RetrospectiveContext from "./RetrospectiveContext";
 import RetrospectiveSection from "./type/RetrospectiveSection";
@@ -302,6 +302,7 @@ const Retrospective = ({
 		<section id="good">
 			<h2>What went well <span className="emoji" role="img" aria-label="">🤩</span></h2>
 			<List
+				section={SECTIONS.GOOD}
 				items={good}
 				addItem={addGood}
 				voteMode={voteMode}
@@ -315,6 +316,7 @@ const Retrospective = ({
 		<section id="bad">
 			<h2>What could we improve <span className="emoji" role="img" aria-label="">🤨</span></h2>
 			<List
+				section={SECTIONS.BAD}
 				items={bad}
 				addItem={addBad}
 				voteMode={voteMode}
@@ -328,6 +330,7 @@ const Retrospective = ({
 		<section id="actions">
 			<h2>Actions for next sprint <span className="emoji" role="img" aria-label="">☑️</span></h2>
 			<List
+				section={SECTIONS.ACTION}
 				items={actions}
 				addItem={addAction}
 				voteMode={voteMode}

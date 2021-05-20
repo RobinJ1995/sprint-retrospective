@@ -197,209 +197,286 @@ article {
 		padding: 0px;
 
 		li {
-			display: flex;
-			background: #444;
-			box-shadow: 0px 0px 6px 4px #444;
-			padding: 8px 16px;
-			margin: 12px 0px;
-			animation: add-item 0.5s ease;
-
-			.theme-colourful & {
-				background: rgba(0, 0, 0, 0.2);
-				box-shadow: 0px 0px 6px 6px rgba(0, 0, 0, 0.2);
-				color: white;
-			}
-
 			&.newItem {
-				background: #333;
-				box-shadow: 0px 0px 6px 6px #333;
+				.item-content-main {
+					background: #333;
+					box-shadow: 0px 0px 6px 6px #333;
 
-				.theme-colourful & {
-					background: rgba(0, 0, 0, 0.4);
-					box-shadow: 0px 0px 6px 6px rgba(0, 0, 0, 0.4);
-				}
+					.theme-colourful & {
+						background: rgba(0, 0, 0, 0.4);
+						box-shadow: 0px 0px 6px 6px rgba(0, 0, 0, 0.4);
+					}
 
-				form {
-					flex-grow: 1;
+					form {
+						flex-grow: 1;
 
-					input {
-						width: 100%;
-						background: #333;
-						border: 0px;
-						font-size: 1rem;
-						color: white;
-						outline: none; // Chrome focus outline
-						box-shadow: none; // Firefox validation outline
-
-						.theme-colourful & {
-							background: transparent;
+						input {
+							width: 100%;
+							background: #333;
+							border: 0px;
+							font-size: 1rem;
 							color: white;
-						}
-
-						&::placeholder {
-							color: #AAA;
+							outline: none; // Chrome focus outline
+							box-shadow: none; // Firefox validation outline
 
 							.theme-colourful & {
-								color: #DDD;
+								background: transparent;
+								color: white;
+							}
+
+							&::placeholder {
+								color: #AAA;
+
+								.theme-colourful & {
+									color: #DDD;
+								}
 							}
 						}
-					}
 
-					input:focus + .markdown-formatting-hint {
-						display: block;
-					}
-
-					.markdown-formatting-hint {
-						display: none;
-						font-size: 0.8em;
-						opacity: 0.72;
-						animation: show-markdown-formatting-hint 1s;
-						margin-top: 6px;
-
-						span {
-							white-space: nowrap;
+						input:focus + .markdown-formatting-hint {
+							display: block;
 						}
 
-						.bold {
-							font-weight: bold;
-						}
+						.markdown-formatting-hint {
+							display: none;
+							font-size: 0.8em;
+							opacity: 0.72;
+							animation: show-markdown-formatting-hint 1s;
+							margin-top: 6px;
 
-						.italic {
-							font-style: italic;
-						}
+							span {
+								white-space: nowrap;
+							}
 
-						.monospace {
-							font-family: monospace;
-						}
+							.bold {
+								font-weight: bold;
+							}
 
-						.checkbox {
-							input {
-								display: inline;
-								width: unset;
-								margin: 0px;
-								pointer-events: none;
+							.italic {
+								font-style: italic;
+							}
+
+							.monospace {
+								font-family: monospace;
+							}
+
+							.checkbox {
+								input {
+									display: inline;
+									width: unset;
+									margin: 0px;
+									pointer-events: none;
+								}
 							}
 						}
 					}
 				}
 			}
 
-			&.editing {
+			&.has-comments {
+				.item-content-main {
+					margin-bottom: 0px;
+				}
+
+				.comments {
+					display: block;
+				}
+			}
+
+			&:hover {
+				.comments {
+					display: block;
+
+					.new-comment {
+						display: flex !important;
+						animation: show-new-comment-box 0.5s ease;
+					}
+				}
+			}
+
+			.comments {
+				display: none;
+				list-style-type: none;
+				padding: 0px 0px 3px 0px;
 				background: #333;
-				box-shadow: 0px 0px 7px 7px #333;
+				box-shadow: 0px 0px 6px 4px #333;
+
+				.comment {
+					margin: 3px 3px 3px 2em;
+					padding: 1px 0px;
+
+					&::before {
+						display: inline-block;
+						content: '💬';
+						opacity: 0.64;
+						margin-right: 8px;
+					}
+
+					&.new-comment, &.new-comment.editing {
+						display: none;
+					}
+
+					&.editing {
+						display: flex;
+						flex-direction: row;
+
+						input {
+							width: 100%;
+							background: #333;
+							border: 0px;
+							font-size: 1rem;
+							color: white;
+							outline: none; // Chrome focus outline
+							box-shadow: none; // Firefox validation outline
+
+							.theme-colourful & {
+								background: transparent;
+								color: white;
+							}
+
+							&::placeholder {
+								color: #AAA;
+
+								.theme-colourful & {
+									color: #DDD;
+								}
+							}
+						}
+					}
+				}
+			}
+
+			.item-content-main {
+				display: flex;
+				background: #444;
+				box-shadow: 0px 0px 6px 4px #444;
+				padding: 8px 16px;
+				margin: 12px 0px;
+				animation: add-item 0.5s ease;
 
 				.theme-colourful & {
-					background: rgba(0, 0, 0, 0.4);
-					box-shadow: 0px 0px 7px 7px rgba(0, 0, 0, 0.4);
+					background: rgba(0, 0, 0, 0.2);
+					box-shadow: 0px 0px 6px 6px rgba(0, 0, 0, 0.2);
+					color: white;
+				}
+
+				&.editing {
+					background: #333;
+					box-shadow: 0px 0px 7px 7px #333;
+
+					.theme-colourful & {
+						background: rgba(0, 0, 0, 0.4);
+						box-shadow: 0px 0px 7px 7px rgba(0, 0, 0, 0.4);
+					}
+
+					.content {
+						.votes {
+							margin-left: 4px;
+						}
+					}
+				}
+
+				.vote {
+					display: inline-block;
+					margin-right: 4px;
+					white-space: nowrap;
+
+					.already-voted {
+						pointer-events: none;
+						filter: saturate(0);
+					}
+
+					button {
+						display: inline-block;
+						opacity: 0.5;
+						padding: 3px;
+						text-decoration: none;
+						transition: all 0.2s;
+						border: none;
+						outline: none;
+						background: transparent;
+						font-size: 1rem;
+						cursor: pointer;
+						animation: show-vote-button 0.4s;
+
+						&:hover {
+							opacity: 1;
+							transform: scale(1.8);
+						}
+					}
 				}
 
 				.content {
-					.votes {
-						margin-left: 4px;
-					}
-				}
-			}
+					display: flex;
+					overflow-wrap: anywhere;
+					flex-grow: 1;
+					align-items: center;
 
-			.vote {
-				display: inline-block;
-				margin-right: 4px;
-				white-space: nowrap;
-
-				.already-voted {
-					pointer-events: none;
-					filter: saturate(0);
-				}
-
-				button {
-					display: inline-block;
-					opacity: 0.5;
-					padding: 3px;
-					text-decoration: none;
-					transition: all 0.2s;
-					border: none;
-					outline: none;
-					background: transparent;
-					font-size: 1rem;
-					cursor: pointer;
-					animation: show-vote-button 0.4s;
-
-					&:hover {
-						opacity: 1;
-						transform: scale(1.8);
-					}
-				}
-			}
-
-			.content {
-				display: flex;
-				overflow-wrap: anywhere;
-				flex-grow: 1;
-				align-items: center;
-
-				> span {
-					display: inline-block;
-					vertical-align: middle;
-
-					&:not(.votes):hover {
-						padding-left: 5px;
-						padding-right: 5px;
-					}
-
-					a {
-						color: inherit;
-						text-decoration: none;
-
-						&:hover {
-							text-decoration: underline;
-						}
-					}
-
-					input[type=checkbox] {
-						width: 1.4em;
-						height: 1.4em;
-						margin: 0px 0.4em 0px 0px;
+					> span {
+						display: inline-block;
 						vertical-align: middle;
 
-						&:checked {
-							& + label {
-								text-decoration: line-through;
-								opacity: 0.64;
+						&:not(.votes):hover {
+							padding-left: 5px;
+							padding-right: 5px;
+						}
+
+						a {
+							color: inherit;
+							text-decoration: none;
+
+							&:hover {
+								text-decoration: underline;
+							}
+						}
+
+						input[type=checkbox] {
+							width: 1.4em;
+							height: 1.4em;
+							margin: 0px 0.4em 0px 0px;
+							vertical-align: middle;
+
+							&:checked {
+								& + label {
+									text-decoration: line-through;
+									opacity: 0.64;
+								}
 							}
 						}
 					}
-				}
 
-				form {
-					flex-grow: 1;
+					form {
+						flex-grow: 1;
 
-					input {
-						background: transparent;
-						border: 0px;
-						color: white;
-						font-size: 1em;
-						width: 100%;
-						padding-left: 5px;
-						padding-right: 5px;
+						input {
+							background: transparent;
+							border: 0px;
+							color: white;
+							font-size: 1em;
+							width: 100%;
+							padding-left: 5px;
+							padding-right: 5px;
 
-						&:focus {
-							outline: none;
+							&:focus {
+								outline: none;
+							}
 						}
 					}
-				}
 
-				.votes {
-					margin-left: 4px;
+					.votes {
+						margin-left: 4px;
 
-					.upvote {
-						display: inline-block;
-						animation: upvote 0.4s;
-						font-size: 1.1em;
-					}
+						.upvote {
+							display: inline-block;
+							animation: upvote 0.4s;
+							font-size: 1.1em;
+						}
 
-					.downvote {
-						display: inline-block;
-						animation: downvote 0.4s;
-						font-size: 1.1em;
+						.downvote {
+							display: inline-block;
+							animation: downvote 0.4s;
+							font-size: 1.1em;
+						}
 					}
 				}
 			}

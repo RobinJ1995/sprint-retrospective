@@ -177,7 +177,8 @@ function App() {
 			apiBaseUrl: API_BASE,
 			retroId: RETRO_ID,
 			lastSetAccessKey,
-			advancedMode
+			advancedMode,
+			getAuthHeaders
 		}}>
 			<ToastProvider
 				components={{ Toast }}

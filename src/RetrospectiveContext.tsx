@@ -4,5 +4,6 @@ export default React.createContext({
     apiBaseUrl: undefined,
     retroId: undefined,
     lastSetAccessKey: undefined,
-    advancedMode: false
+    advancedMode: false,
+    getAuthHeaders: () => void 0
 });

@@ -221,3 +221,20 @@
 		transform: translateY(0px) scale(1.0);
 	}
 }
+
+@keyframes show-new-comment-box {
+	0% {
+		opacity: 0;
+		overflow: hidden;
+		max-height: 0px;
+	}
+	99% {
+		opacity: 1;
+		overflow: hidden;
+		max-height: 2em;
+	}
+	100% {
+		overflow: unset;
+		max-height: unset;
+	}
+}

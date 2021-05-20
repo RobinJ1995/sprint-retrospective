@@ -36,6 +36,11 @@ const WS_ACTIONS = Object.freeze({
 	ADD_BAD: 'add_bad',
 	ADD_ACTION: 'add_action'
 })
+const SECTIONS = Object.freeze({
+	GOOD: 'good',
+	BAD: 'bad',
+	ACTION: 'action'
+});
 
 export {
 	VOTE_MODES,
@@ -51,5 +56,6 @@ export {
 	HEADERS,
 	PAGES,
 	MODALS,
-	WS_ACTIONS
+	WS_ACTIONS,
+	SECTIONS
 };
