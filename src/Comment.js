@@ -74,7 +74,7 @@ const Comment = ({ id, children = '', section, itemId }) => {
 	};
 
 	useEffect(() => {
-		if (inputField.current) {
+		if (inputField.current && !isNew) {
 			inputField.current.focus();
 		}
 	});
