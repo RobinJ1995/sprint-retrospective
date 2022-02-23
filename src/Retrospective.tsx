@@ -1,5 +1,5 @@
 import React, {useState, useRef, useEffect, useContext, useCallback} from 'react';
-import useInterval from 'use-interval';
+import useInterval from './useInterval';
 import { useToasts } from 'react-toast-notifications';
 import { v4 as uuid } from 'uuid';
 import List from './List';
@@ -28,6 +28,7 @@ const Retrospective = ({
 	const [nParticipants, setNParticipants] = useState(null);
 	const [participantAvatars, setParticipantAvatars] = useState([]);
 	const [latency, setLatency] = useState<number | null>(null);
+	const [lastPingSentTimestamp, setLastPingSentTimestamp] = useState<number | null>(null);
 	const [myVotes, setMyVotes] = useCache(`${retroId}:votes`, []);
 
 	const websocket = useRef(null);
@@ -179,6 +180,10 @@ const Retrospective = ({
 				wsSend(`PONG ${pongValue}`);
 				return;
 			} else if (message.data.toLowerCase().startsWith('pong ')) {
+				if (lastPingSentTimestamp) {
+					const latency = new Date().getTime() - lastPingSentTimestamp;
+					setLatency(latency);
+				}
 				return;
 			} else if (message.data.toLowerCase().startsWith('connected_to ')) {
 				if (!advancedMode) {
@@ -264,7 +269,7 @@ const Retrospective = ({
 				'error': err
 			});
 		}
-	}, [addToast, refreshState, retroId, wsSend]);
+	}, [addToast, refreshState, retroId, wsSend, lastPingSentTimestamp, setLastPingSentTimestamp, setLatency]);
 
 	useInterval(() => {
 		if (!autorefresh) {
@@ -280,9 +285,11 @@ const Retrospective = ({
 			return;
 		}
 
+		setLastPingSentTimestamp(new Date().getTime());
 		wsSend(`PING ${uuid()}`);
-	}, 8000);
+	}, advancedMode ? 2000 : 8000, false, [setLastPingSentTimestamp, advancedMode]);
 
+	// When websocket URL changes, disconnect and connect to it.
 	useEffect(() => {
 		if (!websocketUrl) {
 			// There is no websocket URL to connect to.
@@ -293,14 +300,6 @@ const Retrospective = ({
 		}
 
 		const socket = new WebSocket(websocketUrl);
-		socket.onmessage = wsHandle;
-		socket.onclose = () => {
-			console.log('Websocket connection closed.');
-			setWebsocketUrl(null); // It'll get populated again on the next poll.
-
-			setAutorefresh(true);
-			setAutorefreshInterval(1000);
-		};
 		websocket.current = socket;
 
 		return () => {
@@ -310,7 +309,30 @@ const Retrospective = ({
 				disconnectWebsocket();
 			}
 		};
-	}, [websocketUrl, setWebsocketUrl, wsHandle]);
+	}, [websocketUrl, setWebsocketUrl]);
+
+	// When websocket message handler or other dependencies change, update the handlers.
+	useEffect(() => {
+		if (!websocket.current) {
+			return;
+		}
+
+		websocket.current.onmessage = wsHandle;
+		websocket.current.onclose = () => {
+			console.log('Websocket connection closed.');
+			setWebsocketUrl(null); // It'll get populated again on the next poll.
+
+			setAutorefresh(true);
+			setAutorefreshInterval(1000);
+		};
+
+		return () => {
+			try {
+				websocket.current.onmessage = null;
+				websocket.current.onclose = null;
+			} catch (ex) {}
+		}
+	}, [wsHandle, setAutorefresh, setAutorefreshInterval, setWebsocketUrl])
 
 	return <article>
 		<section id="good">
