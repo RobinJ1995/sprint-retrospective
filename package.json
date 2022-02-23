@@ -3,25 +3,39 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@types/jest": "^26.0.21",
-    "@types/markdown-it": "^12.0.1",
-    "@types/markdown-it-emoji": "^2.0.0",
-    "@types/node": "^14.14.35",
-    "@types/react": "^17.0.3",
-    "@types/react-dom": "^17.0.2",
+    "@testing-library/jest-dom": "^5.16.2",
+    "@testing-library/react": "^11.2.7",
+    "@testing-library/user-event": "^12.8.3",
+    "@types/jest": "^26.0.24",
+    "@types/node": "^12.20.46",
+    "@types/react": "^16.14.23",
+    "@types/react-dom": "^16.9.14",
     "indent.js": "^0.3.5",
     "markdown-it": "^12.0.4",
     "markdown-it-checkbox": "^1.1.0",
     "markdown-it-emoji": "^2.0.0",
     "node-sass": "^5.0.0",
-    "react": "^17.0.1",
-    "react-dom": "^17.0.1",
-    "react-scripts": "^4.0.3",
-    "react-toast-notifications": "^2.4.3",
-    "typescript": "^4.2.3",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
+    "react-scripts": "5.0.0",
+    "react-toast-notifications": "^2.5.1",
+    "typescript": "^4.5.5",
     "unique-names-generator": "^4.4.0",
     "use-interval": "^1.3.0",
-    "uuid": "^8.3.2"
+    "uuid": "^8.3.2",
+    "web-vitals": "^0.2.4",
+    "workbox-background-sync": "^5.1.4",
+    "workbox-broadcast-update": "^5.1.4",
+    "workbox-cacheable-response": "^5.1.4",
+    "workbox-core": "^5.1.4",
+    "workbox-expiration": "^5.1.4",
+    "workbox-google-analytics": "^5.1.4",
+    "workbox-navigation-preload": "^5.1.4",
+    "workbox-precaching": "^5.1.4",
+    "workbox-range-requests": "^5.1.4",
+    "workbox-routing": "^5.1.4",
+    "workbox-strategies": "^5.1.4",
+    "workbox-streams": "^5.1.4"
   },
   "scripts": {
     "build-start": "npm install --dev && npm start",
@@ -32,7 +46,10 @@
     "dev": "./dev.sh"
   },
   "eslintConfig": {
-    "extends": "react-app"
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
   },
   "browserslist": {
     "production": [
