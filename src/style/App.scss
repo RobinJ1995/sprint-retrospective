@@ -23,6 +23,21 @@ main {
 	}
 }
 
+.fork-me-on-github {
+	@media (max-width: 860px) {
+		display: none;
+		position: fixed !important;
+		top: unset !important;
+		bottom: 0px !important;
+		transform: rotate(90deg);
+
+		svg {
+			width: 40px;
+			height: 40px;
+		}
+	}
+}
+
 nav {
 	background: linear-gradient(#333, black);
 

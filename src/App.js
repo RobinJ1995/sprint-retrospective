@@ -19,6 +19,7 @@ import Toast from './Toast';
 import {repeat} from "./utils";
 import RetrospectiveContext from './RetrospectiveContext';
 import useCache, {useLocalStorage} from "./useCache";
+import ForkMeOnGithub from 'fork-me-on-github';
 
 const trimSlashes = str => str.replace(/^\//, '').replace(/\/$/, '');
 const getRetroIdFromUrl = () => {
@@ -198,6 +199,11 @@ function App() {
 					error && 'error',
 					`theme-${theme}`
 				].filter(x => x).join(' ')}>
+					<ForkMeOnGithub
+						className="fork-me-on-github"
+						colorBackground="#888"
+						colorOctocat="#222"
+						repo="https://github.com/RobinJ1995/sprint-retrospective/" />
 					<nav>
 						<ul>
 							<li onClick={() => setModal(MODALS.SET_NAME)}>{title ? 'Change' : 'Set'} name</li>
