@@ -13,8 +13,6 @@ class Cache {
 			this.data = JSON.parse(window.localStorage.getItem('cache') || '{}');
 			this.ttl = JSON.parse(window.localStorage.getItem('cache_ttl') || '{}');
 
-			console.log(this.data);
-
 			this.json = {};
 		} catch (ex) {
 			console.error('Error occurred while retrieving cache from local storage. Clearing cache...', ex);

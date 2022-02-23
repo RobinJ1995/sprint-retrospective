@@ -22,6 +22,10 @@ const isLocalhost = Boolean(
 
 export function register(config) {
   if (! (process.env.NODE_ENV === 'production' && 'serviceWorker' in navigator)) {
+    console.debug('Skipping service worker registration.', {
+		"process.env.NODE_ENV === 'production'": process.env.NODE_ENV === 'production',
+		"'serviceWorker' in navigator": 'serviceWorker' in navigator
+	});
     return;
   }
 
@@ -31,6 +35,10 @@ export function register(config) {
     // Our service worker won't work if PUBLIC_URL is on a different origin
     // from what our page is served on. This might happen if a CDN is used to
     // serve assets; see https://github.com/facebook/create-react-app/issues/2374
+    console.debug('Skipping servuice worker registration.', {
+		'publicUrl.origin': publicUrl.origin,
+		'window.location.origin': window.location.origin
+	})
     return;
   }
 
@@ -38,6 +46,8 @@ export function register(config) {
     const swUrl = `${process.env.PUBLIC_URL}/service-worker.js`;
 
     if (isLocalhost) {
+      console.debug('Running on localhost.');
+
       // This is running on localhost. Let's check if a service worker still exists or not.
       checkValidServiceWorker(swUrl, config);
 
@@ -57,15 +67,27 @@ export function register(config) {
 }
 
 function registerValidSW(swUrl, config) {
+  console.debug('Registering service worker...', {
+	swUrl,
+	config
+  });
   navigator.serviceWorker
     .register(swUrl)
     .then(registration => {
+      console.debug('Service worker registered.', { registration });
       registration.onupdatefound = () => {
+	    console.debug('Service worker: update found...');
         const installingWorker = registration.installing;
         if (installingWorker == null) {
+          console.debug('Service worker: update found, but installingWorker==null. Not doing anything.', {
+			registration,
+			installingWorker
+		  });
           return;
         }
+
         installingWorker.onstatechange = () => {
+		  console.debug('Service worker: Installing worker: state changed...');
           if (installingWorker.state === 'installed') {
             if (navigator.serviceWorker.controller) {
               // At this point, the updated precached content has been fetched,
@@ -75,6 +97,7 @@ function registerValidSW(swUrl, config) {
 
               // Execute callback
               if (config && config.onUpdate) {
+				console.debug('Service worker: Triggering onUpdate callback.', { config });
                 config.onUpdate(registration);
               }
             } else {
@@ -85,6 +108,7 @@ function registerValidSW(swUrl, config) {
 
               // Execute callback
               if (config && config.onSuccess) {
+				console.debug('Service worker: Triggering onSuccess callback.', { config });
                 config.onSuccess(registration);
               }
             }
@@ -108,6 +132,7 @@ function checkValidServiceWorker(swUrl, config) {
         (contentType != null && contentType.indexOf('javascript') === -1)
       ) {
         // No service worker found. Probably a different app. Reload the page.
+        console.debug('No service worker found. Scheduling page reload.');
         navigator.serviceWorker.ready.then(registration => {
           registration.unregister().then(() => {
             window.location.reload();
@@ -115,6 +140,7 @@ function checkValidServiceWorker(swUrl, config) {
         });
       } else if ([500, 503].includes(response.status)) {
         // Kubernetes went into meltdown again. Let's just leave it for now...
+        console.debug(`Service worker check failed with HTTP ${response.status} response. Doing nothing.`);
         return;
       } else {
         // Service worker found. Proceed as normal.
@@ -130,6 +156,7 @@ function checkValidServiceWorker(swUrl, config) {
 
 export function unregister() {
   if ('serviceWorker' in navigator) {
+	console.debug('Unregistering service worker...');
     navigator.serviceWorker.ready.then(registration => {
       registration.unregister();
     });
