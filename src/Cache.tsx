@@ -65,7 +65,7 @@ class Cache {
 				
 				return resolve(value);
 			} catch (ex) {
-				console.error(ex);
+				console.error(ex.name, ex);
 				return reject(ex);
 			}
 		});
@@ -80,6 +80,7 @@ class Cache {
 				
 				return resolve(this.set(key, value, ttl));
 			} catch (ex) {
+				console.error(ex.name, ex);
 				return reject(ex);
 			}
 		});

@@ -18,7 +18,7 @@ import SetTheme from './modal/SetTheme';
 import Toast from './Toast';
 import {repeat} from "./utils";
 import RetrospectiveContext from './RetrospectiveContext';
-import {useLocalStorage} from "./useCache";
+import useCache, {useLocalStorage} from "./useCache";
 
 const trimSlashes = str => str.replace(/^\//, '').replace(/\/$/, '');
 const getRetroIdFromUrl = () => {
@@ -54,7 +54,8 @@ const initialData = {
 	...cache.get(RETRO_ID)
 };
 const getAuthHeaders = () => ({
-	[HEADERS.TOKEN]: cache.get(`${RETRO_ID}:token`)
+	[HEADERS.TOKEN]: cache.get(`${RETRO_ID}:token`),
+	[HEADERS.ADMIN_KEY]: cache.get(`admin_key`)
 });
 
 function App() {
@@ -69,8 +70,18 @@ function App() {
 	const [page, setPage] = useState(PAGES.RETROSPECTIVE);
 	const [modal, setModal] = useState(null);
 	const [lastSetAccessKey, setLastSetAccessKey] = useState(null);
+	const [adminKey, setAdminKey] = useCache('admin_key', null);
 	const [advancedMode, setAdvancedMode] = useLocalStorage('advanced_mode', false);
-	window.therebedragons = () => setAdvancedMode(true);
+	window.therebedragons = (adminKey = null) => {
+		if (adminKey) {
+			setAdminKey(adminKey);
+		}
+		setAdvancedMode(true);
+	};
+	window.imafraidofthedragonspleasemakethemgoaway = () => {
+		setAdminKey(null);
+		setAdvancedMode(false);
+	};
 
 	const updateTitle = title => {
 		httpPut(`${API_BASE}/title`, {title}, getAuthHeaders())
@@ -195,7 +206,7 @@ function App() {
 							<li onClick={() => setModal(MODALS.EXPORT)}>Export</li>
 							<li onClick={() => setModal(MODALS.SET_THEME)}>Change theme</li>
 							<li onClick={() => setModal(MODALS.SET_ACCESS_KEY)}>Set access key</li>
-							{advancedMode &&
+							{advancedMode && adminKey &&
 							<li onClick={() => fetch(`${API_BASE}/_actions`, {
 								headers: getAuthHeaders()
 							})

@@ -21,7 +21,7 @@ const Retrospective = ({
 						getAuthHeaders,
 						setPage,
 					   }) => {
-	const { apiBaseUrl, retroId, lastSetAccessKey } = useContext(RetrospectiveContext);
+	const { apiBaseUrl, retroId, lastSetAccessKey, advancedMode } = useContext(RetrospectiveContext);
 	
 	const [autorefresh, setAutorefresh] = useState(true);
 	const [autorefreshInterval, setAutorefreshInterval] = useState(1000);
@@ -181,6 +181,16 @@ const Retrospective = ({
 			} else if (message.data.toLowerCase().startsWith('pong ')) {
 				return;
 			} else if (message.data.toLowerCase().startsWith('connected_to ')) {
+				if (!advancedMode) {
+					return;
+				}
+
+				const nodeName = message.data.substr(1).trim();
+				
+				addToast(`Connected to: ${nodeName}`, {
+					appearance: 'info',
+					autoDismiss: true,
+				});
 				return;
 			} else if (message.data.toLowerCase().startsWith('participants ')) {
 				const n = parseInt(message.data.replace(/^participants\s+/i, ''));
@@ -196,9 +206,13 @@ const Retrospective = ({
 				setLatency(x);
 				return;
 			} else if (message.data.startsWith('#')) {
-				const text = message.data.substr(1).trim();
+				if (!advancedMode) {
+					return;
+				}
 
-				addToast(text, {
+				const nodeName = message.data.substr(1).trim();
+
+				addToast(`Connected to: ${nodeName}`, {
 					appearance: 'info',
 					autoDismiss: true,
 				});

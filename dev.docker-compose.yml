@@ -38,6 +38,7 @@ services:
       REDIS_URL: 'redis://redis'
       WEBSOCKET_PUBLIC_BASE_URL: 'ws://localhost:5433/'
       PORT: 5432
+      ADMIN_KEY: 'i_am_root'
     depends_on:
       database:
         condition: service_healthy
@@ -90,7 +91,7 @@ services:
     command:
       - npm
       - run
-      - build-start
+      - start
       - --host
       - 0.0.0.0
     healthcheck:

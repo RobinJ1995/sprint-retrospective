@@ -18,7 +18,8 @@ const THEMES = Object.freeze({
 	COLOURFUL: 'colourful'
 });
 const HEADERS = Object.freeze({
-	TOKEN: 'X-Token'
+	TOKEN: 'X-Token',
+	ADMIN_KEY: 'X-Admin-Key'
 });
 const PAGES = Object.freeze({
 	RETROSPECTIVE: 'retro',
