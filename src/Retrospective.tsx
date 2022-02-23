@@ -185,7 +185,7 @@ const Retrospective = ({
 					return;
 				}
 
-				const nodeName = message.data.substr(1).trim();
+				const nodeName = message.data.replace(/^connected_to\s+/i, '');
 				
 				addToast(`Connected to: ${nodeName}`, {
 					appearance: 'info',
