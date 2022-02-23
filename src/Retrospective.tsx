@@ -27,7 +27,7 @@ const Retrospective = ({
 	const [autorefreshInterval, setAutorefreshInterval] = useState(1000);
 	const [nParticipants, setNParticipants] = useState(null);
 	const [participantAvatars, setParticipantAvatars] = useState([]);
-	const [latency, setLatency] = useState(null);
+	const [latency, setLatency] = useState<number | null>(null);
 	const [myVotes, setMyVotes] = useCache(`${retroId}:votes`, []);
 
 	const websocket = useRef(null);
@@ -358,6 +358,8 @@ const Retrospective = ({
 		{nParticipants &&
 			<div id="stats-n-participants">
 				<span>{participantAvatars.map(avatar => <span role="img">{avatar}</span>)}</span>
+				{advancedMode && latency &&
+					<span className={`latency ${latency > 100 ? 'bad' : ''}`}>{latency}ms</span>}
 			</div>}
 	</article>;
 };
