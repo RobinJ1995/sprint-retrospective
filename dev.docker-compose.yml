@@ -17,6 +17,11 @@ services:
     restart: always
     ports:
       - '6379'
+    healthcheck:
+      test: redis-cli ping
+      interval: 1s
+      timeout: 2s
+      retries: 10
 
   api:
     build: https://github.com/RobinJ1995/sprint-retrospective-server.git
@@ -29,10 +34,18 @@ services:
       WEBSOCKET_PUBLIC_BASE_URL: 'ws://localhost:5433/'
       PORT: 5432
     depends_on:
-      - database
-      - redis
-      - websocket
+      database:
+        condition: service_started
+      redis:
+        condition: service_healthy
+      websocket:
+        condition: service_healthy
     restart: always
+    healthcheck:
+      test: curl --fail http://localhost:5432/health
+      interval: 1s
+      timeout: 2s
+      retries: 10
 
   websocket:
     build: https://github.com/RobinJ1995/sprint-retrospective-websocket-server.git
@@ -43,8 +56,14 @@ services:
       REDIS_URL: 'redis://redis'
       PORT: 5433
     depends_on:
-      - redis
+      redis:
+        condition: service_healthy
     restart: always
+    healthcheck:
+      test: curl http://localhost:5433/
+      interval: 1s
+      timeout: 2s
+      retries: 10
 
   frontend:
     build:
@@ -56,7 +75,8 @@ services:
     ports:
       - 5431:3000
     depends_on:
-      - api
+      api:
+        condition: service_healthy
     restart: always
     stdin_open: true
     volumes:
@@ -66,6 +86,11 @@ services:
       - start
       - --host
       - 0.0.0.0
+    healthcheck:
+      test: curl --fail http://localhost:3000/
+      interval: 1s
+      timeout: 2s
+      retries: 10
 
 volumes:
   data-mongo:
