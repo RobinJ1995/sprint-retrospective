@@ -24,6 +24,7 @@
     "uuid": "^8.3.2"
   },
   "scripts": {
+    "build-start": "npm install --dev && npm start",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",

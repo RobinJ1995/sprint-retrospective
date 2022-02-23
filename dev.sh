@@ -2,7 +2,13 @@
 set -e
 
 docker-compose -f dev.docker-compose.yml build --pull --parallel
-docker-compose -f dev.docker-compose.yml up &
+if [[ ! -z "${TAIL_LOGS_FROM_ALL_CONTAINERS}" ]]
+then
+  docker-compose -f dev.docker-compose.yml up &
+else
+  docker-compose -f dev.docker-compose.yml up -d
+  docker-compose -f dev.docker-compose.yml logs -f frontend &
+fi
 
 echo "Probing http://localhost:5431..."
 while ! curl http://localhost:5431 &> /dev/null; do

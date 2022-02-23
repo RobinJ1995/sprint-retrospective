@@ -11,6 +11,11 @@ services:
     volumes:
       - data-mongo:/var/lib/mongodb
     restart: always
+    healthcheck:
+      test: mongo --eval 'db.runCommand("ping").ok' --quiet
+      interval: 1s
+      timeout: 2s
+      retries: 10
 
   redis:
     image: 'redis'
@@ -35,7 +40,7 @@ services:
       PORT: 5432
     depends_on:
       database:
-        condition: service_started
+        condition: service_healthy
       redis:
         condition: service_healthy
       websocket:
@@ -72,6 +77,7 @@ services:
     working_dir: /app
     environment:
       API_ENDPOINT: 'http://localhost:5432'
+      GENERATE_SOURCEMAP: 'false' # Because Docker on MacOS is a shit show
     ports:
       - 5431:3000
     depends_on:
@@ -83,7 +89,8 @@ services:
       - ./:/app:z
     command:
       - npm
-      - start
+      - run
+      - build-start
       - --host
       - 0.0.0.0
     healthcheck:
