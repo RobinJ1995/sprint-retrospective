@@ -1,7 +1,24 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import ModalContext from './ModalContext';
+import {KEY} from "./constants";
 
 const Modal = ({ children, closeable = false, closeModal = null }) => {
+	const closeByHittingEscapeKeyHandler = e => {
+		if (e.key === KEY.ESCAPE) {
+			closeModal();
+		}
+	};
+
+	useEffect(() => {
+		if (!closeable) {
+			return;
+		}
+
+		window.addEventListener('keydown', closeByHittingEscapeKeyHandler);
+
+		return () => window.removeEventListener('keydown', closeByHittingEscapeKeyHandler)
+	})
+
 	return (<div class="modal">
 		{closeable &&
 		<div
