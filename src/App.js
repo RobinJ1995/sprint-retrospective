@@ -16,7 +16,6 @@ import SetAccessKey from './modal/SetAccessKey';
 import Export from './modal/Export';
 import SetTheme from './modal/SetTheme';
 import Toast from './Toast';
-import {repeat} from "./utils";
 import RetrospectiveContext from './RetrospectiveContext';
 import useCache, {useLocalStorage} from "./useCache";
 import ForkMeOnGithub from 'fork-me-on-github';
@@ -58,6 +57,13 @@ const getAuthHeaders = () => ({
 	[HEADERS.TOKEN]: cache.get(`${RETRO_ID}:token`),
 	[HEADERS.ADMIN_KEY]: cache.get(`admin_key`)
 });
+
+try {
+	cache.prune()
+		.catch(ex => console.error('Failed to prune cache.', ex));
+} catch (ex) {
+	console.error('Failed to prune cache.', ex);
+}
 
 function App() {
 	const [good, setGood] = useState(initialData.good);

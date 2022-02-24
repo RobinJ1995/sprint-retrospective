@@ -22,20 +22,32 @@ class Cache {
 		}
 	}
 	
-	hasExpired(key: string) : boolean {
+	hasExpired(key: string, purgeIfExpired: boolean = false) : boolean {
 		if (this.ttl[key] && this.ttl[key] > Date.now()) {
 			return false;
+		} else if (this.ttl[key] === undefined && this.data[key] === undefined) {
+			// Key doesn't exist.
+			return false;
+		} else if (this.ttl[key] === undefined || this.data[key] === undefined) {
+			console.warn('Cache key "${key}" has either value or TTL instead of both. Deleting key from both.');
+			this.remove(key);
+			return false;
 		}
-		
-		this.remove(key);
-		
+
+		if (purgeIfExpired) {
+			console.debug(`Cache key ${key} has expired. Removing...`);
+			this.remove(key)
+				.then(() => console.log(`Cache key deleted: ${key}`))
+				.catch(console.error);
+		}
+
 		return true;
 	}
 	
 	get<T>(key : string, fallback : T = null) : T {
 		const value = this.data[key];
 		
-		if (this.hasExpired(key) || value == null) {
+		if (this.hasExpired(key, true) || value == null) {
 			return fallback;
 		}
 		
@@ -86,15 +98,17 @@ class Cache {
 		});
 	}
 	
-	remove(key : string) : Promise<void> {
+	remove(key : string, commit: boolean = true) : Promise<void> {
 		return new Promise((resolve, reject) => {
 			try {
 				delete this.data[key];
 				delete this.ttl[key];
 				delete this.json[key];
-				
-				this.commit();
-				
+
+				if (commit) {
+					this.commit();
+				}
+
 				return resolve();
 			} catch (ex) {
 				return reject(ex);
@@ -105,13 +119,15 @@ class Cache {
 	prune() : Promise<boolean> {
 		return new Promise((resolve, reject) => {
 			try {
-				if (Object.keys(this.data).map(this.hasExpired).some(expired => !!expired)) {
-					this.commit();
-					
-					return resolve(true);
+				const expiredCacheKeys = Object.keys(this.data).filter(key => this.hasExpired(key, false));
+				if (expiredCacheKeys.length === 0) {
+					return resolve(false);
 				}
-				
-				return resolve(false);
+
+				console.log(`Found ${expiredCacheKeys.length} expired cache entries. Removing...`);
+				return Promise.all(expiredCacheKeys.map(key => this.remove(key, false)))
+					.then(() => this.commit())
+					.then(() => resolve(true));
 			} catch (ex) {
 				return reject(ex);
 			}
