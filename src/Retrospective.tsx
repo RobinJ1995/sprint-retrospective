@@ -336,12 +336,19 @@ const Retrospective = ({
 
 	useInterval(() => {
 		if (!isWebsocketConnected()) {
+			setParticipantsTypingIn([]);
+			setLatency(null);
+			setNParticipants(null);
+			setParticipantAvatars([]);
+			setAutorefreshInterval(1000);
 			return;
 		}
 
 		setLastPingSentTimestamp(new Date().getTime());
 		wsSend(`PING ${uuid()}`);
-	}, advancedMode ? 2000 : 8000, false, [setLastPingSentTimestamp, advancedMode]);
+	}, advancedMode ? 2000 : 8000, false, [
+		setLastPingSentTimestamp, advancedMode, setParticipantsTypingIn, setLatency, setNParticipants,
+		setParticipantAvatars, setAutorefreshInterval]);
 
 	// When websocket URL changes, disconnect and connect to it.
 	useEffect(() => {
