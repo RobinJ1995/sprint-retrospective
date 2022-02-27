@@ -238,3 +238,15 @@
 		max-height: unset;
 	}
 }
+
+@keyframes new-item-participant-typing {
+	0% {
+		opacity: 1;
+	}
+	50% {
+		opacity: 0.9;
+	}
+	100% {
+		opacity: 1;
+	}
+}

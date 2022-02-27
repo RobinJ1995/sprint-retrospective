@@ -3,12 +3,13 @@ import useInterval from './useInterval';
 import { useToasts } from 'react-toast-notifications';
 import { v4 as uuid } from 'uuid';
 import List from './List';
-import {PAGES, SECTIONS, WS_ACTIONS} from './constants';
+import {PAGES, SECTIONS, SECTIONS_MAP_PLURALISED, WS_ACTIONS} from './constants';
 import {checkHttpStatus, httpCheckParse, httpDelete, httpPatch, httpPost, repeat} from './utils';
 import RetrospectiveContext from "./RetrospectiveContext";
 import RetrospectiveSection from "./type/RetrospectiveSection";
 import useCache from "./useCache";
 import sentence from '@fakerjs/sentence';
+import WebsocketContext from "./WebsocketContext";
 
 const Retrospective = ({
 						good, setGood,
@@ -31,6 +32,7 @@ const Retrospective = ({
 	const [latency, setLatency] = useState<number | null>(null);
 	const [lastPingSentTimestamp, setLastPingSentTimestamp] = useState<number | null>(null);
 	const [myVotes, setMyVotes] = useCache(`${retroId}:votes`, []);
+	const [participantsTypingIn, setParticipantsTypingIn] = useState([]); // Which fields participants are currently typing in.
 
 	const websocket = useRef(null);
 	const isWebsocketConnected = useCallback(() : boolean => websocketUrl && websocket.current && websocket.current.readyState === WebSocket.OPEN, [websocket, websocketUrl]);
@@ -243,6 +245,25 @@ const Retrospective = ({
 				const x = parseInt(message.data.replace(/^latency\s+/i, ''));
 				setLatency(x);
 				return;
+			} else if (message.data.toLowerCase().startsWith('typing ')) {
+				const args : string[] = message.data.replace(/\n/, '')
+					.split(/\s+/);
+				if (args.length != 4) {
+					console.warn(`Got TYPING message but ${args.length} arguments instead of the expected 4.`, { message });
+					return;
+				}
+
+				const who = String(args[1]).toLowerCase();
+				const what = String(args[2]).toLowerCase();
+				const where = String(args[3]).toLowerCase();
+
+				if (['start', 'still'].includes(what)) {
+					setParticipantsTypingIn([...participantsTypingIn, where]);
+				} else if (what === 'stop') {
+					setParticipantsTypingIn(participantsTypingIn.filter(x => x !== where));
+				}
+
+				return;
 			} else if (message.data.startsWith('#')) {
 				if (!advancedMode) {
 					return;
@@ -378,54 +399,60 @@ const Retrospective = ({
 	}, [wsHandle, setAutorefresh, setAutorefreshInterval, setWebsocketUrl])
 
 	return <article>
-		<section id="good">
-			<h2>What went well <span className="emoji" role="img" aria-label="">🤩</span></h2>
-			<List
-				section={SECTIONS.GOOD}
-				items={good}
-				addItem={addGood}
-				voteMode={voteMode}
-				myVotes={myVotes}
-				upvoteItem={id => upvoteItem(id, 'good')}
-				downvoteItem={id => downvoteItem(id, 'good')}
-				updateItemText={(id, text) => updateItemText('good', id, text)}
-				deleteItem={id => deleteItem('good', id)}
-			/>
-		</section>
-		<section id="bad">
-			<h2>What could we improve <span className="emoji" role="img" aria-label="">🤨</span></h2>
-			<List
-				section={SECTIONS.BAD}
-				items={bad}
-				addItem={addBad}
-				voteMode={voteMode}
-				myVotes={myVotes}
-				upvoteItem={id => upvoteItem(id, 'bad')}
-				downvoteItem={id => downvoteItem(id, 'bad')}
-				updateItemText={(id, text) => updateItemText('bad', id, text)}
-				deleteItem={id => deleteItem('bad', id)}
-			/>
-		</section>
-		<section id="actions">
-			<h2>Actions for next sprint <span className="emoji" role="img" aria-label="">☑️</span></h2>
-			<List
-				section={SECTIONS.ACTION}
-				items={actions}
-				addItem={addAction}
-				voteMode={voteMode}
-				myVotes={myVotes}
-				upvoteItem={id => upvoteItem(id, 'action')}
-				downvoteItem={id => downvoteItem(id, 'action')}
-				updateItemText={(id, text) => updateItemText('action', id, text)}
-				deleteItem={id => deleteItem('action', id)}
-			/>
-		</section>
-		{nParticipants &&
-			<div id="stats-n-participants">
-				<span>{participantAvatars.map(avatar => <span role="img">{avatar}</span>)}</span>
-				{advancedMode && latency &&
-					<span className={`latency ${latency > 100 ? 'bad' : ''}`}>{latency}ms</span>}
-			</div>}
+		<WebsocketContext.Provider
+			value={{ wsSend }}>
+			<section id="good">
+				<h2>What went well <span className="emoji" role="img" aria-label="">🤩</span></h2>
+				<List
+					section={SECTIONS.GOOD}
+					items={good}
+					addItem={addGood}
+					voteMode={voteMode}
+					myVotes={myVotes}
+					upvoteItem={id => upvoteItem(id, 'good')}
+					downvoteItem={id => downvoteItem(id, 'good')}
+					updateItemText={(id, text) => updateItemText('good', id, text)}
+					deleteItem={id => deleteItem('good', id)}
+					participantTypingNewItem={participantsTypingIn.includes(SECTIONS_MAP_PLURALISED[SECTIONS.GOOD])}
+				/>
+			</section>
+			<section id="bad">
+				<h2>What could we improve <span className="emoji" role="img" aria-label="">🤨</span></h2>
+				<List
+					section={SECTIONS.BAD}
+					items={bad}
+					addItem={addBad}
+					voteMode={voteMode}
+					myVotes={myVotes}
+					upvoteItem={id => upvoteItem(id, 'bad')}
+					downvoteItem={id => downvoteItem(id, 'bad')}
+					updateItemText={(id, text) => updateItemText('bad', id, text)}
+					deleteItem={id => deleteItem('bad', id)}
+					participantTypingNewItem={participantsTypingIn.includes(SECTIONS_MAP_PLURALISED[SECTIONS.BAD])}
+				/>
+			</section>
+			<section id="actions">
+				<h2>Actions for next sprint <span className="emoji" role="img" aria-label="">☑️</span></h2>
+				<List
+					section={SECTIONS.ACTION}
+					items={actions}
+					addItem={addAction}
+					voteMode={voteMode}
+					myVotes={myVotes}
+					upvoteItem={id => upvoteItem(id, 'action')}
+					downvoteItem={id => downvoteItem(id, 'action')}
+					updateItemText={(id, text) => updateItemText('action', id, text)}
+					deleteItem={id => deleteItem('action', id)}
+					participantTypingNewItem={participantsTypingIn.includes(SECTIONS_MAP_PLURALISED[SECTIONS.ACTION])}
+				/>
+			</section>
+			{nParticipants &&
+				<div id="stats-n-participants">
+					<span>{participantAvatars.map(avatar => <span role="img">{avatar}</span>)}</span>
+					{advancedMode && latency &&
+						<span className={`latency ${latency > 100 ? 'bad' : ''}`}>{latency}ms</span>}
+				</div>}
+		</WebsocketContext.Provider>
 	</article>;
 };
 

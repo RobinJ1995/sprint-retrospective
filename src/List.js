@@ -1,6 +1,13 @@
-import React, {useMemo, useState} from 'react';
+import React, {useContext, useMemo, useState} from 'react';
 import Item from './Item';
-import {ITEM_TEXT_MAX_LENGTH, ITEM_TEXT_MIN_LENGTH, VOTE_MODES} from './constants';
+import {
+	ITEM_TEXT_MAX_LENGTH,
+	ITEM_TEXT_MIN_LENGTH,
+	VOTE_MODES,
+	TIMEOUT_MS_BEFORE_TYPING_STOP_NOTIFICATION_SENT, SECTIONS_MAP_PLURALISED
+} from './constants';
+import WebsocketContext from "./WebsocketContext";
+import useInterval from "./useInterval";
 
 function List({
 				  section,
@@ -8,9 +15,18 @@ function List({
 				  addItem, updateItemText, deleteItem,
 				  upvoteItem, downvoteItem,
 				  voteMode,
-				  myVotes
+				  myVotes,
+				  participantTypingNewItem
 			  }) {
+	const { wsSend } = useContext(WebsocketContext);
+
 	const [newItemText, setNewItemText] = useState('');
+	const [newItemLastKeypress, setNewItemLastKeypress] = useState(null);
+	const placeholder = participantTypingNewItem
+		? 'Someone is typing...'
+		: 'Add new item...';
+
+	const sectionPluralised = SECTIONS_MAP_PLURALISED[section];
 
 	const submit = e => {
 		e.preventDefault();
@@ -23,6 +39,20 @@ function List({
 			.then(() => setNewItemText(''))
 			.catch(window.alert);
 	};
+
+	useInterval(() => {
+		const now = new Date();
+
+		if (!newItemLastKeypress) {
+			return;
+		} else if ((now.getTime() - newItemLastKeypress.getTime()) > TIMEOUT_MS_BEFORE_TYPING_STOP_NOTIFICATION_SENT) {
+			wsSend(`TYPING STOP ${sectionPluralised}`);
+			setNewItemLastKeypress(null);
+		}
+	},
+		Math.min(1000, TIMEOUT_MS_BEFORE_TYPING_STOP_NOTIFICATION_SENT),
+		false,
+		[newItemLastKeypress, setNewItemLastKeypress]);
 
 	const sortedItems = useMemo(() => items.map(item => ({
 			up: item.up || 0,
@@ -62,18 +92,28 @@ function List({
 					updateText={text => updateItemText(id, text)}
 					deleteItem={() => deleteItem(id)}
 				>{text}</Item>)}
-			<li className="newItem">
+			<li className={`newItem ${participantTypingNewItem ? 'participantTyping' : ''}`}>
 				<div className="item-content-main">
 					<form onSubmit={submit}>
 						<input
 							type="text"
-							placeholder="Add new item..."
+							placeholder={placeholder}
 							value={newItemText}
 							onChange={e => setNewItemText(e.target.value)}
 							minLength={ITEM_TEXT_MIN_LENGTH}
 							maxLength={ITEM_TEXT_MAX_LENGTH}
 							required
 							aria-label="Add new item"
+							onKeyDown={e => {
+								if (newItemLastKeypress && ((new Date().getTime() - newItemLastKeypress.getTime()) <= 250)) {
+									// Don't flood the websocket too much.
+									return;
+								}
+
+								setNewItemLastKeypress(new Date());
+								wsSend(`TYPING ${e.target?.value?.length > 0 ? 'STILL' : 'START'} ${sectionPluralised}`);
+							}}
+							onBlur={() => wsSend(`TYPING STOP ${sectionPluralised}`)}
 						/>
 						<div className="markdown-formatting-hint">
 							<span>Markdown formatting supported:</span>

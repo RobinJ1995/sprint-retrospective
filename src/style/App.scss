@@ -286,6 +286,10 @@ article {
 						}
 					}
 				}
+
+				&.participantTyping {
+					animation: new-item-participant-typing 2s infinite;
+				}
 			}
 
 			&.has-comments {

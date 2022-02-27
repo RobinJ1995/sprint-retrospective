@@ -42,6 +42,12 @@ const SECTIONS = Object.freeze({
 	BAD: 'bad',
 	ACTION: 'action'
 });
+const SECTIONS_MAP_PLURALISED = Object.freeze({ // Why didn't I just keep it consistent from the start...
+	[SECTIONS.GOOD]: 'good',
+	[SECTIONS.BAD]: 'bad',
+	[SECTIONS.ACTION]: 'actions'
+});
+const TIMEOUT_MS_BEFORE_TYPING_STOP_NOTIFICATION_SENT = 5000;
 
 export {
 	VOTE_MODES,
@@ -58,5 +64,7 @@ export {
 	PAGES,
 	MODALS,
 	WS_ACTIONS,
-	SECTIONS
+	SECTIONS,
+	TIMEOUT_MS_BEFORE_TYPING_STOP_NOTIFICATION_SENT,
+	SECTIONS_MAP_PLURALISED
 };
