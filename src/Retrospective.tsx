@@ -8,6 +8,7 @@ import {checkHttpStatus, httpCheckParse, httpDelete, httpPatch, httpPost, repeat
 import RetrospectiveContext from "./RetrospectiveContext";
 import RetrospectiveSection from "./type/RetrospectiveSection";
 import useCache from "./useCache";
+import Promise from 'bluebird';
 
 const Retrospective = ({
 						good, setGood,
@@ -99,6 +100,23 @@ const Retrospective = ({
 			getAuthHeaders())
 		.then(checkHttpStatus)
 		.catch(alert);
+
+	// Hidden dev methods
+	useEffect(() => {
+		(window as any).wipeThisEntireRetroIOnlyUsedItForTestingPurposes = () => {
+			if (confirm('Are you sure you want to wipe out this entire retrospective?')) {
+				Promise.all([
+					...good.map(item => [SECTIONS.GOOD, item.id]),
+					...bad.map(item => [SECTIONS.BAD, item.id]),
+					...actions.map(item => [SECTIONS.ACTION, item.id])
+				].map(([section, id]) => deleteItem(section, id)))
+					.then(() => refreshState())
+					.then(() => Promise.delay(1000))
+					.then(() => alert('Poof! It\'s all gone!'))
+					.catch(alert);
+			}
+		}
+	}, [good, bad, actions, deleteItem])
 
 	const authRequired = () => {
 		setAutorefresh(false);

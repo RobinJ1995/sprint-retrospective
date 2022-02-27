@@ -3,7 +3,7 @@ ARG API_ENDPOINT=https://api.sprintretrospective.eu
 
 WORKDIR /app
 COPY package.json package-lock.json ./
-RUN npm install
+RUN npm ci
 
 COPY . .
 ENV REACT_APP_API_ENDPOINT=${API_ENDPOINT}

@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import './style/App.scss';
 import {v4 as uuid} from 'uuid';
 import { ToastProvider } from 'react-toast-notifications';
@@ -79,16 +79,20 @@ function App() {
 	const [lastSetAccessKey, setLastSetAccessKey] = useState(null);
 	const [adminKey, setAdminKey] = useCache('admin_key', null);
 	const [advancedMode, setAdvancedMode] = useLocalStorage('advanced_mode', false);
-	window.herebedragons = (adminKey = null) => {
-		if (adminKey) {
-			setAdminKey(adminKey);
-		}
-		setAdvancedMode(true);
-	};
-	window.imafraidofthedragonspleasemakethemgoaway = () => {
-		setAdminKey(null);
-		setAdvancedMode(false);
-	};
+
+	// Hidden dev methods
+	useEffect(() => {
+		window.hereBeDragons = (adminKey = null) => {
+			if (adminKey) {
+				setAdminKey(adminKey);
+			}
+			setAdvancedMode(true);
+		};
+		window.imAfraidOfTheDragonsPleaseMakeThemGoAway = () => {
+			setAdminKey(null);
+			setAdvancedMode(false);
+		};
+	}, [adminKey, setAdminKey, advancedMode, setAdvancedMode])
 
 	const updateTitle = title => {
 		httpPut(`${API_BASE}/title`, {title}, getAuthHeaders())
