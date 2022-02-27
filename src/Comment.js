@@ -1,7 +1,7 @@
 import Markdown from "./Markdown";
 import React, {useContext, useEffect, useState} from "react";
 import {ITEM_TEXT_MAX_LENGTH, ITEM_TEXT_MIN_LENGTH, KEY} from "./constants";
-import {checkHttpStatus, httpDelete, httpPatch, httpPost, httpPut} from "./utils";
+import {checkHttpStatus, httpDelete, httpPatch, httpPost} from "./utils";
 import RetrospectiveContext from "./RetrospectiveContext";
 
 const Comment = ({ id, children = '', section, itemId }) => {

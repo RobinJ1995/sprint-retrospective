@@ -200,6 +200,7 @@ function App() {
 			retroId: RETRO_ID,
 			lastSetAccessKey,
 			advancedMode,
+			debugLogging: advancedMode,
 			getAuthHeaders
 		}}>
 			<ToastProvider

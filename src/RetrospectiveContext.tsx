@@ -5,5 +5,6 @@ export default React.createContext({
     retroId: undefined,
     lastSetAccessKey: undefined,
     advancedMode: false,
+    debugLogging: false,
     getAuthHeaders: () => void 0
 });

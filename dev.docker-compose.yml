@@ -79,8 +79,10 @@ services:
     environment:
       API_ENDPOINT: 'http://localhost:5432'
       GENERATE_SOURCEMAP: 'false' # Because Docker on MacOS is a shit show
+      HOST: "0.0.0.0"
+      PORT: "5431"
     ports:
-      - 5431:3000
+      - 5431:5431
     depends_on:
       api:
         condition: service_healthy
@@ -92,10 +94,8 @@ services:
       - npm
       - run
       - start
-      - --host
-      - 0.0.0.0
     healthcheck:
-      test: curl --fail http://localhost:3000/
+      test: curl --fail http://localhost:5431/
       interval: 1s
       timeout: 2s
       retries: 10

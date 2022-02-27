@@ -29,7 +29,7 @@ class Cache {
 			// Key doesn't exist.
 			return false;
 		} else if (this.ttl[key] === undefined || this.data[key] === undefined) {
-			console.warn('Cache key "${key}" has either value or TTL instead of both. Deleting key from both.');
+			console.warn(`Cache key "${key}" has either value or TTL instead of both. Deleting key from both.`);
 			this.remove(key);
 			return false;
 		}

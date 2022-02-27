@@ -43,7 +43,7 @@ function List({
 			.sort((a, b) => a.text < b.text ? -1 : 1)
 			// Sort by total, descending
 			.sort((a, b) => a.total < b.total ? 1 : -1),
-		[items]);
+		[items, voteMode]);
 
 	return (
 		<ul class="items">

@@ -1,4 +1,4 @@
-import React, {useState, useRef, useEffect, useContext, useCallback} from 'react';
+import React, {useState, useRef, useEffect, useContext, useCallback, useMemo} from 'react';
 import useInterval from './useInterval';
 import { useToasts } from 'react-toast-notifications';
 import { v4 as uuid } from 'uuid';
@@ -8,7 +8,7 @@ import {checkHttpStatus, httpCheckParse, httpDelete, httpPatch, httpPost, repeat
 import RetrospectiveContext from "./RetrospectiveContext";
 import RetrospectiveSection from "./type/RetrospectiveSection";
 import useCache from "./useCache";
-import Promise from 'bluebird';
+import sentence from '@fakerjs/sentence';
 
 const Retrospective = ({
 						good, setGood,
@@ -22,7 +22,7 @@ const Retrospective = ({
 						getAuthHeaders,
 						setPage,
 					   }) => {
-	const { apiBaseUrl, retroId, lastSetAccessKey, advancedMode } = useContext(RetrospectiveContext);
+	const { apiBaseUrl, retroId, lastSetAccessKey, advancedMode, debugLogging } = useContext(RetrospectiveContext);
 	
 	const [autorefresh, setAutorefresh] = useState(true);
 	const [autorefreshInterval, setAutorefreshInterval] = useState(1000);
@@ -33,7 +33,7 @@ const Retrospective = ({
 	const [myVotes, setMyVotes] = useCache(`${retroId}:votes`, []);
 
 	const websocket = useRef(null);
-	const isWebsocketConnected = () : boolean => websocketUrl && websocket.current && websocket.current.readyState === WebSocket.OPEN;
+	const isWebsocketConnected = useCallback(() : boolean => websocketUrl && websocket.current && websocket.current.readyState === WebSocket.OPEN, [websocket, websocketUrl]);
 	const disconnectWebsocket = useCallback(() => {
 		websocket.current.close();
 		websocket.current = null;
@@ -101,23 +101,6 @@ const Retrospective = ({
 		.then(checkHttpStatus)
 		.catch(alert);
 
-	// Hidden dev methods
-	useEffect(() => {
-		(window as any).wipeThisEntireRetroIOnlyUsedItForTestingPurposes = () => {
-			if (confirm('Are you sure you want to wipe out this entire retrospective?')) {
-				Promise.all([
-					...good.map(item => [SECTIONS.GOOD, item.id]),
-					...bad.map(item => [SECTIONS.BAD, item.id]),
-					...actions.map(item => [SECTIONS.ACTION, item.id])
-				].map(([section, id]) => deleteItem(section, id)))
-					.then(() => refreshState())
-					.then(() => Promise.delay(1000))
-					.then(() => alert('Poof! It\'s all gone!'))
-					.catch(alert);
-			}
-		}
-	}, [good, bad, actions, deleteItem])
-
 	const authRequired = () => {
 		setAutorefresh(false);
 
@@ -132,7 +115,7 @@ const Retrospective = ({
 			})
 	};
 
-	const refreshState = () => fetch(apiBaseUrl, { headers: getAuthHeaders() })
+	const refreshState = useCallback(() => fetch(apiBaseUrl, { headers: getAuthHeaders() })
 		.catch(() => {
 			throw Error('Failed to retrieve retrospective.');
 		})
@@ -173,7 +156,39 @@ const Retrospective = ({
 					}
 				});
 		})
-		.catch(setError);
+		.catch(setError),
+		[apiBaseUrl, getAuthHeaders, authRequired, setGood, setBad, setActions, setTitle, setVoteMode,
+			setWebsocketUrl, setError, setError]);
+
+	// Hidden dev methods
+	useEffect(() => {
+		(window as any).wipeThisEntireRetroIOnlyUsedItForTestingPurposes = () => {
+			if (window.confirm('Are you sure you want to wipe out this entire retrospective?')) {
+				Promise.all([
+					...good.map(item => [SECTIONS.GOOD, item.id]),
+					...bad.map(item => [SECTIONS.BAD, item.id]),
+					...actions.map(item => [SECTIONS.ACTION, item.id])
+				].map(([section, id]) => deleteItem(section, id)))
+					.then(() => refreshState())
+					.catch(alert);
+			}
+		};
+
+		(window as any).fillUpThisRetroWithRandomCrap = () => {
+			if (window.confirm('Are you sure you want to fill up this retro with random items?')) {
+				const nGood = Math.ceil(Math.random() * 50);
+				const nBad = Math.ceil(Math.random() * 50);
+				const nActions = Math.ceil(Math.random() * 50);
+
+				Promise.all([
+					...Array(nGood).fill(true).map(() => sentence()).map(addGood),
+					...Array(nBad).fill(true).map(() => sentence()).map(addBad),
+					...Array(nActions).fill(true).map(() => sentence()).map(addAction)
+				]).then(() => refreshState())
+					.catch(alert);
+			}
+		}
+	}, [good, bad, actions, addGood, addBad, addAction, deleteItem, refreshState]);
 
 	const wsSend = useCallback(message => {
 		if (!websocket.current) {
@@ -296,7 +311,7 @@ const Retrospective = ({
 
 		refreshState().then(
 			() => setAutorefresh(true));
-	}, autorefreshInterval);
+	}, autorefreshInterval, false, [refreshState, autorefresh, setAutorefresh]);
 
 	useInterval(() => {
 		if (!isWebsocketConnected()) {
@@ -313,10 +328,17 @@ const Retrospective = ({
 			// There is no websocket URL to connect to.
 			return;
 		} else if (isWebsocketConnected()) {
+			if (debugLogging) {
+				console.debug('Still connected to an active/open websocket.', {
+					websocketUrl,
+					connected: isWebsocketConnected()
+				});
+			}
 			// Still connected to an active/open websocket.
 			return;
 		}
 
+		console.info(`🌐 Connecting to ${websocketUrl}...`);
 		const socket = new WebSocket(websocketUrl);
 		websocket.current = socket;
 
@@ -324,10 +346,13 @@ const Retrospective = ({
 			if (!websocket.current) {
 				return;
 			} else if (!isWebsocketConnected()) {
+				if (debugLogging) {
+					console.debug('Disconnecting from websocket...', {websocketUrl});
+				}
 				disconnectWebsocket();
 			}
 		};
-	}, [websocketUrl, setWebsocketUrl]);
+	}, [websocketUrl, setWebsocketUrl, isWebsocketConnected, disconnectWebsocket]);
 
 	// When websocket message handler or other dependencies change, update the handlers.
 	useEffect(() => {
