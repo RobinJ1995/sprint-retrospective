@@ -79,7 +79,7 @@ function App() {
 	const [lastSetAccessKey, setLastSetAccessKey] = useState(null);
 	const [adminKey, setAdminKey] = useCache('admin_key', null);
 	const [advancedMode, setAdvancedMode] = useLocalStorage('advanced_mode', false);
-	window.therebedragons = (adminKey = null) => {
+	window.herebedragons = (adminKey = null) => {
 		if (adminKey) {
 			setAdminKey(adminKey);
 		}
