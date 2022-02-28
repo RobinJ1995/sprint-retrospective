@@ -1,4 +1,4 @@
-import React, {useContext, useMemo, useState} from 'react';
+import React, {useContext, useMemo, useState, useCallback} from 'react';
 import Item from './Item';
 import {
 	ITEM_TEXT_MAX_LENGTH,
@@ -28,7 +28,7 @@ function List({
 
 	const sectionPluralised = SECTIONS_MAP_PLURALISED[section];
 
-	const submit = e => {
+	const submit = useCallback(e => {
 		e.preventDefault();
 
 		if (!newItemText) {
@@ -37,8 +37,13 @@ function List({
 
 		addItem(newItemText)
 			.then(() => setNewItemText(''))
+			.then(() => notifyTypingStopped())
 			.catch(window.alert);
-	};
+	}, [newItemText, setNewItemText]);
+
+	const notifyTypingStopped = useCallback(
+		() => wsSend(`TYPING STOP ${sectionPluralised}`),
+		[wsSend]);
 
 	useInterval(() => {
 		const now = new Date();
@@ -46,7 +51,7 @@ function List({
 		if (!newItemLastKeypress) {
 			return;
 		} else if ((now.getTime() - newItemLastKeypress.getTime()) > TIMEOUT_MS_BEFORE_TYPING_STOP_NOTIFICATION_SENT) {
-			wsSend(`TYPING STOP ${sectionPluralised}`);
+			notifyTypingStopped();
 			setNewItemLastKeypress(null);
 		}
 	},
@@ -111,9 +116,9 @@ function List({
 								}
 
 								setNewItemLastKeypress(new Date());
-								wsSend(`TYPING ${e.target?.value?.length > 0 ? 'STILL' : 'START'} ${sectionPluralised}`);
+								wsSend(`TYPING ${e.target?.value?.length > 1 ? 'STILL' : 'START'} ${sectionPluralised}`);
 							}}
-							onBlur={() => wsSend(`TYPING STOP ${sectionPluralised}`)}
+							onBlur={notifyTypingStopped}
 						/>
 						<div className="markdown-formatting-hint">
 							<span>Markdown formatting supported:</span>
