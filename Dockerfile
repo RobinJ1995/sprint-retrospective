@@ -1,5 +1,5 @@
 FROM node:15 AS build
-ARG API_ENDPOINT=https://api.sprintretrospective.eu
+ARG API_ENDPOINT=https://api.sprintretro.app
 
 WORKDIR /app
 COPY package.json package-lock.json ./
