@@ -23,7 +23,14 @@ const Retrospective = ({
 						getAuthHeaders,
 						setPage,
 					   }) => {
-	const { apiBaseUrl, retroId, lastSetAccessKey, advancedMode, debugLogging } = useContext(RetrospectiveContext);
+	const {
+		apiBaseUrl,
+		retroId,
+		lastSetAccessKey,
+		advancedMode,
+		debugLogging,
+		showErrorToast
+	} = useContext(RetrospectiveContext);
 	
 	const [autorefresh, setAutorefresh] = useState(true);
 	const [autorefreshInterval, setAutorefreshInterval] = useState(1000);
@@ -95,13 +102,14 @@ const Retrospective = ({
 		httpPatch(`${apiBaseUrl}/${type}/${id}`,
 			{text},
 			getAuthHeaders())
-		.then(checkHttpStatus);
+		.then(checkHttpStatus)
+		.catch(err => showErrorToast(`Failed to update item: ${err?.message}`));
 
 	const deleteItem = (type: RetrospectiveSection, id: string) =>
 		httpDelete(`${apiBaseUrl}/${type}/${id}`,
 			getAuthHeaders())
 		.then(checkHttpStatus)
-		.catch(alert);
+		.catch(err => showErrorToast(`Failed to delete item: ${err?.message}`));
 
 	const authRequired = () => {
 		setAutorefresh(false);
@@ -269,9 +277,9 @@ const Retrospective = ({
 					return;
 				}
 
-				const nodeName = message.data.substr(1).trim();
+				const websocketMessage = message.data.substr(1).trim();
 
-				addToast(`Connected to: ${nodeName}`, {
+				addToast(websocketMessage, {
 					appearance: 'info',
 					autoDismiss: true,
 				});

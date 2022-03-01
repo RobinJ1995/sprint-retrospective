@@ -6,5 +6,6 @@ export default React.createContext({
     lastSetAccessKey: undefined,
     advancedMode: false,
     debugLogging: false,
-    getAuthHeaders: () => void 0
+    getAuthHeaders: () => void 0,
+    showErrorToast: (message: string, autoDismiss: boolean = true) => void 0
 });

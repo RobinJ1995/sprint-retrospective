@@ -1,7 +1,7 @@
 import React from 'react';
 
-const Toast = ({ children }) => (
-	<div class="toast">{children}</div>
+const Toast = ({ children, appearance }) => (
+	<div class={`toast ${appearance}`}>{children}</div>
 );
 
 export default Toast;

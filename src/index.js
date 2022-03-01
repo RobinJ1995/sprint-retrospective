@@ -5,8 +5,16 @@ import App from './App';
 import Updater from './Updater';
 import * as serviceWorkerRegistration from './serviceWorkerRegistration';
 import reportWebVitals from './reportWebVitals';
+import Toast from "./Toast";
+import {ToastProvider} from "react-toast-notifications";
 
-ReactDOM.render(<App />, document.getElementById('root'));
+ReactDOM.render(
+	<ToastProvider
+		components={{Toast}}
+		autoDismissTimeout={5_000}>
+		<App/>
+	</ToastProvider>,
+	document.getElementById('root'));
 
 serviceWorkerRegistration.register({
     onUpdate: registration => {

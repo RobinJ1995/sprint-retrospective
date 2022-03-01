@@ -8,6 +8,7 @@ import {
 } from './constants';
 import WebsocketContext from "./WebsocketContext";
 import useInterval from "./useInterval";
+import RetrospectiveContext from "./RetrospectiveContext";
 
 function List({
 				  section,
@@ -18,6 +19,7 @@ function List({
 				  myVotes,
 				  participantTypingNewItem
 			  }) {
+	const { showErrorToast } = useContext(RetrospectiveContext);
 	const { wsSend } = useContext(WebsocketContext);
 
 	const [newItemText, setNewItemText] = useState('');
@@ -38,12 +40,12 @@ function List({
 		addItem(newItemText)
 			.then(() => setNewItemText(''))
 			.then(() => notifyTypingStopped())
-			.catch(window.alert);
+			.catch(err => showErrorToast(`Failed to add new item: ${err?.message}`));
 	}, [newItemText, setNewItemText]);
 
 	const notifyTypingStopped = useCallback(
 		() => wsSend(`TYPING STOP ${sectionPluralised}`),
-		[wsSend]);
+		[wsSend, sectionPluralised]);
 
 	useInterval(() => {
 		const now = new Date();

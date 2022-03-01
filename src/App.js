@@ -1,7 +1,7 @@
-import React, {useEffect, useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import './style/App.scss';
 import {v4 as uuid} from 'uuid';
-import { ToastProvider } from 'react-toast-notifications';
+import {ToastProvider, useToasts} from 'react-toast-notifications';
 import {VOTE_MODES, PATH_MAX_LENGTH, THEMES, HEADERS, PAGES, MODALS} from './constants';
 import cache from './Cache';
 import {checkHttpStatus, copyToClipboard, httpCheckParse, httpPost, httpPut} from './utils';
@@ -79,6 +79,16 @@ function App() {
 	const [lastSetAccessKey, setLastSetAccessKey] = useState(null);
 	const [adminKey, setAdminKey] = useCache('admin_key', null);
 	const [advancedMode, setAdvancedMode] = useLocalStorage('advanced_mode', false);
+
+	const { addToast } = useToasts();
+	const showErrorToast = useCallback((error, autoDismiss = true) => {
+		const message = (error instanceof Error && error?.message) ? error?.message : String(error);
+		return addToast(message, {
+			appearance: 'error',
+			autoDismiss,
+			autoDismissTimeout: 8_000
+		})
+	}, [addToast]);
 
 	// Hidden dev methods
 	useEffect(() => {
@@ -201,66 +211,63 @@ function App() {
 			lastSetAccessKey,
 			advancedMode,
 			debugLogging: advancedMode,
-			getAuthHeaders
+			getAuthHeaders,
+			showErrorToast
 		}}>
-			<ToastProvider
-				components={{ Toast }}
-				autoDismissTimeout={5_000}>
-				<main className={[
-					error && 'error',
-					`theme-${theme}`
-				].filter(x => x).join(' ')}>
-					<ForkMeOnGithub
-						className="fork-me-on-github"
-						colorBackground="#888"
-						colorOctocat="#222"
-						repo="https://github.com/RobinJ1995/sprint-retrospective/" />
-					<nav>
-						<ul>
-							<li onClick={() => setModal(MODALS.SET_NAME)}>{title ? 'Change' : 'Set'} name</li>
-							<li onClick={() => setModal(MODALS.SET_VOTE_MODE)}>Set voting mode</li>
-							<li onClick={share}>Share</li>
-							<li onClick={() => setModal(MODALS.EXPORT)}>Export</li>
-							<li onClick={() => setModal(MODALS.SET_THEME)}>Change theme</li>
-							<li onClick={() => setModal(MODALS.SET_ACCESS_KEY)}>Set access key</li>
-							{advancedMode && adminKey &&
-							<li onClick={() => fetch(`${API_BASE}/_actions`, {
-								headers: getAuthHeaders()
-							})
-								.then(httpCheckParse)
-								.then(logs => setModal(<pre>{JSON.stringify(logs, undefined, 4)}</pre>))}>Logs</li>}
-						</ul>
-					</nav>
-					{!!title &&
-						<h1>{title}</h1>}
-					{!!error &&
-						<p id="error">{error.message}</p>
-					}
-					<Retrospective
-						good={good}
-						setGood={setGood}
-						bad={bad}
-						setBad={setBad}
-						actions={actions}
-						setActions={setActions}
-						setTitle={setTitle}
-						voteMode={voteMode}
-						setVoteMode={setVoteMode}
-						websocketUrl={websocketUrl}
-						setWebsocketUrl={setWebsocketUrl}
-						setError={setError}
-						cache={cache}
-						getAuthHeaders={getAuthHeaders}
-						setPage={setPage}
-					/>
-					{modal && <Overlay>
-						<Modal
-							closeable={true}
-							closeModal={() => setModal(null)}
-						>{populateModal()}</Modal>
-					</Overlay>}
-				</main>
-			</ToastProvider>
+			<main className={[
+				error && 'error',
+				`theme-${theme}`
+			].filter(x => x).join(' ')}>
+				<ForkMeOnGithub
+					className="fork-me-on-github"
+					colorBackground="#888"
+					colorOctocat="#222"
+					repo="https://github.com/RobinJ1995/sprint-retrospective/" />
+				<nav>
+					<ul>
+						<li onClick={() => setModal(MODALS.SET_NAME)}>{title ? 'Change' : 'Set'} name</li>
+						<li onClick={() => setModal(MODALS.SET_VOTE_MODE)}>Set voting mode</li>
+						<li onClick={share}>Share</li>
+						<li onClick={() => setModal(MODALS.EXPORT)}>Export</li>
+						<li onClick={() => setModal(MODALS.SET_THEME)}>Change theme</li>
+						<li onClick={() => setModal(MODALS.SET_ACCESS_KEY)}>Set access key</li>
+						{advancedMode && adminKey &&
+						<li onClick={() => fetch(`${API_BASE}/_actions`, {
+							headers: getAuthHeaders()
+						})
+							.then(httpCheckParse)
+							.then(logs => setModal(<pre>{JSON.stringify(logs, undefined, 4)}</pre>))}>Logs</li>}
+					</ul>
+				</nav>
+				{!!title &&
+					<h1>{title}</h1>}
+				{!!error &&
+					<p id="error">{error.message}</p>
+				}
+				<Retrospective
+					good={good}
+					setGood={setGood}
+					bad={bad}
+					setBad={setBad}
+					actions={actions}
+					setActions={setActions}
+					setTitle={setTitle}
+					voteMode={voteMode}
+					setVoteMode={setVoteMode}
+					websocketUrl={websocketUrl}
+					setWebsocketUrl={setWebsocketUrl}
+					setError={setError}
+					cache={cache}
+					getAuthHeaders={getAuthHeaders}
+					setPage={setPage}
+				/>
+				{modal && <Overlay>
+					<Modal
+						closeable={true}
+						closeModal={() => setModal(null)}
+					>{populateModal()}</Modal>
+				</Overlay>}
+			</main>
 		</RetrospectiveContext.Provider>
 	);
 }

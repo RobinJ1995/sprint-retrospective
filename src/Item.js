@@ -1,10 +1,13 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useContext} from 'react';
 import Markdown from './Markdown';
 import {ITEM_TEXT_MAX_LENGTH, ITEM_TEXT_MIN_LENGTH, KEY, VOTE_MODES} from './constants';
 import {repeat} from './utils';
 import Comment from "./Comment";
+import RetrospectiveContext from "./RetrospectiveContext";
 
 function Item({id, children, up, down, comments, section, upvoteItem, downvoteItem, voteMode, updateText, deleteItem, myVotes}) {
+	const { showErrorToast } = useContext(RetrospectiveContext);
+
 	const [editing, setEditing] = useState(false);
 	const [text, setText] = useState(children);
 	
@@ -34,7 +37,7 @@ function Item({id, children, up, down, comments, section, upvoteItem, downvoteIt
 
 		return updateText(text)
 			.catch(err => {
-				window.alert(err);
+				showErrorToast(err);
 
 				// Ensure input does not get lost
 				setEditing(true);
