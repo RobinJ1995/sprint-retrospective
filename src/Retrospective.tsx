@@ -172,30 +172,63 @@ const Retrospective = ({
 
 	// Hidden dev methods
 	useEffect(() => {
-		(window as any).wipeThisEntireRetroIOnlyUsedItForTestingPurposes = () => {
+		(window as any).wipeThisEntireRetroIOnlyUsedItForTestingPurposes = async (fast: boolean = false) => {
 			if (window.confirm('Are you sure you want to wipe out this entire retrospective?')) {
-				Promise.all([
-					...good.map(item => [SECTIONS.GOOD, item.id]),
-					...bad.map(item => [SECTIONS.BAD, item.id]),
-					...actions.map(item => [SECTIONS.ACTION, item.id])
-				].map(([section, id]) => deleteItem(section, id)))
-					.then(() => refreshState())
-					.catch(alert);
+				try {
+					const functionsThatReturnPromises: (() => Promise<any>)[] = [
+						...good.map(item => [SECTIONS.GOOD, item.id]),
+						...bad.map(item => [SECTIONS.BAD, item.id]),
+						...actions.map(item => [SECTIONS.ACTION, item.id])
+					].map(([section, id]) => () => deleteItem(section, id));
+
+					if (fast) {
+						// All in parallel
+						await Promise.all(functionsThatReturnPromises.map(func => func()));
+					} else {
+						// One at a time
+						for (const func of functionsThatReturnPromises) {
+							await func();
+						}
+					}
+
+					return await refreshState();
+				} catch (err) {
+					showErrorToast(err);
+				}
 			}
 		};
 
-		(window as any).fillUpThisRetroWithRandomCrap = () => {
-			if (window.confirm('Are you sure you want to fill up this retro with random items?')) {
-				const nGood = Math.ceil(Math.random() * 50);
-				const nBad = Math.ceil(Math.random() * 50);
-				const nActions = Math.ceil(Math.random() * 50);
+		(window as any).fillUpThisRetroWithRandomCrap = async (nGood: number | undefined = undefined,
+															   nBad: number | undefined = undefined,
+															   nActions: number | undefined = undefined,
+															   fast: boolean = false) => {
+			nGood = nGood ?? Math.ceil(Math.random() * 50);
+			nBad = nBad ?? Math.ceil(Math.random() * 50);
+			nActions = nActions ?? Math.ceil(Math.random() * 50);
+			const nTotal = nGood + nBad + nActions;
 
-				Promise.all([
-					...Array(nGood).fill(true).map(() => sentence()).map(addGood),
-					...Array(nBad).fill(true).map(() => sentence()).map(addBad),
-					...Array(nActions).fill(true).map(() => sentence()).map(addAction)
-				]).then(() => refreshState())
-					.catch(alert);
+			if (window.confirm(`Are you sure you want to fill up this retro with ${nTotal} random items?`)) {
+				try {
+					const functionsThatReturnPromises: (() => Promise<any>)[] = [
+						...Array(nGood).fill(true).map(() => sentence()).map(x => () => addGood(x)),
+						...Array(nBad).fill(true).map(() => sentence()).map(x => () => addBad(x)),
+						...Array(nActions).fill(true).map(() => sentence()).map(x => () => addAction(x))
+					];
+
+					if (fast) {
+						// All in parallel
+						await Promise.all(functionsThatReturnPromises.map(func => func()));
+					} else {
+						// One at a time
+						for (const func of functionsThatReturnPromises) {
+							await func();
+						}
+					}
+
+					return await refreshState();
+				} catch (err) {
+					showErrorToast(err);
+				}
 			}
 		}
 	}, [good, bad, actions, addGood, addBad, addAction, deleteItem, refreshState]);
