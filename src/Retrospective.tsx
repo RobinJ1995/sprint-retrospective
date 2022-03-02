@@ -111,7 +111,7 @@ const Retrospective = ({
 		.then(checkHttpStatus)
 		.catch(err => showErrorToast(`Failed to delete item: ${err?.message}`));
 
-	const authRequired = () => {
+	const authRequired = useCallback(() => {
 		setAutorefresh(false);
 
 		return httpPost(`${apiBaseUrl}/authenticate`, {})
@@ -123,7 +123,7 @@ const Retrospective = ({
 
 				return setPage(PAGES.ENTER_ACCESS_KEY);
 			})
-	};
+	}, [apiBaseUrl, setPage]);
 
 	const refreshState = useCallback(() => fetch(apiBaseUrl, { headers: getAuthHeaders() })
 		.catch(() => {
@@ -364,7 +364,8 @@ const Retrospective = ({
 				'error': err
 			});
 		}
-	}, [addToast, refreshState, retroId, wsSend, lastPingSentTimestamp, setLastPingSentTimestamp, setLatency]);
+	}, [addToast, refreshState, retroId, wsSend, lastPingSentTimestamp, setLastPingSentTimestamp, setLatency,
+		setAutorefreshInterval]);
 
 	useInterval(() => {
 		if (!autorefresh) {
@@ -373,7 +374,7 @@ const Retrospective = ({
 
 		refreshState().then(
 			() => setAutorefresh(true));
-	}, autorefreshInterval, false, [refreshState, autorefresh, setAutorefresh]);
+	}, autorefreshInterval, false, [refreshState, autorefresh, setAutorefresh, autorefreshInterval]);
 
 	useInterval(() => {
 		if (!isWebsocketConnected()) {
