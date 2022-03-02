@@ -44,8 +44,15 @@ const Retrospective = ({
 	const websocket = useRef(null);
 	const isWebsocketConnected = useCallback(() : boolean => websocketUrl && websocket.current && websocket.current.readyState === WebSocket.OPEN, [websocket, websocketUrl]);
 	const disconnectWebsocket = useCallback(() => {
-		websocket.current.close();
-		websocket.current = null;
+		try {
+			websocket.current.close();
+			websocket.current = null;
+		} catch {}
+
+		try {
+			websocket.current.onmessage = null;
+			websocket.current.onclose = null;
+		} catch (ex) {}
 	}, [websocket]);
 
 	const { addToast } = useToasts();
@@ -378,6 +385,7 @@ const Retrospective = ({
 
 	useInterval(() => {
 		if (!isWebsocketConnected()) {
+			disconnectWebsocket();
 			setParticipantsTypingIn([]);
 			setLatency(null);
 			setNParticipants(null);
@@ -398,37 +406,14 @@ const Retrospective = ({
 			// There is no websocket URL to connect to.
 			return;
 		} else if (isWebsocketConnected()) {
-			if (debugLogging) {
-				console.debug('Still connected to an active/open websocket.', {
-					websocketUrl,
-					connected: isWebsocketConnected()
-				});
-			}
 			// Still connected to an active/open websocket.
+			// One of wsHandle's dependencies probably just changed...
 			return;
 		}
 
 		console.info(`🌐 Connecting to ${websocketUrl}...`);
 		const socket = new WebSocket(websocketUrl);
 		websocket.current = socket;
-
-		return () => {
-			if (!websocket.current) {
-				return;
-			} else if (!isWebsocketConnected()) {
-				if (debugLogging) {
-					console.debug('Disconnecting from websocket...', {websocketUrl});
-				}
-				disconnectWebsocket();
-			}
-		};
-	}, [websocketUrl, setWebsocketUrl, isWebsocketConnected, disconnectWebsocket]);
-
-	// When websocket message handler or other dependencies change, update the handlers.
-	useEffect(() => {
-		if (!websocket.current) {
-			return;
-		}
 
 		websocket.current.onmessage = wsHandle;
 		websocket.current.onclose = () => {
@@ -440,12 +425,17 @@ const Retrospective = ({
 		};
 
 		return () => {
-			try {
-				websocket.current.onmessage = null;
-				websocket.current.onclose = null;
-			} catch (ex) {}
-		}
-	}, [wsHandle, setAutorefresh, setAutorefreshInterval, setWebsocketUrl])
+			if (!websocket.current) {
+				return;
+			} else if (!isWebsocketConnected()) {
+				if (debugLogging) {
+					console.debug('Disconnecting from websocket...', {websocketUrl});
+				}
+				disconnectWebsocket();
+			}
+		};
+	}, [websocketUrl, setWebsocketUrl, isWebsocketConnected, disconnectWebsocket, wsHandle,
+		setAutorefresh, setAutorefreshInterval]);
 
 	return <article>
 		<WebsocketContext.Provider
