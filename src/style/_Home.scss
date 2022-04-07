@@ -1,0 +1,14 @@
+#home-page {
+	display: flex;
+	flex-direction: row;
+
+	section {
+		&.create-new-retro {
+			flex: 2;
+		}
+
+		&.previous-retros {
+			flex: 1;
+		}
+	}
+}

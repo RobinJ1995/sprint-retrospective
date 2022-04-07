@@ -65,6 +65,10 @@ class Cache {
 		
 		return this.json[key];
 	}
+
+	keys() : string[] {
+		return Object.keys(this.data);
+	}
 	
 	set<T>(key : string, value : T, ttl : number = Cache.TTL_3_MONTHS) : Promise<T> {
 		return new Promise((resolve, reject) => {

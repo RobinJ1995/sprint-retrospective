@@ -4,9 +4,10 @@ import {v4 as uuid} from 'uuid';
 import {ToastProvider, useToasts} from 'react-toast-notifications';
 import {VOTE_MODES, PATH_MAX_LENGTH, THEMES, HEADERS, PAGES, MODALS} from './constants';
 import cache from './Cache';
-import {checkHttpStatus, copyToClipboard, httpCheckParse, httpPost, httpPut} from './utils';
+import {checkHttpStatus, copyToClipboard, getAuthHeaders, httpCheckParse, httpPost, httpPut} from './utils';
 import Retrospective from './Retrospective';
-import AccessKeyInput from './AccessKeyInput';
+import AccessKeyInput from './page/AccessKeyInput';
+import Home from './page/Home';
 import Overlay from './Overlay';
 import Modal from './Modal';
 import ShareFallback from './modal/ShareFallback';
@@ -15,35 +16,25 @@ import SetName from './modal/SetName';
 import SetAccessKey from './modal/SetAccessKey';
 import Export from './modal/Export';
 import SetTheme from './modal/SetTheme';
-import Toast from './Toast';
 import RetrospectiveContext from './RetrospectiveContext';
 import useCache, {useLocalStorage} from "./useCache";
 import ForkMeOnGithub from 'fork-me-on-github';
+import MDSpinner from "react-md-spinner";
 
 const trimSlashes = str => str.replace(/^\//, '').replace(/\/$/, '');
 const getRetroIdFromUrl = () => {
 	const path = trimSlashes(String(window.location.pathname));
 	if (!path || path.length > PATH_MAX_LENGTH) {
-		return false;
+		return null;
 	}
 
 	return path;
 };
-const getOrSetRetroId = () => {
-	if (getRetroIdFromUrl()) {
-		return getRetroIdFromUrl();
-	}
 
-	const id = uuid();
-	window.history.replaceState(null, 'Sprint Retrospective', `/${id}`);
-
-	return id;
-};
-
-const RETRO_ID = getOrSetRetroId();
+const RETRO_ID = getRetroIdFromUrl() ?? null;
 
 const apiEndpoint = process.env.REACT_APP_API_ENDPOINT || 'http://localhost:5432';
-const API_BASE = `${apiEndpoint}/${RETRO_ID}`;
+const API_BASE = `${apiEndpoint}/${RETRO_ID ?? ''}`;
 
 const initialData = {
 	title: null,
@@ -53,10 +44,6 @@ const initialData = {
 	voteMode: VOTE_MODES.UPVOTE,
 	...cache.get(RETRO_ID)
 };
-const getAuthHeaders = () => ({
-	[HEADERS.TOKEN]: cache.get(`${RETRO_ID}:token`),
-	[HEADERS.ADMIN_KEY]: cache.get(`admin_key`)
-});
 
 try {
 	cache.prune()
@@ -105,21 +92,21 @@ function App() {
 	}, [adminKey, setAdminKey, advancedMode, setAdvancedMode])
 
 	const updateTitle = title => {
-		httpPut(`${API_BASE}/title`, {title}, getAuthHeaders())
+		httpPut(`${API_BASE}/title`, {title}, getAuthHeaders(window.RETRO_ID))
 			.catch(alert);
 
 		setTitle(title);
 	};
 
 	const updateVoteMode = voteMode => {
-		httpPut(`${API_BASE}/voteMode`, {voteMode}, getAuthHeaders())
+		httpPut(`${API_BASE}/voteMode`, {voteMode}, getAuthHeaders(window.RETRO_ID))
 			.catch(alert);
 
 		setVoteMode(voteMode);
 	};
 
 	const updateAccessKey = accessKey => {
-		return httpPut(`${API_BASE}/accessKey`, {accessKey}, getAuthHeaders())
+		return httpPut(`${API_BASE}/accessKey`, {accessKey}, getAuthHeaders(window.RETRO_ID))
 			.then(checkHttpStatus)
 			.then(() => httpPost(`${API_BASE}/authenticate`, {
 				accessKey
@@ -202,6 +189,16 @@ function App() {
 				cache={cache}
 				validKeySubmitted={() => setPage(PAGES.RETROSPECTIVE)}
 			/>;
+		case PAGES.HOME:
+			return <Home
+				apiBaseUrl={API_BASE}
+				cache={cache}
+			/>;
+	}
+
+	if (RETRO_ID === null) {
+		setPage(PAGES.HOME);
+		return <MDSpinner />;
 	}
 
 	return (
@@ -233,7 +230,7 @@ function App() {
 						<li onClick={() => setModal(MODALS.SET_ACCESS_KEY)}>Set access key</li>
 						{advancedMode && adminKey &&
 						<li onClick={() => fetch(`${API_BASE}/_actions`, {
-							headers: getAuthHeaders()
+							headers: getAuthHeaders(window.RETRO_ID)
 						})
 							.then(httpCheckParse)
 							.then(logs => setModal(<pre>{JSON.stringify(logs, undefined, 4)}</pre>))}>Logs</li>}

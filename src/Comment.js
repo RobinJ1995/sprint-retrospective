@@ -3,11 +3,11 @@ import React, {useContext, useEffect, useState} from "react";
 import {ITEM_TEXT_MAX_LENGTH, ITEM_TEXT_MIN_LENGTH, KEY} from "./constants";
 import {checkHttpStatus, httpDelete, httpPatch, httpPost} from "./utils";
 import RetrospectiveContext from "./RetrospectiveContext";
+import {getAuthHeaders} from "./utils";
 
 const Comment = ({ id, children = '', section, itemId }) => {
 	const {
 		apiBaseUrl,
-		getAuthHeaders
 	} = useContext(RetrospectiveContext);
 	const isNew = !id;
 
@@ -23,7 +23,7 @@ const Comment = ({ id, children = '', section, itemId }) => {
 
 		if (!text) {
 			if (window.confirm('Delete this comment?') && !isNew) {
-				return httpDelete(`${apiBaseUrl}/${section}/${itemId}/comment/${id}`, getAuthHeaders())
+				return httpDelete(`${apiBaseUrl}/${section}/${itemId}/comment/${id}`, getAuthHeaders(window.RETRO_ID))
 					.then(checkHttpStatus)
 					.catch(window.alert);
 			}
@@ -40,7 +40,7 @@ const Comment = ({ id, children = '', section, itemId }) => {
 		if (isNew) {
 			return httpPost(`${apiBaseUrl}/${section}/${itemId}/comment`,
 				{text},
-				getAuthHeaders())
+				getAuthHeaders(window.RETRO_ID))
 				.then(checkHttpStatus)
 				.catch(err => {
 					window.alert(err);
@@ -53,7 +53,7 @@ const Comment = ({ id, children = '', section, itemId }) => {
 
 		return httpPatch(`${apiBaseUrl}/${section}/${itemId}/comment/${id}`,
 			{text},
-			getAuthHeaders())
+			getAuthHeaders(window.RETRO_ID))
 			.then(checkHttpStatus)
 			.catch(err => {
 				window.alert(err);

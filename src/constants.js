@@ -23,7 +23,8 @@ const HEADERS = Object.freeze({
 });
 const PAGES = Object.freeze({
 	RETROSPECTIVE: 'retro',
-	ENTER_ACCESS_KEY: 'enter_access_key'
+	ENTER_ACCESS_KEY: 'enter_access_key',
+	HOME: 'home'
 });
 const MODALS = Object.freeze({
 	SET_NAME: 'set_name',
