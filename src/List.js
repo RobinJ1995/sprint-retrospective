@@ -9,6 +9,7 @@ import {
 import WebsocketContext from "./WebsocketContext";
 import useInterval from "./useInterval";
 import RetrospectiveContext from "./RetrospectiveContext";
+import {sortRetrospectiveItems} from "./sort";
 
 function List({
 				  section,
@@ -74,28 +75,8 @@ function List({
 			}))
 			// Only show items that have an id or are not duplicates (by text)
 			.filter((item, i, arr) => item.id || (arr.findIndex(val => val.text === item.text) === i))
-			// Add a total to each item
-			.map(item => ({total: item.up - item.down, ...item}))
 			// Sort by total:descending + alphabetically:ascending
-			.sort((a, b) => {
-				// By score
-				if (a.total < b.total) {
-					return 1;
-				} else if (a.total > b.total) {
-					return -1;
-				}
-
-				// Alphabetical
-				const aTextLowerCase = String(a.text).toLowerCase();
-				const bTextLowerCase = String(b.text).toLowerCase();
-				if (aTextLowerCase < bTextLowerCase) {
-					return -1;
-				} else if (aTextLowerCase > bTextLowerCase) {
-					return 1;
-				}
-
-				return 0;
-			}),
+			.sort(sortRetrospectiveItems),
 		[items, voteMode]);
 
 	return (
