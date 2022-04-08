@@ -58,7 +58,7 @@ const CreateNewRetrospective = ({
             setError(ex);
             showErrorToast(ex);
         }
-    }, [title, voteMode, setError]);
+    }, [title, voteMode, setError, showErrorToast]);
 
     const submit = useCallback(async e => {
         try {
@@ -71,7 +71,7 @@ const CreateNewRetrospective = ({
         } finally {
             setLoading(false);
         }
-    }, [title, voteMode]);
+    }, [createRetro, setLoading, setError, showErrorToast]);
 
     return <form id="create-new-retro" className={loading ? 'loading' : ''} onSubmit={submit}>
         <div>
