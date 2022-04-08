@@ -1,13 +1,14 @@
 import Markdown from "./Markdown";
-import React, {useContext, useEffect, useState} from "react";
+import React, {useCallback, useContext, useEffect, useState} from "react";
 import {ITEM_TEXT_MAX_LENGTH, ITEM_TEXT_MIN_LENGTH, KEY} from "./constants";
 import {checkHttpStatus, httpDelete, httpPatch, httpPost} from "./utils";
 import RetrospectiveContext from "./RetrospectiveContext";
+import {getAuthHeaders} from "./utils";
 
 const Comment = ({ id, children = '', section, itemId }) => {
 	const {
 		apiBaseUrl,
-		getAuthHeaders
+		retroId
 	} = useContext(RetrospectiveContext);
 	const isNew = !id;
 
@@ -16,14 +17,14 @@ const Comment = ({ id, children = '', section, itemId }) => {
 
 	const inputField = React.createRef();
 
-	const submit = e => {
+	const submit = useCallback(e => {
 		e.preventDefault();
 
 		setEditing(false);
 
 		if (!text) {
 			if (window.confirm('Delete this comment?') && !isNew) {
-				return httpDelete(`${apiBaseUrl}/${section}/${itemId}/comment/${id}`, getAuthHeaders())
+				return httpDelete(`${apiBaseUrl}/${section}/${itemId}/comment/${id}`, getAuthHeaders(retroId))
 					.then(checkHttpStatus)
 					.catch(window.alert);
 			}
@@ -40,7 +41,7 @@ const Comment = ({ id, children = '', section, itemId }) => {
 		if (isNew) {
 			return httpPost(`${apiBaseUrl}/${section}/${itemId}/comment`,
 				{text},
-				getAuthHeaders())
+				getAuthHeaders(retroId))
 				.then(checkHttpStatus)
 				.catch(err => {
 					window.alert(err);
@@ -53,7 +54,7 @@ const Comment = ({ id, children = '', section, itemId }) => {
 
 		return httpPatch(`${apiBaseUrl}/${section}/${itemId}/comment/${id}`,
 			{text},
-			getAuthHeaders())
+			getAuthHeaders(retroId))
 			.then(checkHttpStatus)
 			.catch(err => {
 				window.alert(err);
@@ -62,22 +63,24 @@ const Comment = ({ id, children = '', section, itemId }) => {
 				setEditing(true);
 				setText(text);
 			});
-	};
+		},
+		[setText, setEditing, apiBaseUrl, section, itemId, id, isNew, text, children, retroId]);
 
-	const cancelEdit = e => {
-		if (isNew) {
-			return;
-		}
+	const cancelEdit = useCallback(e => {
+			if (isNew) {
+				return;
+			}
 
-		setText(children);
-		setEditing(false);
-	};
+			setText(children);
+			setEditing(false);
+		},
+	[isNew, setText, setEditing]);
 
 	useEffect(() => {
 		if (inputField.current && !isNew) {
 			inputField.current.focus();
 		}
-	});
+	}, [inputField, isNew]);
 
 	return <li
 		className={[

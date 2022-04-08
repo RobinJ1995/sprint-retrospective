@@ -1,6 +1,5 @@
-const DEFAULT_HEADERS = {
-	'Content-Type': 'application/json'
-};
+import {HEADERS, DEFAULT_HEADERS} from "./constants";
+import cache from "./Cache";
 
 const httpPost = (url, data = {}, headers = {}) => fetch(url, {
 	method: 'POST',
@@ -54,6 +53,11 @@ const httpCheckParse = res => checkHttpStatus(res).json();
 
 const repeat = (n, content) => Array(n || 0).fill(false).map(() => content);
 
+const getAuthHeaders = (retroId) => ({
+	[HEADERS.TOKEN]: cache.get(`${retroId}:token`),
+	[HEADERS.ADMIN_KEY]: cache.get(`admin_key`)
+});
+
 export {
 	httpPost,
 	httpPut,
@@ -62,5 +66,6 @@ export {
 	copyToClipboard,
 	checkHttpStatus,
 	httpCheckParse,
-	repeat
+	repeat,
+	getAuthHeaders
 };

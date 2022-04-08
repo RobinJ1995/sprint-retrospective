@@ -58,20 +58,20 @@ const Retrospective = ({
 	const { addToast } = useToasts();
 
 	const addGood = (text: string) => {
-		return httpPost(`${apiBaseUrl}/good`, {text}, getAuthHeaders())
+		return httpPost(`${apiBaseUrl}/good`, {text}, getAuthHeaders(retroId))
 			.then(checkHttpStatus);
 	};
 	const addBad = (text: string) => {
-		return httpPost(`${apiBaseUrl}/bad`, {text}, getAuthHeaders())
+		return httpPost(`${apiBaseUrl}/bad`, {text}, getAuthHeaders(retroId))
 			.then(checkHttpStatus);
 	};
 	const addAction = (text: string) => {
-		return httpPost(`${apiBaseUrl}/action`, {text}, getAuthHeaders())
+		return httpPost(`${apiBaseUrl}/action`, {text}, getAuthHeaders(retroId))
 			.then(checkHttpStatus);
 	};
 
 	const upvoteItem = (id: string, type: RetrospectiveSection) => {
-		httpPost(`${apiBaseUrl}/${type}/${id}/up`, {}, getAuthHeaders())
+		httpPost(`${apiBaseUrl}/${type}/${id}/up`, {}, getAuthHeaders(retroId))
 			.then(httpCheckParse)
 			.then(res => {
 				if (res.actionId) {
@@ -88,7 +88,7 @@ const Retrospective = ({
 			.catch(alert);
 	};
 	const downvoteItem = (id: string, type: RetrospectiveSection) => {
-		httpPost(`${apiBaseUrl}/${type}/${id}/down`, {}, getAuthHeaders())
+		httpPost(`${apiBaseUrl}/${type}/${id}/down`, {}, getAuthHeaders(retroId))
 			.then(httpCheckParse)
 			.then(res => {
 				if (res.actionId) {
@@ -108,13 +108,13 @@ const Retrospective = ({
 	const updateItemText = (type: RetrospectiveSection, id: string, text: string) =>
 		httpPatch(`${apiBaseUrl}/${type}/${id}`,
 			{text},
-			getAuthHeaders())
+			getAuthHeaders(retroId))
 		.then(checkHttpStatus)
 		.catch(err => showErrorToast(`Failed to update item: ${err?.message}`));
 
 	const deleteItem = (type: RetrospectiveSection, id: string) =>
 		httpDelete(`${apiBaseUrl}/${type}/${id}`,
-			getAuthHeaders())
+			getAuthHeaders(retroId))
 		.then(checkHttpStatus)
 		.catch(err => showErrorToast(`Failed to delete item: ${err?.message}`));
 
@@ -132,7 +132,7 @@ const Retrospective = ({
 			})
 	}, [apiBaseUrl, setPage]);
 
-	const refreshState = useCallback(() => fetch(apiBaseUrl, { headers: getAuthHeaders() })
+	const refreshState = useCallback(() => fetch(apiBaseUrl, { headers: getAuthHeaders(retroId) })
 		.catch(() => {
 			throw Error('Failed to retrieve retrospective.');
 		})

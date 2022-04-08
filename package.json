@@ -19,6 +19,7 @@
     "node-sass": "^7.0.1",
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
+    "react-md-spinner": "^1.0.0",
     "react-scripts": "5.0.0",
     "react-toast-notifications": "^2.5.1",
     "typescript": "^4.6.3",
