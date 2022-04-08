@@ -49,6 +49,9 @@ const SECTIONS_MAP_PLURALISED = Object.freeze({ // Why didn't I just keep it con
 	[SECTIONS.ACTION]: 'actions'
 });
 const TIMEOUT_MS_BEFORE_TYPING_STOP_NOTIFICATION_SENT = 5000;
+const DEFAULT_HEADERS = {
+	'Content-Type': 'application/json'
+};
 
 export {
 	VOTE_MODES,
@@ -67,5 +70,6 @@ export {
 	WS_ACTIONS,
 	SECTIONS,
 	TIMEOUT_MS_BEFORE_TYPING_STOP_NOTIFICATION_SENT,
-	SECTIONS_MAP_PLURALISED
+	SECTIONS_MAP_PLURALISED,
+	DEFAULT_HEADERS
 };

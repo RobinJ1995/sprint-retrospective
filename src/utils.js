@@ -1,9 +1,5 @@
-import {HEADERS} from "./constants";
+import {HEADERS, DEFAULT_HEADERS} from "./constants";
 import cache from "./Cache";
-
-const DEFAULT_HEADERS = {
-	'Content-Type': 'application/json'
-};
 
 const httpPost = (url, data = {}, headers = {}) => fetch(url, {
 	method: 'POST',

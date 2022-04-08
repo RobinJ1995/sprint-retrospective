@@ -92,21 +92,21 @@ function App() {
 	}, [adminKey, setAdminKey, advancedMode, setAdvancedMode])
 
 	const updateTitle = title => {
-		httpPut(`${API_BASE}/title`, {title}, getAuthHeaders(window.RETRO_ID))
+		httpPut(`${API_BASE}/title`, {title}, getAuthHeaders(RETRO_ID))
 			.catch(alert);
 
 		setTitle(title);
 	};
 
 	const updateVoteMode = voteMode => {
-		httpPut(`${API_BASE}/voteMode`, {voteMode}, getAuthHeaders(window.RETRO_ID))
+		httpPut(`${API_BASE}/voteMode`, {voteMode}, getAuthHeaders(RETRO_ID))
 			.catch(alert);
 
 		setVoteMode(voteMode);
 	};
 
 	const updateAccessKey = accessKey => {
-		return httpPut(`${API_BASE}/accessKey`, {accessKey}, getAuthHeaders(window.RETRO_ID))
+		return httpPut(`${API_BASE}/accessKey`, {accessKey}, getAuthHeaders(RETRO_ID))
 			.then(checkHttpStatus)
 			.then(() => httpPost(`${API_BASE}/authenticate`, {
 				accessKey
@@ -193,6 +193,7 @@ function App() {
 			return <Home
 				apiBaseUrl={API_BASE}
 				cache={cache}
+				showErrorToast={showErrorToast}
 			/>;
 	}
 
@@ -230,7 +231,7 @@ function App() {
 						<li onClick={() => setModal(MODALS.SET_ACCESS_KEY)}>Set access key</li>
 						{advancedMode && adminKey &&
 						<li onClick={() => fetch(`${API_BASE}/_actions`, {
-							headers: getAuthHeaders(window.RETRO_ID)
+							headers: getAuthHeaders(RETRO_ID)
 						})
 							.then(httpCheckParse)
 							.then(logs => setModal(<pre>{JSON.stringify(logs, undefined, 4)}</pre>))}>Logs</li>}

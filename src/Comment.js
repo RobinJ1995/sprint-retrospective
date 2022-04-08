@@ -8,6 +8,7 @@ import {getAuthHeaders} from "./utils";
 const Comment = ({ id, children = '', section, itemId }) => {
 	const {
 		apiBaseUrl,
+		retroId
 	} = useContext(RetrospectiveContext);
 	const isNew = !id;
 
@@ -23,7 +24,7 @@ const Comment = ({ id, children = '', section, itemId }) => {
 
 		if (!text) {
 			if (window.confirm('Delete this comment?') && !isNew) {
-				return httpDelete(`${apiBaseUrl}/${section}/${itemId}/comment/${id}`, getAuthHeaders(window.RETRO_ID))
+				return httpDelete(`${apiBaseUrl}/${section}/${itemId}/comment/${id}`, getAuthHeaders(retroId))
 					.then(checkHttpStatus)
 					.catch(window.alert);
 			}
@@ -40,7 +41,7 @@ const Comment = ({ id, children = '', section, itemId }) => {
 		if (isNew) {
 			return httpPost(`${apiBaseUrl}/${section}/${itemId}/comment`,
 				{text},
-				getAuthHeaders(window.RETRO_ID))
+				getAuthHeaders(retroId))
 				.then(checkHttpStatus)
 				.catch(err => {
 					window.alert(err);
@@ -53,7 +54,7 @@ const Comment = ({ id, children = '', section, itemId }) => {
 
 		return httpPatch(`${apiBaseUrl}/${section}/${itemId}/comment/${id}`,
 			{text},
-			getAuthHeaders(window.RETRO_ID))
+			getAuthHeaders(retroId))
 			.then(checkHttpStatus)
 			.catch(err => {
 				window.alert(err);

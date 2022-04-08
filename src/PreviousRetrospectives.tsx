@@ -1,4 +1,4 @@
-import React, {useEffect, useMemo, useState} from 'react';
+import React, {useCallback, useEffect, useMemo, useState} from 'react';
 import {getAuthHeaders, httpCheckParse, httpPost} from './utils';
 import MDSpinner from "react-md-spinner";
 
@@ -34,30 +34,35 @@ const PreviousRetrospective = ({
                 setLoaded(true);
             })
             .catch(setError);
-    }, [fetchRetroData, setRetroData, setLoaded, setError])
+    }, [fetchRetroData, setRetroData, setLoaded, setError]);
 
     const nGood = retroData?.good?.length ?? 0;
     const nBad = retroData?.bad?.length ?? 0;
     const nActions = retroData?.actions?.length ?? 0;
     const nComments = [retroData?.good, retroData?.bad, retroData?.actions]
-        .map(x => x?.comments)
-        .map(x => !!x)
+        .flatMap(x => x)
+        .map(x => x?.comments ?? [])
         .flatMap(x => x)
         .length;
+    const hasTitle = !!retroData?.title;
+    const retroUrl = `${window.location.origin}/${retroId}`;
+    const navigateToRetro = useCallback(() => {
+        window.location.href = retroUrl;
+    }, [retroUrl]);
 
     if (error) {
-        return <li>{error?.message ?? `${retroId}: Error`}</li>;
+        return <li className="previous-retro error" onClick={navigateToRetro}><a href={retroUrl}>Error retrieving information for {retroId}: {error.toString()}</a></li>;
     } else if (loaded && retroData) {
-        return <li>{retroData?.title ?? retroId}<ul>
-            <li><span role="img" aria-label="Thumb up">👍</span> {nGood}</li>
-            <li><span role="img" aria-label="Thumb down">👎</span> {nBad}</li>
-            <li><span role="img" aria-label="Action items">☑️</span> {nActions}</li>
-            <li><span role="img" aria-label="Comments">💬</span> {nComments}</li>
+        return <li className="previous-retro loaded" onClick={navigateToRetro}><a href={retroUrl} className={`name ${hasTitle ? 'title' : ''}`}>{retroData?.title ?? retroId}</a><ul>
+            <li title={`${nGood} things went well`}><span role="img" aria-label="Good">🤩</span> {nGood}</li>
+            <li title={`${nBad} could have been done better`}><span role="img" aria-label="Bad">🤨</span> {nBad}</li>
+            <li title={`${nActions} action items`}><span role="img" aria-label="Actions">☑️</span> {nActions}</li>
+            <li title={`${nComments} comments`}><span role="img" aria-label="Comments">💬</span> {nComments}</li>
         </ul></li>;
     } else if (!loaded) {
-        return <li><MDSpinner /> {retroId}</li>;
+        return <li className="previous-retro loading" onClick={navigateToRetro}><MDSpinner /> <a href={retroUrl}>{retroId}</a></li>;
     } else {
-        return <li>{retroId}</li>;
+        return <li onClick={navigateToRetro}><a href={retroUrl}>{retroId}</a></li>;
     }
 };
 
