@@ -1,5 +1,5 @@
 import React, {useCallback, useEffect, useMemo, useState} from 'react';
-import {getAuthHeaders, httpCheckParse, httpPost} from './utils';
+import {getAuthHeaders, httpCheckParse} from './utils';
 import MDSpinner from "react-md-spinner";
 
 
@@ -25,7 +25,7 @@ const PreviousRetrospective = ({
 
             throw ex;
         }
-    }, [retroId, cache]);
+    }, [retroId, cache, apiBaseUrl]);
 
     useEffect(() => {
         fetchRetroData()
@@ -53,6 +53,11 @@ const PreviousRetrospective = ({
     if (error) {
         return <li className="previous-retro error" onClick={navigateToRetro}><a href={retroUrl}>Error retrieving information for {retroId}: {error.toString()}</a></li>;
     } else if (loaded && retroData) {
+        if (!hasTitle && (nGood + nBad + nActions + nComments === 0)) {
+            // Retro wasn't used. No point showing it.
+            return <span />;
+        }
+
         return <li className="previous-retro loaded" onClick={navigateToRetro}><a href={retroUrl} className={`name ${hasTitle ? 'title' : ''}`}>{retroData?.title ?? retroId}</a><ul>
             <li title={`${nGood} things went well`}><span role="img" aria-label="Good">🤩</span> {nGood}</li>
             <li title={`${nBad} could have been done better`}><span role="img" aria-label="Bad">🤨</span> {nBad}</li>
