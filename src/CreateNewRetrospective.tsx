@@ -25,7 +25,7 @@ const CreateNewRetrospective = ({
         const retroUrl: string = `${window.location.origin}/${retroId}`;
 
         try {
-            await fetch(`${apiBaseUrl}${retroId}/authenticate`, {
+            const headers = await fetch(`${apiBaseUrl}${retroId}/authenticate`, {
                 method: 'POST'
             })
                 .then(httpCheckParse)
@@ -33,25 +33,25 @@ const CreateNewRetrospective = ({
                 .then(token => ({
                     ...DEFAULT_HEADERS,
                     [HEADERS.TOKEN]: token
-                }))
-                .then(headers => {
-                    return Promise.all([
-                        title ? fetch(`${apiBaseUrl}${retroId}/title`, {
-                            method: 'PUT',
-                            headers,
-                            body: JSON.stringify({
-                                title
-                            })
-                        } as RequestInit).then(checkHttpStatus) : null,
-                        fetch(`${apiBaseUrl}${retroId}/voteMode`, {
-                            method: 'PUT',
-                            headers,
-                            body: JSON.stringify({
-                                voteMode
-                            })
-                        } as RequestInit).then(checkHttpStatus),
-                    ]);
-                });
+                }));
+
+            if (title) {
+                await fetch(`${apiBaseUrl}${retroId}/title`, {
+                    method: 'PUT',
+                    headers,
+                    body: JSON.stringify({
+                        title
+                    })
+                } as RequestInit).then(checkHttpStatus);
+            }
+
+            await fetch(`${apiBaseUrl}${retroId}/voteMode`, {
+                method: 'PUT',
+                headers,
+                body: JSON.stringify({
+                    voteMode
+                })
+            } as RequestInit).then(checkHttpStatus);
 
             window.location.href = retroUrl;
         } catch (ex) {
