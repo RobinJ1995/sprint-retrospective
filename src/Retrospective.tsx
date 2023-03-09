@@ -10,6 +10,7 @@ import RetrospectiveSection from "./type/RetrospectiveSection";
 import useCache from "./useCache";
 import sentence from '@fakerjs/sentence';
 import WebsocketContext from "./WebsocketContext";
+import Avatar from "./Avatar";
 
 const Retrospective = ({
 						good, setGood,
@@ -39,7 +40,7 @@ const Retrospective = ({
 	const [latency, setLatency] = useState<number | null>(null);
 	const [lastPingSentTimestamp, setLastPingSentTimestamp] = useState<number | null>(null);
 	const [myVotes, setMyVotes] = useCache(`${retroId}:votes`, []);
-	const [participantsTypingIn, setParticipantsTypingIn] = useState([]); // Which fields participants are currently typing in.
+	const [participantsTypingIn, setParticipantsTypingIn] = useState([]); // Which fields which participants are currently typing in.
 
 	const websocket = useRef(null);
 	const isWebsocketConnected = useCallback(() : boolean => websocketUrl && websocket.current && websocket.current.readyState === WebSocket.OPEN, [websocket, websocketUrl]);
@@ -306,9 +307,9 @@ const Retrospective = ({
 				const where = String(args[3]).toLowerCase();
 
 				if (['start', 'still'].includes(what)) {
-					setParticipantsTypingIn([...participantsTypingIn, where]);
+					setParticipantsTypingIn([...participantsTypingIn, {who, where}]);
 				} else if (what === 'stop') {
-					setParticipantsTypingIn(participantsTypingIn.filter(x => x !== where));
+					setParticipantsTypingIn(participantsTypingIn.filter(x => !(x.where === where && x.who === who)));
 				}
 
 				return;
@@ -452,7 +453,7 @@ const Retrospective = ({
 					downvoteItem={id => downvoteItem(id, 'good')}
 					updateItemText={(id, text) => updateItemText('good', id, text)}
 					deleteItem={id => deleteItem('good', id)}
-					participantTypingNewItem={participantsTypingIn.includes(SECTIONS_MAP_PLURALISED[SECTIONS.GOOD])}
+					participantTypingNewItem={participantsTypingIn.map(x => x.where).includes(SECTIONS_MAP_PLURALISED[SECTIONS.GOOD])}
 				/>
 			</section>
 			<section id="bad">
@@ -467,7 +468,7 @@ const Retrospective = ({
 					downvoteItem={id => downvoteItem(id, 'bad')}
 					updateItemText={(id, text) => updateItemText('bad', id, text)}
 					deleteItem={id => deleteItem('bad', id)}
-					participantTypingNewItem={participantsTypingIn.includes(SECTIONS_MAP_PLURALISED[SECTIONS.BAD])}
+					participantTypingNewItem={participantsTypingIn.map(x => x.where).includes(SECTIONS_MAP_PLURALISED[SECTIONS.BAD])}
 				/>
 			</section>
 			<section id="actions">
@@ -482,12 +483,12 @@ const Retrospective = ({
 					downvoteItem={id => downvoteItem(id, 'action')}
 					updateItemText={(id, text) => updateItemText('action', id, text)}
 					deleteItem={id => deleteItem('action', id)}
-					participantTypingNewItem={participantsTypingIn.includes(SECTIONS_MAP_PLURALISED[SECTIONS.ACTION])}
+					participantTypingNewItem={participantsTypingIn.map(x => x.where).includes(SECTIONS_MAP_PLURALISED[SECTIONS.ACTION])}
 				/>
 			</section>
 			{nParticipants &&
 				<div id="stats-n-participants">
-					<span>{participantAvatars.map(avatar => <span role="img">{avatar}</span>)}</span>
+					<span>{participantAvatars.map(avatar => <Avatar emoji={avatar} location={participantsTypingIn.find(x => x.who === avatar)?.where} />)}</span>
 					{advancedMode && latency &&
 						<span className={`latency ${latency > 100 ? 'bad' : ''}`}>{latency}ms</span>}
 				</div>}

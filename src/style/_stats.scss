@@ -6,16 +6,23 @@
 	text-align: center;
 
 	> span {
-		> span {
+		.avatar {
 			cursor: default;
 			font-size: 28px;
 			display: inline-block;
 			animation: show-participant 3.6s;
+			animation-iteration-count: 1;
 
 			&:hover {
 				margin-left: 8px;
 				margin-right: 8px;
 				transform: translateY(-10px) scale(1.8);
+			}
+
+			&.typing {
+				margin-left: 4px;
+				margin-right: 4px;
+				transform: translateY(-4px) scale(1.4);
 			}
 		}
 
