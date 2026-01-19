@@ -82,6 +82,10 @@ const Comment = ({ id, children = '', section, itemId }) => {
 		}
 	}, [inputField, isNew]);
 
+	useEffect(() => {
+		setText(children);
+	}, [children]);
+
 	return <li
 		className={[
 			'comment',
