@@ -16,5 +16,5 @@ jobs:
         name: robinj1995/sprint-retrospective/sprint-retrospective
         registry: ghcr.io
         username: RobinJ1995
-        password: ${{ secrets.GITHUB_PERSONAL_ACCESS_TOKEN }}
+        password: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
         snapshot: true
