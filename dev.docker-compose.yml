@@ -2,20 +2,18 @@ version: '3.7'
 
 services:
   database:
-    image: 'mongo'
+    image: 'mariadb:11'
     environment:
-      MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: root
-      MONGO_INITDB_DATABASE: sprint-retrospective
-      MONGO_DATA_DIR: /var/lib/mongodb
+      MARIADB_ROOT_PASSWORD: root
+      MARIADB_DATABASE: sprint-retrospective
     volumes:
-      - data-mongo:/var/lib/mongodb
+      - data-mariadb:/var/lib/mysql
     restart: always
     healthcheck:
-      test: mongo --eval 'db.runCommand("ping").ok' --quiet
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
       interval: 1s
       timeout: 2s
-      retries: 10
+      retries: 60
 
   redis:
     image: 'redis'
@@ -101,4 +99,4 @@ services:
       retries: 10
 
 volumes:
-  data-mongo:
+  data-mariadb:
