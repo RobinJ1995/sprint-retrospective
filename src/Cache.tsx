@@ -32,9 +32,7 @@ class Cache {
 			console.warn(`Cache key "${key}" has either value or TTL instead of both. Deleting key from both.`);
 			this.remove(key);
 			return false;
-		}
-
-		if (purgeIfExpired) {
+		} else if (purgeIfExpired) {
 			console.debug(`Cache key ${key} has expired. Removing...`);
 			this.remove(key)
 				.then(() => console.log(`Cache key deleted: ${key}`))

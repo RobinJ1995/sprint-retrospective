@@ -7,7 +7,7 @@ import {sortRetrospectiveItems} from "./sort";
 const mdParser = new MarkdownParser();
 
 const exportToJson = ({ title, good, bad, actions }) => JSON.stringify({
-  title, good, bad, actions
+	title, good, bad, actions
 }, null, 4);
 
 const mdItems = items => items.sort(sortRetrospectiveItems)

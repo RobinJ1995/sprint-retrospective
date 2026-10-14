@@ -66,9 +66,9 @@ const PreviousRetrospective = ({
         </ul></li>;
     } else if (!loaded) {
         return <li className="previous-retro loading" onClick={navigateToRetro}><MDSpinner /> <a href={retroUrl}>{retroId}</a></li>;
-    } else {
-        return <li onClick={navigateToRetro}><a href={retroUrl}>{retroId}</a></li>;
     }
+
+    return <li onClick={navigateToRetro}><a href={retroUrl}>{retroId}</a></li>;
 };
 
 
