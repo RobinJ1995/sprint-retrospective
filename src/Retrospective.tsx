@@ -339,9 +339,7 @@ const Retrospective = ({
 				if (retroId !== retro) {
 					console.error('Received a message for the wrong retrospective.');
 					return;
-				}
-
-				if (parsed?.action === 'set_access_key') {
+				} else if (parsed?.action === 'set_access_key') {
 					/*
 					 * Try authenticate with the access key that is in cache.
 					 * If it succeeds, we're the ones that set the access key.
