@@ -53,7 +53,7 @@ const httpCheckParse = res => checkHttpStatus(res).json();
 
 const repeat = (n, content) => Array(n || 0).fill(false).map(() => content);
 
-const getAuthHeaders = (retroId) => ({
+const getAuthHeaders = retroId => ({
 	[HEADERS.TOKEN]: cache.get(`${retroId}:token`),
 	[HEADERS.ADMIN_KEY]: cache.get(`admin_key`)
 });

@@ -1,17 +1,19 @@
 .toast {
-	background: rgba(0, 0, 0, 0.84);
-	color: #DADADA;
-	padding: 10px 12px;
-	margin: 8px 8px 12px 8px;
-	box-shadow: 0px 0px 10px 2px #555;
-	border-radius: 3px;
-	text-align: right;
-	animation: show-toast 0.4s;
+	max-width: 360px;
+	margin: 8px 12px 12px 12px;
+	padding: 11px 14px;
+	border: var(--border-w) solid var(--border-strong);
+	border-radius: var(--radius-m);
+	background: var(--surface-raised);
+	box-shadow: var(--shadow-pop);
+	color: var(--text);
+	font-size: 0.93rem;
+	animation: show-toast 0.3s ease;
 
 	&.error {
-		background: red;
-		color: black;
-		box-shadow: 0px 0px 10px 2px red;
-		padding: 16px 12px;
+		border-color: var(--danger-border);
+		background: var(--danger-bg);
+		color: var(--danger-fg);
+		font-weight: 600;
 	}
 }

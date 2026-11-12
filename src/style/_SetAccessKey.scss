@@ -1,26 +1,57 @@
 .modal-set-access-key {
 	.modal-set-access-key-more-info {
-		border: 1px solid grey;
-		padding: 4px 8px;
-		background: rgba(255, 255, 255, 0.04);
+		margin: 0 0 12px 0;
+		border: var(--border-w) solid var(--border);
+		border-radius: var(--radius-m);
+		background: var(--surface);
+		font-size: 0.93em;
 
-		p {
-			text-align: left;
+		@include colourful {
+			background: rgba(255, 255, 255, 0.6);
 		}
 
-		strong {
+		.disclosure {
+			display: flex;
+			align-items: center;
+			gap: 8px;
+			width: 100%;
+			padding: 9px 12px;
+			border: 0;
+			border-radius: var(--radius-m);
+			background: transparent;
+			color: var(--text);
+			font-weight: 600;
+			text-align: left;
 			cursor: pointer;
 
-			&:hover {
-				text-decoration: underline;
+			.icon {
+				color: var(--text-muted);
+				transition: transform 0.15s;
 			}
+
+			&.open .icon {
+				transform: rotate(90deg);
+			}
+
+			&:hover {
+				background: var(--surface-hover);
+			}
+		}
+
+		.disclosure-body {
+			padding: 2px 12px 12px 12px;
+			color: var(--text-muted);
+			animation: add-item 0.2s ease;
 		}
 	}
 
+	form {
+		margin-top: 16px;
+	}
+
 	.access-key-generate {
-		font-size: 0.8em;
-		text-align: center;
-		color: #CACACA;
-		cursor: pointer;
+		margin-top: 8px;
+		color: var(--text-muted);
+		font-size: 0.88em;
 	}
 }

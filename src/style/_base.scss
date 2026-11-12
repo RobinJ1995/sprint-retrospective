@@ -1,0 +1,245 @@
+*,
+*::before,
+*::after {
+	box-sizing: border-box;
+}
+
+html {
+	background-color: var(--bg);
+}
+
+body {
+	margin: 0;
+	min-height: 100vh;
+	background-color: var(--bg);
+	background-image: var(--bg-image);
+	background-size: var(--bg-size);
+	background-repeat: repeat;
+	color: var(--text);
+	font-family: var(--font-body);
+	font-size: 15px;
+	line-height: 1.5;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+
+html:not([data-theme='colourful']) body {
+	background-repeat: no-repeat;
+}
+
+button,
+input,
+textarea,
+select {
+	font: inherit;
+	color: inherit;
+}
+
+h1,
+h2,
+h3 {
+	font-family: var(--font-display);
+	line-height: 1.2;
+	margin: 0;
+}
+
+a {
+	color: inherit;
+}
+
+:focus-visible {
+	outline: 2px solid var(--focus);
+	outline-offset: 2px;
+}
+
+::selection {
+	background: var(--focus);
+	color: var(--bg);
+}
+
+kbd,
+code {
+	font-family: var(--font-mono);
+	font-size: 0.9em;
+}
+
+.emoji {
+	// MacOS is once again the ugly duckling...
+	font-family: 'apple color emoji', 'segoe ui emoji', 'noto color emoji', 'android emoji', 'emojisymbols', 'emojione mozilla', 'twemoji mozilla', 'segoe ui symbol';
+}
+
+.icon {
+	width: 1em;
+	height: 1em;
+	flex: none;
+	fill: none;
+	stroke: currentColor;
+	stroke-width: 2;
+	stroke-linecap: round;
+	stroke-linejoin: round;
+}
+
+.button {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 8px;
+	min-height: 38px;
+	padding: 7px 16px;
+	border: var(--border-w) solid var(--border-strong);
+	border-radius: var(--radius-s);
+	background: var(--surface-raised);
+	box-shadow: var(--shadow-button);
+	color: var(--text);
+	font-weight: 600;
+	text-decoration: none;
+	cursor: pointer;
+	transition: background-color 0.15s, border-color 0.15s, color 0.15s, transform 0.08s, box-shadow 0.08s;
+
+	&:hover {
+		background: var(--surface-hover);
+	}
+
+	&:active {
+		transform: var(--press);
+	}
+
+	&.primary {
+		background: var(--primary-bg);
+		border-color: var(--primary-bg);
+		color: var(--primary-fg);
+
+		&:hover {
+			background: var(--primary-hover);
+			border-color: var(--primary-hover);
+		}
+
+		@include colourful {
+			border-color: var(--border);
+		}
+	}
+
+	&.large {
+		min-height: 46px;
+		padding: 10px 22px;
+		font-size: 1.05em;
+	}
+
+	&.link {
+		min-height: 0;
+		padding: 0;
+		border: 0;
+		background: none;
+		box-shadow: none;
+		color: var(--text-muted);
+		font-weight: inherit;
+		text-decoration: underline;
+		text-underline-offset: 3px;
+
+		&:hover {
+			color: var(--text);
+		}
+
+		&:active {
+			transform: none;
+		}
+	}
+
+	@include colourful {
+		&:active {
+			box-shadow: 1px 1px 0 var(--border);
+		}
+
+		&.link:active {
+			box-shadow: none;
+		}
+	}
+}
+
+.input {
+	display: block;
+	width: 100%;
+	min-height: 42px;
+	padding: 8px 12px;
+	border: var(--border-w) solid var(--border-strong);
+	border-radius: var(--radius-s);
+	background: var(--field);
+	color: var(--text);
+	font-size: 1.05em;
+	transition: border-color 0.15s, box-shadow 0.15s;
+
+	&::placeholder {
+		color: var(--text-faint);
+	}
+
+	&:focus {
+		outline: none;
+		border-color: var(--focus);
+		box-shadow: 0 0 0 3px rgba(124, 176, 255, 0.25);
+
+		@include colourful {
+			box-shadow: 3px 3px 0 var(--focus);
+		}
+	}
+}
+
+.field-label {
+	display: block;
+	margin-bottom: 6px;
+	color: var(--text-muted);
+	font-size: 0.9em;
+	font-weight: 600;
+}
+
+.app-bar {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 6px 16px;
+	padding: 10px 20px;
+	background: var(--bar-bg);
+	transition: box-shadow 0.5s;
+	color: var(--bar-fg);
+	border-bottom: var(--border-w) solid var(--bar-border);
+
+	@media (max-width: 700px) {
+		padding: 10px 12px;
+	}
+}
+
+.brand {
+	display: inline-flex;
+	align-items: center;
+	gap: 10px;
+	flex: none;
+	border-radius: var(--radius-s);
+	color: inherit;
+	font-family: var(--font-display);
+	font-size: 1.1rem;
+	font-weight: 700;
+	letter-spacing: -0.01em;
+	text-decoration: none;
+
+	img {
+		display: block;
+		width: 28px;
+		height: 28px;
+		border-radius: 50%;
+
+		@include colourful {
+			border: 2px solid #17130e;
+			box-shadow: 2px 2px 0 #17130e;
+		}
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	// The participant avatars are exempt: their animation is to stay exactly as it was.
+	*:not(.avatar),
+	*:not(.avatar)::before,
+	*:not(.avatar)::after {
+		animation-duration: 0.01ms !important;
+		animation-iteration-count: 1 !important;
+		transition-duration: 0.01ms !important;
+	}
+}

@@ -4,6 +4,7 @@ import MDSpinner from "react-md-spinner";
 import {VOTE_MODES, HEADERS, DEFAULT_HEADERS, RETRO_TITLE_MIN_LENGTH, RETRO_TITLE_MAX_LENGTH} from "./constants";
 import { v4 as uuid } from 'uuid';
 import Promise from 'bluebird';
+import Icon from './Icon';
 
 
 const CreateNewRetrospective = ({
@@ -73,12 +74,30 @@ const CreateNewRetrospective = ({
         }
     }, [createRetro, setLoading, setError, showErrorToast]);
 
+    const voteModeOption = (mode: string, icon: string, label: string) => (
+        <label className={`choice ${voteMode === mode ? 'selected' : ''}`}>
+            <input
+                type="radio"
+                name="vote-mode"
+                value={mode}
+                checked={voteMode === mode}
+                readOnly
+            />
+            <span className="choice-icon emoji" role="img" aria-hidden="true">{icon}</span>
+            <span className="choice-text">{label}</span>
+            <span className="choice-check"><Icon name="check" /></span>
+        </label>
+    );
+
     return <form id="create-new-retro" className={loading ? 'loading' : ''} onSubmit={submit}>
         <div>
-            <div className="title">
-                <label>Retrospective name:
+            <div className="form-row title">
+                <label>
+                    <span className="field-label">Retrospective name:</span>
                     <input
+                        className="input"
                         type="text"
+                        placeholder="Sprint 42"
                         name="title"
                         value={title}
                         onChange={e => setTitle(e.target.value)}
@@ -87,37 +106,18 @@ const CreateNewRetrospective = ({
                     />
                 </label>
             </div>
-            <div className="vote-mode">
-                Voting mode:
+            <div className="form-row vote-mode">
+                <span className="field-label">Voting mode:</span>
                 <div className="options" onChange={e => setVoteMode((e.target as any).value)}>
-                    <label>
-                        <input
-                            type="radio"
-                            name="vote-mode"
-                            value={VOTE_MODES.UPVOTE_DOWNVOTE}
-                            checked={voteMode === VOTE_MODES.UPVOTE_DOWNVOTE}
-                        /> <span role="img" aria-label="Thumb down">👎</span> Upvotes and downvotes
-                    </label>
-                    <label>
-                        <input
-                            type="radio"
-                            name="vote-mode"
-                            checked={voteMode === VOTE_MODES.UPVOTE}
-                            value={VOTE_MODES.UPVOTE} /> <span role="img" aria-label="Thumb up">👍</span> Upvotes only
-                    </label>
-                    <label>
-                        <input
-                            type="radio"
-                            name="vote-mode"
-                            checked={voteMode === VOTE_MODES.NONE}
-                            value={VOTE_MODES.NONE} /> <span role="img" aria-label="Prohibited symbol">🚫</span> Disable voting
-                    </label>
+                    {voteModeOption(VOTE_MODES.UPVOTE_DOWNVOTE, '👍👎', 'Upvotes and downvotes')}
+                    {voteModeOption(VOTE_MODES.UPVOTE, '👍', 'Upvotes only')}
+                    {voteModeOption(VOTE_MODES.NONE, '🚫', 'Disable voting')}
                 </div>
             </div>
             <div className="create">
                 {loading
                     ? <MDSpinner size={48} />
-                    : <button>Create retrospective</button>}
+                    : <button className="button primary large">Create retrospective</button>}
             </div>
         </div>
     </form>;

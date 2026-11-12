@@ -440,7 +440,7 @@ const Retrospective = ({
 		<WebsocketContext.Provider
 			value={{ wsSend }}>
 			<section id="good">
-				<h2>What went well <span className="emoji" role="img" aria-label="">🤩</span></h2>
+				<h2><span className="emoji" role="img" aria-label="">🤩</span> <span className="section-title">What went well</span> <span className="count" title={`${good.length} items`}>{good.length}</span></h2>
 				<List
 					section={SECTIONS.GOOD}
 					items={good}
@@ -455,7 +455,7 @@ const Retrospective = ({
 				/>
 			</section>
 			<section id="bad">
-				<h2>What could we improve <span className="emoji" role="img" aria-label="">🤨</span></h2>
+				<h2><span className="emoji" role="img" aria-label="">🤨</span> <span className="section-title">What could we improve</span> <span className="count" title={`${bad.length} items`}>{bad.length}</span></h2>
 				<List
 					section={SECTIONS.BAD}
 					items={bad}
@@ -470,7 +470,7 @@ const Retrospective = ({
 				/>
 			</section>
 			<section id="actions">
-				<h2>Actions for next sprint <span className="emoji" role="img" aria-label="">☑️</span></h2>
+				<h2><span className="emoji" role="img" aria-label="">☑️</span> <span className="section-title">Actions for next sprint</span> <span className="count" title={`${actions.length} items`}>{actions.length}</span></h2>
 				<List
 					section={SECTIONS.ACTION}
 					items={actions}

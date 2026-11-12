@@ -1,37 +1,37 @@
 import React from 'react';
 import {THEMES} from '../constants';
-import ModalContext from '../ModalContext';
+import Icon from '../Icon';
+
+// Themes are picked by their preview alone. The names are internal, and only read out by screen readers.
+const OPTIONS = Object.freeze([
+	{ value: THEMES.DARK, label: 'Dark' },
+	{ value: THEMES.COLOURFUL, label: 'Colourful' }
+]);
 
 const SetTheme = ({ setTheme, theme }) => {
 	return (
-		<ModalContext.Consumer>
-			{({ closeModal }) => {
-				return (<form class="modal-set-theme">
-					<ul>
-						<li>
-							<label>
-								<input
-									onChange={e => setTheme(e.target.value)}
-									name="theme"
-									type="radio"
-									checked={theme === THEMES.DARK}
-									value={THEMES.DARK} />
-								Dark (default)</label>
-						</li>
-						<li>
-							<label>
-								<input
-									onChange={e => setTheme(e.target.value)}
-									name="theme"
-									type="radio"
-									checked={theme === THEMES.COLOURFUL}
-									value={THEMES.COLOURFUL} />
-								Colourful</label>
-						</li>
-					</ul>
-				</form>)
-			}}
-		</ModalContext.Consumer>
+		<form className="modal-set-theme">
+			<ul>
+				{OPTIONS.map(({ value, label }) => <li key={value}>
+					<label className={`choice ${theme === value ? 'selected' : ''}`}>
+						<input
+							onChange={e => setTheme(e.target.value)}
+							name="theme"
+							type="radio"
+							checked={theme === value}
+							value={value}
+							aria-label={label} />
+						<span className={`theme-preview ${value}`} aria-hidden="true">
+							<i className="bar" />
+							<i className="col good" />
+							<i className="col bad" />
+							<i className="col actions" />
+						</span>
+						<span className="choice-check"><Icon name="check" /></span>
+					</label>
+				</li>)}
+			</ul>
+		</form>
 	);
 }
 

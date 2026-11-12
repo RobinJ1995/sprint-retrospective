@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useState} from 'react';
+import React, {useCallback, useEffect, useLayoutEffect, useState} from 'react';
 import './style/App.scss';
 import {v4 as uuid} from 'uuid';
 import {ToastProvider, useToasts} from 'react-toast-notifications';
@@ -18,8 +18,16 @@ import Export from './modal/Export';
 import SetTheme from './modal/SetTheme';
 import RetrospectiveContext from './RetrospectiveContext';
 import useCache, {useLocalStorage} from "./useCache";
-import ForkMeOnGithub from 'fork-me-on-github';
 import MDSpinner from "react-md-spinner";
+import Icon from './Icon';
+import Brand from './Brand';
+
+const MODAL_TITLES = Object.freeze({
+	[MODALS.SET_VOTE_MODE]: 'Voting mode',
+	[MODALS.SET_THEME]: 'Theme',
+	[MODALS.SET_ACCESS_KEY]: 'Access key',
+	[MODALS.EXPORT]: 'Export'
+});
 
 const trimSlashes = str => str.replace(/^\//, '').replace(/\/$/, '');
 const getRetroIdFromUrl = () => {
@@ -77,6 +85,11 @@ function App() {
 		})
 	}, [addToast]);
 
+	// The theme lives on <html> so that it applies to every page, not just the retrospective itself.
+	useLayoutEffect(() => {
+		document.documentElement.dataset.theme = Object.values(THEMES).includes(theme) ? theme : THEMES.DARK;
+	}, [theme]);
+
 	// Hidden dev methods
 	useEffect(() => {
 		window.hereBeDragons = (adminKey = null) => {
@@ -130,7 +143,7 @@ function App() {
 	const shareFallback = () => copyToClipboard(window.location)
 		.then(() => true)
 		.catch(() => false)
-		.then(copySucceeded => setModal(<ShareFallback copySucceeded={copySucceeded} />));
+		.then(copySucceeded => setModal(<ShareFallback modalTitle="Share" copySucceeded={copySucceeded} />));
 
 	const share = () => {
 		if (navigator.share) {
@@ -157,6 +170,7 @@ function App() {
 			case MODALS.SET_VOTE_MODE:
 				return <SetVoteMode
 					setMode={updateVoteMode}
+					current={voteMode}
 				/>;
 			case MODALS.SET_THEME:
 				return <SetTheme
@@ -216,31 +230,44 @@ function App() {
 				error && 'error',
 				`theme-${theme}`
 			].filter(x => x).join(' ')}>
-				<ForkMeOnGithub
-					className="fork-me-on-github"
-					colorBackground="#888"
-					colorOctocat="#222"
-					repo="https://github.com/RobinJ1995/sprint-retrospective/" />
-				<nav>
-					<ul>
-						<li onClick={() => setModal(MODALS.SET_NAME)}>{title ? 'Change' : 'Set'} name</li>
-						<li onClick={() => setModal(MODALS.SET_VOTE_MODE)}>Set voting mode</li>
-						<li onClick={share}>Share</li>
-						<li onClick={() => setModal(MODALS.EXPORT)}>Export</li>
-						<li onClick={() => setModal(MODALS.SET_THEME)}>Change theme</li>
-						<li onClick={() => setModal(MODALS.SET_ACCESS_KEY)}>Set access key</li>
-						{advancedMode && adminKey &&
-						<li onClick={() => fetch(`${API_BASE}/_actions`, {
-							headers: getAuthHeaders(RETRO_ID)
-						})
-							.then(httpCheckParse)
-							.then(logs => setModal(<pre>{JSON.stringify(logs, undefined, 4)}</pre>))}>Logs</li>}
-					</ul>
-				</nav>
-				{!!title &&
-					<h1>{title}</h1>}
+				<header className="app-bar">
+					<Brand compact />
+					{!!title &&
+					<h1>
+						<button
+							type="button"
+							className="title-button"
+							title="Change name"
+							onClick={() => setModal(MODALS.SET_NAME)}
+						><span>{title}</span> <Icon name="edit" /></button>
+					</h1>}
+					<nav aria-label="Retrospective">
+						<ul>
+							<li><button type="button" onClick={() => setModal(MODALS.SET_NAME)}><Icon name="edit" /> {title ? 'Change' : 'Set'} name</button></li>
+							<li><button type="button" onClick={() => setModal(MODALS.SET_VOTE_MODE)}><Icon name="vote" /> Set voting mode</button></li>
+							<li><button type="button" onClick={share}><Icon name="share" /> Share</button></li>
+							<li><button type="button" onClick={() => setModal(MODALS.EXPORT)}><Icon name="export" /> Export</button></li>
+							<li><button type="button" onClick={() => setModal(MODALS.SET_THEME)}><Icon name="theme" /> Change theme</button></li>
+							<li><button type="button" onClick={() => setModal(MODALS.SET_ACCESS_KEY)}><Icon name="key" /> Set access key</button></li>
+							{advancedMode && adminKey &&
+							<li><button type="button" onClick={() => fetch(`${API_BASE}/_actions`, {
+								headers: getAuthHeaders(RETRO_ID)
+							})
+								.then(httpCheckParse)
+								.then(logs => setModal(<pre data-modal-title="Logs">{JSON.stringify(logs, undefined, 4)}</pre>))}><Icon name="logs" /> Logs</button></li>}
+							<li className="nav-icon-only">
+								<a
+									href="https://github.com/RobinJ1995/sprint-retrospective/"
+									target="_blank"
+									rel="noopener noreferrer"
+									title="Fork me on GitHub"
+									aria-label="Fork me on GitHub"><Icon name="github" /></a>
+							</li>
+						</ul>
+					</nav>
+				</header>
 				{!!error &&
-					<p id="error">{error.message}</p>
+					<p id="error" role="alert">{error.message}</p>
 				}
 				<Retrospective
 					good={good}
@@ -261,6 +288,9 @@ function App() {
 				/>
 				{modal && <Overlay>
 					<Modal
+						title={modal === MODALS.SET_NAME
+							? `${title ? 'Change' : 'Set'} name`
+							: MODAL_TITLES[modal] ?? modal?.props?.modalTitle ?? modal?.props?.['data-modal-title'] ?? null}
 						closeable={true}
 						closeModal={() => setModal(null)}
 					>{populateModal()}</Modal>

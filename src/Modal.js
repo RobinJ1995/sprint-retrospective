@@ -1,8 +1,9 @@
 import React, {useEffect} from 'react';
 import ModalContext from './ModalContext';
+import Icon from './Icon';
 import {KEY} from "./constants";
 
-const Modal = ({ children, closeable = false, closeModal = null }) => {
+const Modal = ({ children, title = null, closeable = false, closeModal = null }) => {
 	const closeByHittingEscapeKeyHandler = e => {
 		if (e.key === KEY.ESCAPE) {
 			closeModal();
@@ -19,24 +20,18 @@ const Modal = ({ children, closeable = false, closeModal = null }) => {
 		return () => window.removeEventListener('keydown', closeByHittingEscapeKeyHandler)
 	})
 
-	return (<div class="modal">
-		{closeable &&
-		<div
-			class="modal-close"
-			title="Close"
-			onClick={closeModal}
-		>
-			<svg viewBox="0 0 12 12" version="1.1"
-				 xmlns="http://www.w3.org/2000/svg">
-				<line x1="3" y1="9"
-					  x2="9" y2="3"
-					  stroke="white"
-					  stroke-width="2"/>
-				<line x1="3" y1="3"
-					  x2="9" y2="9"
-					  stroke="white"
-					  stroke-width="2"/>
-			</svg>
+	return (<div className="modal" role="dialog" aria-modal="true" aria-label={title}>
+		{(title || closeable) &&
+		<div className="modal-header">
+			{title && <h2>{title}</h2>}
+			{closeable &&
+			<button
+				type="button"
+				className="modal-close"
+				title="Close"
+				aria-label="Close"
+				onClick={closeModal}
+			><Icon name="close" /></button>}
 		</div>}
 		<ModalContext.Provider
 			value={{ closeModal}}

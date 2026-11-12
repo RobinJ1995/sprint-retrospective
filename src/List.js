@@ -80,7 +80,7 @@ function List({
 		[items, voteMode]);
 
 	return (
-		<ul class="items">
+		<ul className="items">
 			{sortedItems.map(({id, text, up, down, comments}) =>
 				<Item
 					key={text}

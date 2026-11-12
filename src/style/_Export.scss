@@ -1,23 +1,60 @@
 .modal-export {
+	// Intentionally flush against the exported text.
 	.modal-export-tab-bar {
+		position: relative;
+		z-index: 1;
 		display: flex;
 		justify-content: space-evenly;
+		border: var(--border-w) solid var(--border);
+		border-radius: var(--radius-m);
+		background: var(--surface);
+		overflow: hidden;
+
+		@include colourful {
+			background: #ffffff;
+		}
+
+		@media (max-width: 440px) {
+			flex-wrap: wrap;
+		}
 
 		button {
 			flex-grow: 1;
-			border-radius: 0px;
-			outline: none;
 			padding: 12px 16px;
+			border: 0;
+			border-radius: 0;
+			outline-offset: -2px;
+			background: transparent;
+			color: var(--text-muted);
+			white-space: nowrap;
+			cursor: pointer;
+			transition: all 0.5s;
+
+			&:hover {
+				color: var(--text);
+			}
 
 			&.selected {
+				background: var(--surface-hover);
+				color: var(--text);
 				font-weight: bold;
 				font-size: 1.2em;
-				background: #444;
+
+				@include colourful {
+					background: var(--primary-bg);
+				}
 			}
 		}
 	}
 
 	.modal-export-content {
+		// Tucked under the tab bar, so that the bar's rounded bottom corners sit on the content's background.
+		margin-top: calc(-1 * var(--radius-m));
+		padding-top: var(--radius-m);
+		border: var(--border-w) solid var(--border);
+		border-top: 0;
+		border-radius: 0 0 var(--radius-m) var(--radius-m);
+		background: var(--field);
 		animation: show-modal-export-content 0.4s;
 
 		&:empty {
@@ -25,16 +62,30 @@
 		}
 
 		p {
-			margin: revert;
+			margin: 0;
+			padding: 12px 12px 0 12px;
+			color: var(--text-muted);
+			font-size: 0.92em;
 		}
 
 		textarea {
+			display: block;
 			width: 100%;
 			height: 60vh;
 			max-height: 90vh;
-			font-size: 0.8em;
-			padding: 0px;
-			border: 0px;
+			padding: 12px;
+			border: 0;
+			border-radius: 0 0 var(--radius-m) var(--radius-m);
+			background: transparent;
+			color: var(--text);
+			font-family: var(--font-mono);
+			font-size: 0.8rem;
+			line-height: 1.55;
+			resize: vertical;
+
+			&:focus {
+				outline: none;
+			}
 		}
 	}
 }

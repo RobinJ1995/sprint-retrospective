@@ -1,3 +1,20 @@
+// Pins the document-level rules the avatars used to inherit, so that they render exactly as before the redesign.
+#stats-n-participants,
+#stats-n-participants * {
+	box-sizing: content-box;
+	transition: all 0.5s;
+}
+
+#stats-n-participants {
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+	font-size: 16px;
+	line-height: normal;
+
+	@include colourful {
+		font-family: var(--font-body);
+	}
+}
+
 #stats-n-participants {
 	position: fixed;
 	bottom: -5px;

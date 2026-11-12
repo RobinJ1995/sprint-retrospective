@@ -65,7 +65,7 @@ const PreviousRetrospective = ({
             <li title={`${nComments} comments`}><span role="img" aria-label="Comments">💬</span> {nComments}</li>
         </ul></li>;
     } else if (!loaded) {
-        return <li className="previous-retro loading" onClick={navigateToRetro}><MDSpinner /> <a href={retroUrl}>{retroId}</a></li>;
+        return <li className="previous-retro loading" onClick={navigateToRetro}><MDSpinner size={18} /> <a href={retroUrl}>{retroId}</a></li>;
     }
 
     return <li onClick={navigateToRetro}><a href={retroUrl}>{retroId}</a></li>;
@@ -81,8 +81,13 @@ const PreviousRetrospectives = ({
     // Hacky but it'll do for now.
     const retroIds: string[] = cacheKeys.filter(retroId => cacheKeys.includes(`${retroId}:token`));
 
+    if (retroIds.length === 0) {
+        return <p className="previous-retros-empty">Retrospectives you have taken part in on this device will show up here.</p>;
+    }
+
     return <ul className="previous-retros">
         {retroIds.map(retroId => <PreviousRetrospective
+            key={retroId}
             retroId={retroId}
             cache={cache}
             apiBaseUrl={apiBaseUrl}

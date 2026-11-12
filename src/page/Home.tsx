@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import {httpPost} from '../utils';
+import React from 'react';
+import Brand from '../Brand';
 import PreviousRetrospectives from "../PreviousRetrospectives";
 import CreateNewRetrospective from "../CreateNewRetrospective";
 
@@ -10,7 +10,9 @@ const Home = ({
                   showErrorToast
               }) => {
 
-    return <main id="home-page">
+    return <>
+        <header className="app-bar"><Brand /></header>
+        <main id="home-page">
         <section className="create-new-retro">
             <h2>Create a new retrospective</h2>
             <CreateNewRetrospective
@@ -25,7 +27,8 @@ const Home = ({
                 apiBaseUrl={apiBaseUrl}
             />
         </section>
-    </main>;
+        </main>
+    </>;
 };
 
 export default Home;
