@@ -5,31 +5,33 @@ import ModalContext from '../ModalContext';
 const SetName = ({ setName, current = '' }) => {
 	const [text, setText] = useState(current);
 
-	return (<div class="modal-set-name">
+	return (<div className="modal-set-name">
 		<ModalContext.Consumer>
-			{({ closeModal }) => [
-				<p>Name this retrospective:</p>,
+			{({ closeModal }) => (
 				<form
 					onSubmit={() => {
 						setName(text);
 						closeModal();
 					}}
 				>
-					<p>
+					<label>
+						<span className="field-label">Name this retrospective:</span>
 						<input
+							className="input"
 							type="text"
 							value={text}
 							minLength={RETRO_TITLE_MIN_LENGTH}
 							maxLength={RETRO_TITLE_MAX_LENGTH}
 							required
+							autoFocus
 							onChange={e => setText(e.target.value)}
 							onKeyUp={e => e.key === KEY.ESCAPE && closeModal()}
 						/>
-					</p>
-					<p>
-						<button>Submit</button>
-					</p>
-				</form>]}
+					</label>
+					<div className="modal-actions">
+						<button className="button primary">Submit</button>
+					</div>
+				</form>)}
 		</ModalContext.Consumer>
 	</div>);
 }

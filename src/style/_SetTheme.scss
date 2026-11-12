@@ -1,9 +1,108 @@
 .modal-set-theme {
 	ul {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 12px;
+		margin: 0;
+		padding: 0;
 		list-style: none;
 
-		li {
-			margin: 8px 12px;
+		@media (max-width: 440px) {
+			grid-template-columns: 1fr;
+		}
+	}
+
+	.choice {
+		position: relative;
+		display: block;
+		padding: 10px;
+
+		.choice-check {
+			position: absolute;
+			top: -8px;
+			right: -8px;
+			display: none;
+		}
+
+		&.selected .choice-check {
+			display: grid;
+		}
+	}
+
+	// Miniature of what the theme looks like. Deliberately hard-coded: a preview must not change with the active theme.
+	.theme-preview {
+		display: grid;
+		grid-template-columns: repeat(3, 1fr);
+		grid-template-rows: 14px 1fr;
+		gap: 6px;
+		height: 96px;
+		padding: 8px;
+		border-radius: 8px;
+		overflow: hidden;
+
+		i {
+			display: block;
+			border-radius: 4px;
+		}
+
+		.bar {
+			grid-column: 1 / -1;
+			margin: -8px -8px 0 -8px;
+			border-radius: 0;
+		}
+
+		&.dark {
+			background: #0c0d11;
+			border: 1px solid #262a33;
+
+			.bar {
+				background: #14161b;
+				border-bottom: 1px solid #262a33;
+			}
+
+			.col {
+				background: #1b1e25;
+				border: 1px solid #262a33;
+			}
+
+			.good {
+				border-top: 3px solid #4fd28f;
+			}
+
+			.bad {
+				border-top: 3px solid #ff8a6b;
+			}
+
+			.actions {
+				border-top: 3px solid #6ea8fe;
+			}
+		}
+
+		&.colourful {
+			background: #fff6d0;
+			border: 2px solid #17130e;
+
+			.bar {
+				background: #9a48ff;
+				border-bottom: 2px solid #17130e;
+			}
+
+			.col {
+				border: 2px solid #17130e;
+				box-shadow: 2px 2px 0 #17130e;
+			}
+
+			.good {
+				background: #4fe07c;
+			}
+
+			.bad {
+				background: #ff7676;
+			}
+
+			.actions {
+				background: #6cbcff;
+			}
 		}
 	}
 }

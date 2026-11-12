@@ -11,7 +11,8 @@ import {ToastProvider} from "react-toast-notifications";
 ReactDOM.render(
 	<ToastProvider
 		components={{Toast}}
-		autoDismissTimeout={5_000}>
+		autoDismissTimeout={5_000}
+		placement="bottom-right">
 		<App/>
 	</ToastProvider>,
 	document.getElementById('root'));

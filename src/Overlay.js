@@ -1,7 +1,7 @@
 import React from 'react';
 
 const Overlay = ({ children }) => (
-	<div class="overlay">{children}</div>
+	<div className="overlay">{children}</div>
 );
 
 export default Overlay;

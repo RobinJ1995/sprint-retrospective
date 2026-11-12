@@ -10,6 +10,7 @@ import {
 	RETRO_ACCESS_KEY_MIN_LENGTH,
 } from '../constants';
 import ModalContext from '../ModalContext';
+import Icon from '../Icon';
 
 const generateRandom = () => uniqueNamesGenerator({
 	dictionaries: [
@@ -22,13 +23,16 @@ const generateRandom = () => uniqueNamesGenerator({
 
 const MoreInformation = ({ setShow, show = false }) => (
 	<div className="modal-set-access-key-more-info">
-		{show
-			? <p onClick={() => setShow(false)}><span role="img" aria-label="Arrow down">⬇️</span> <strong>Collapse</strong></p>
-			: <p onClick={() => setShow(true)}><span role="img" aria-label="Arrow right">➡️</span> <strong>More information</strong></p>}
-		{show && [
-			<p>For retrospectives that do not have an access key set, a user's session token is valid for 2 minutes before it needs to be renewed. At this stage, if an access key has been set, the user will need to enter it in order to continue.</p>,
+		<button
+			type="button"
+			className={`disclosure ${show ? 'open' : ''}`}
+			aria-expanded={show}
+			onClick={() => setShow(!show)}
+		><Icon name="chevron" /> {show ? 'Collapse' : 'More information'}</button>
+		{show && <div className="disclosure-body">
+			<p>For retrospectives that do not have an access key set, a user's session token is valid for 2 minutes before it needs to be renewed. At this stage, if an access key has been set, the user will need to enter it in order to continue.</p>
 			<p>Once a user has authenticated to a retrospective with an access key, their session token remains valid for 20 days. After this, they will not need to enter one for the next 20 days, regardless of whether the retrospective's access key has changed in the meantime.</p>
-		]}
+		</div>}
 	</div>
 );
 
@@ -47,15 +51,16 @@ const SetAccessKey = ({ setAccessKey }) => {
 					setShow={setMoreInfo}
 				/>,
 				<p>Once an access key is set on a retrospective, it can be changed but it can not be removed.</p>,
-				<p>Set an access key for this retrospective:</p>,
 				<form
 					onSubmit={() => {
 						setAccessKey(text);
 						closeModal();
 					}}
 				>
-					<p>
+					<label>
+						<span className="field-label">Set an access key for this retrospective:</span>
 						<input
+							className="input"
 							type="text"
 							value={text}
 							minLength={RETRO_ACCESS_KEY_MIN_LENGTH}
@@ -64,14 +69,15 @@ const SetAccessKey = ({ setAccessKey }) => {
 							onChange={e => setText(e.target.value)}
 							onKeyUp={e => e.key === KEY.ESCAPE && closeModal()}
 						/>
-						<p
-							className="access-key-generate"
-							onClick={() => setText(generateRandom)}
-						>Or <em>click here</em> to generate a random access key.</p>
-					</p>
-					<p>
-						<button>Set access key</button>
-					</p>
+					</label>
+					<p className="access-key-generate">Or <button
+						type="button"
+						className="button link"
+						onClick={() => setText(generateRandom)}
+					>click here</button> to generate a random access key.</p>
+					<div className="modal-actions">
+						<button className="button primary">Set access key</button>
+					</div>
 				</form>]}
 		</ModalContext.Consumer>
 	</div>);

@@ -5,7 +5,7 @@ import {checkHttpStatus, httpDelete, httpPatch, httpPost} from "./utils";
 import RetrospectiveContext from "./RetrospectiveContext";
 import {getAuthHeaders} from "./utils";
 
-const Comment = ({ id, children = '', section, itemId }) => {
+const Comment = ({ id, children = '', section, itemId, onClose = () => {} }) => {
 	const {
 		apiBaseUrl,
 		retroId
@@ -19,6 +19,20 @@ const Comment = ({ id, children = '', section, itemId }) => {
 
 	const submit = useCallback(e => {
 		e.preventDefault();
+
+		if (isNew) {
+			if (!text) {
+				return onClose();
+			}
+
+			// The input stays open until the comment has been saved, so that it does not get lost on failure.
+			return httpPost(`${apiBaseUrl}/${section}/${itemId}/comment`,
+				{text},
+				getAuthHeaders(retroId))
+				.then(checkHttpStatus)
+				.then(() => onClose())
+				.catch(window.alert);
+		}
 
 		setEditing(false);
 
@@ -38,20 +52,6 @@ const Comment = ({ id, children = '', section, itemId }) => {
 
 		setText(children);
 
-		if (isNew) {
-			return httpPost(`${apiBaseUrl}/${section}/${itemId}/comment`,
-				{text},
-				getAuthHeaders(retroId))
-				.then(checkHttpStatus)
-				.catch(err => {
-					window.alert(err);
-
-					// Ensure input does not get lost
-					setEditing(true);
-					setText(text);
-				});
-		}
-
 		return httpPatch(`${apiBaseUrl}/${section}/${itemId}/comment/${id}`,
 			{text},
 			getAuthHeaders(retroId))
@@ -64,17 +64,21 @@ const Comment = ({ id, children = '', section, itemId }) => {
 				setText(text);
 			});
 		},
-		[setText, setEditing, apiBaseUrl, section, itemId, id, isNew, text, children, retroId]);
+		[setText, setEditing, apiBaseUrl, section, itemId, id, isNew, text, children, retroId, onClose]);
 
 	const cancelEdit = useCallback(e => {
 			if (isNew) {
+				if (!text) {
+					onClose();
+				}
+
 				return;
 			}
 
 			setText(children);
 			setEditing(false);
 		},
-	[isNew, setText, setEditing]);
+	[isNew, text, children, setText, setEditing, onClose]);
 
 	useEffect(() => {
 		if (inputField.current && !isNew) {
@@ -105,8 +109,10 @@ const Comment = ({ id, children = '', section, itemId }) => {
 					maxLength={ITEM_TEXT_MAX_LENGTH}
 					onChange={e => setText(e.target.value)}
 					onBlur={cancelEdit}
-					onKeyUp={e => e.key === KEY.ESCAPE && cancelEdit()}
-					aria-label="Edit comment" />
+					onKeyUp={e => e.key === KEY.ESCAPE && (isNew ? onClose() : cancelEdit())}
+					placeholder={isNew ? 'Add comment...' : undefined}
+					autoFocus={isNew}
+					aria-label={isNew ? 'Add comment' : 'Edit comment'} />
 			</form>
 		}
 	</li>;
